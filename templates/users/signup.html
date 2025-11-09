@@ -17,19 +17,12 @@
     <form method="post">
         {% csrf_token %}
         <div class="form-group">
-            <label>Username</label>
-            {{ form.username }}
-            {% if form.username.errors %}
-            <span style="color: red; font-size: 0.875rem;">{{ form.username.errors }}</span>
-            {% endif %}
-        </div>
-
-        <div class="form-group">
-            <label>Email</label>
+            <label>Email Address</label>
             {{ form.email }}
             {% if form.email.errors %}
             <span style="color: red; font-size: 0.875rem;">{{ form.email.errors }}</span>
             {% endif %}
+            <small style="color: #6b7280; font-size: 0.875rem;">We'll create your username automatically</small>
         </div>
 
         <div class="form-group">

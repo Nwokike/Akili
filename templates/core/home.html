@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Akili - Nigeria's first AI-powered personal exam prep platform. Master JAMB, WAEC, NECO, and JSS exams with your personal AI tutor.">
+    <meta name="theme-color" content="#2563eb">
+    
+    <title>Akili - AI-Powered Exam Prep for Nigerian Students</title>
+    
+    {% load static %}
+    
+    <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/logo.png' %}">
+    <link rel="manifest" href="{% static 'pwa/manifest.json' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+    <div class="hero">
+        <nav class="nav">
+            <a href="{% url 'home' %}" class="nav-logo">
+                <img src="{% static 'images/logo.png' %}" alt="Akili">
+                <span>Akili</span>
+            </a>
+            <div class="nav-links">
+                <a href="{% url 'about' %}" class="nav-link">About</a>
+                <a href="{% url 'login' %}" class="nav-link">Login</a>
+                <a href="{% url 'signup' %}" class="btn btn-primary btn-nav">Sign Up Free</a>
+            </div>
+        </nav>
+        
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Your Personal AI Tutor for Nigerian Exams</h1>
+                <p>Master JAMB, WAEC, NECO, and JSS exams with AI-powered personalized learning. Get instant explanations, practice questions, and full mock exams.</p>
+                
+                <div class="cta-group">
+                    <a href="{% url 'signup' %}" class="btn btn-primary">
+                        <span>Start Learning Free</span>
+                        <span>→</span>
+                    </a>
+                    <a href="#features" class="btn btn-secondary">Learn More</a>
+                </div>
+                
+                <p class="credit-info">✨ Resets to 10 Free Credits Daily • No Credit Card Required</p>
+            </div>
+            
+            <div class="hero-visual">
+                <div class="hero-visual-box">
+                    <div class="ai-response-card">
+                        <div class="ai-label">AI Tutor Response</div>
+                        <div class="ai-text">
+                            "Great question! Let me explain projectile motion. The formula is: <strong>s = ut + ½at²</strong>. When you throw a ball..."
+                        </div>
+                    </div>
+                    <div class="badge-group">
+                        <div class="badge badge-physics">📚 Physics</div>
+                        <div class="badge badge-validated">✓ Validated</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="trust-bar">
+        <div class="trust-content">
+            <div class="trust-stats">
+                <div class="stat">
+                    <div class="stat-number">10</div>
+                    <div class="stat-label">Free Daily Credits</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Exam Types</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">AI Tutor Access</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <section class="features" id="features">
+        <div class="section-header">
+            <h2>Everything You Need to Excel</h2>
+            <p>Akili combines cutting-edge AI with official syllabuses to give you the ultimate exam prep experience.</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI-Powered Learning</h3>
+                <p>Get personalized lessons generated on-demand by advanced AI. Every topic explained in a way that works for you.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <h3>Official Syllabuses</h3>
+                <p>All content follows official JAMB, WAEC, NECO, and JSS syllabuses. Study exactly what you need for your exams.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📝</div>
+                <h3>Unlimited Practice</h3>
+                <p>Generate unlimited mock exams with real exam-style questions. Track your progress and master every topic.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">💡</div>
+                <h3>Ask Anything</h3>
+                <p>Stuck on a concept? Ask follow-up questions and get instant explanations. Your AI tutor is always ready to help.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>Study Anywhere</h3>
+                <p>Progressive Web App works on any device. Install it and study offline when you need to.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⭐</div>
+                <h3>Earn More Credits</h3>
+                <p>Refer friends and increase your daily credit limit up to 30 credits. More studying, more success!</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="pricing">
+        <div class="pricing-container">
+            <div class="pricing-highlight">🎉 Start Learning Today - Completely Free</div>
+            
+            <h2 class="pricing-title">Simple, Fair Pricing</h2>
+            <p class="pricing-description">
+                Your credits reset to 10 every day (up to 30 with referrals). Need more? Buy credits as you go.
+            </p>
+            
+            <div class="exam-badges">
+                <span class="exam-badge">JAMB</span>
+                <span class="exam-badge">WAEC</span>
+                <span class="exam-badge">NECO</span>
+                <span class="exam-badge">JSS</span>
+            </div>
+            
+            <a href="{% url 'signup' %}" class="btn btn-primary cta-large">
+                Join Akili Free →
+            </a>
+        </div>
+    </section>
+    
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Akili</h4>
+                <p class="footer-description">Nigeria's first AI-powered personal exam prep platform. Master your exams with confidence.</p>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Product</h4>
+                <ul class="footer-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="{% url 'signup' %}">Pricing</a></li>
+                    <li><a href="{% url 'about' %}">About Us</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul class="footer-links">
+                    <li><a href="{% url 'privacy' %}">Privacy Policy</a></li>
+                    <li><a href="{% url 'terms' %}">Terms of Service</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul class="footer-links">
+                    <li><a href="mailto:support@akili.ng">support@akili.ng</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 Akili. All rights reserved. Built with ❤️ in Nigeria.</p>
+        </div>
+    </footer>
+    
+    <button id="install-app-btn" class="btn btn-primary install-btn">
+        📱 Install App
+    </button>
+
+    <script src="{% static 'js/home.js' %}"></script>
+</body>
+</html>

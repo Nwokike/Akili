@@ -18,6 +18,21 @@ def signup_view(request):
         if form.is_valid():
             user = form.save(commit=False)
             
+            # Auto-generate username from email
+            email = form.cleaned_data['email']
+            base_username = email.split('@')[0].lower().replace('.', '_').replace('+', '_')
+            username = base_username
+            
+            # Ensure username is unique
+            counter = 1
+            while CustomUser.objects.filter(username=username).exists():
+                username = f"{base_username}{counter}"
+                counter += 1
+            
+            user.username = username
+            user.save()
+            
+            # Handle referral
             if referred_by:
                 try:
                     referrer = CustomUser.objects.get(username=referred_by)
@@ -25,12 +40,10 @@ def signup_view(request):
                     referrer.increase_daily_limit(2)
                     user.save()
                 except CustomUser.DoesNotExist:
-                    user.save()
-            else:
-                user.save()
+                    pass
             
             login(request, user)
-            messages.success(request, f'Welcome to Akili, {user.username}!')
+            messages.success(request, f'Welcome to Akili!')
             return redirect('dashboard')
     else:
         form = SignupForm()
@@ -49,25 +62,21 @@ def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
-            username_or_email = form.cleaned_data['username']
+            email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             
-            user = None
-            if '@' in username_or_email:
-                try:
-                    user_obj = CustomUser.objects.get(email=username_or_email)
-                    user = authenticate(request, username=user_obj.username, password=password)
-                except CustomUser.DoesNotExist:
-                    pass
-            else:
-                user = authenticate(request, username=username_or_email, password=password)
-            
-            if user is not None:
-                login(request, user)
-                messages.success(request, f'Welcome back, {user.username}!')
-                return redirect('dashboard')
-            else:
-                messages.error(request, 'Invalid username/email or password.')
+            try:
+                user_obj = CustomUser.objects.get(email=email)
+                user = authenticate(request, username=user_obj.username, password=password)
+                
+                if user is not None:
+                    login(request, user)
+                    messages.success(request, 'Welcome back!')
+                    return redirect('dashboard')
+                else:
+                    messages.error(request, 'Invalid email or password.')
+            except CustomUser.DoesNotExist:
+                messages.error(request, 'Invalid email or password.')
     else:
         form = LoginForm()
     
