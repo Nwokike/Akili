@@ -3,44 +3,6 @@
 ## Project Overview
 Akili is Nigeria's first personal AI-powered study platform designed to make one-on-one tutoring accessible through dynamic, responsive learning. The platform generates all content on demand via AI to avoid copyright and cost issues.
 
-**Status**: Foundation complete - Team Lead portion finished
-**Version**: MVP v1.0
-**Tech Stack**: Django 5.2.8, PostgreSQL, Gemini AI, Groq API
-
----
-
-## Recent Changes (November 9, 2025)
-
-### Team Lead Foundation (✅ COMPLETE)
-1. **Core Infrastructure**
-   - Django project initialized with PostgreSQL database
-   - Custom User model with freemium credit system
-   - 4-tier AI Smart Fallback architecture implemented
-   - PWA setup with manifest.json and service worker
-
-2. **Authentication System**
-   - Email + username login/signup
-   - Referral system using username URLs (akili.ng/join/username)
-   - Daily credit reset logic (10 free credits, max 30 with referrals)
-
-3. **Admin System**
-   - JAMB, SSCE, JSS syllabus models with Markdown + LaTeX support
-   - Django admin configured for syllabus management
-
-4. **Base Template & UI**
-   - Responsive base template with KaTeX for LaTeX rendering
-   - Mobile-first design (bottom nav) + desktop (side nav)
-   - Credits display in navbar
-   - Akili logo integration
-
-5. **Project Structure**
-   - All Django apps created with clear ownership
-   - Models defined for all features
-   - URLs configured
-   - Static files separated from templates
-
----
-
 ## Project Architecture
 
 ### Django Apps Structure
@@ -221,16 +183,3 @@ GROQ_API_KEY=your_key
 # Always run migrations before committing model changes
 # Test locally before pushing
 ```
-
----
-
-## Support
-
-- **Team Lead**: Handles foundation, deployment, AI integration
-- **Developer 1**: Learning features (courses, profiles)
-- **Developer 2**: Assessment features (quizzes, exams, payments)
-
----
-
-**Last Updated**: November 9, 2025
-**Foundation Status**: ✅ Complete and ready for feature development
