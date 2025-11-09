@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Akili{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 3rem auto; padding: 2rem; background: white; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="text-align: center; margin-bottom: 2rem;">
+        {% load static %}
+        <img src="{% static 'images/logo.png' %}" alt="Akili" style="height: 80px;">
+        <h1>Welcome Back</h1>
+        <p>Login to continue learning</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Username or Email</label>
+            {{ form.username }}
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            {{ form.password }}
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Login</button>
+    </form>
+
+    <p style="text-align: center; margin-top: 1.5rem;">
+        Don't have an account? <a href="{% url 'signup' %}" style="color: #2563eb;">Sign Up</a>
+    </p>
+</div>
+{% endblock %}

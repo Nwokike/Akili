@@ -1,0 +1,22 @@
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+
+@login_required
+def dashboard_view(request):
+    """Main dashboard view"""
+    return render(request, 'core/dashboard.html', {
+        'referral_url': f"{request.scheme}://{request.get_host()}/join/{request.user.username}"
+    })
+
+
+@login_required
+def exam_center_view(request):
+    """Mock exam center - Developer 2 will implement"""
+    return render(request, 'exams/exam_center.html')
+
+
+@login_required
+def profile_view(request):
+    """User profile - Developer 1 will implement"""
+    return render(request, 'profiles/profile.html')

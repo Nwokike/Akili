@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Akili{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto;">
+    <div style="background: white; padding: 2rem; border-radius: 1rem; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h1>Welcome, {{ user.username }}!</h1>
+        <p>You have <strong>{{ user_credits }}</strong> credits available (Resets daily to {{ user_daily_limit }})</p>
+        
+        <div style="margin-top: 1.5rem; padding: 1rem; background: #f3f4f6; border-radius: 0.5rem;">
+            <p style="margin-bottom: 0.5rem;"><strong>Your Referral Link:</strong></p>
+            <div style="display: flex; gap: 0.5rem;">
+                <input type="text" value="{{ referral_url }}" readonly id="referralLink" 
+                       style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem;">
+                <button onclick="copyToClipboard('{{ referral_url }}')" class="btn btn-primary">Copy</button>
+            </div>
+            <p style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280;">
+                Earn 2 extra daily credits per referral (max 30 credits/day)
+            </p>
+        </div>
+    </div>
+
+    <div style="background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h2>Your Courses</h2>
+        <p style="color: #6b7280; margin-top: 0.5rem;">
+            Developer 1: Course dashboard will be implemented here
+        </p>
+        
+        <div style="margin-top: 2rem; text-align: center; padding: 3rem;">
+            <p style="font-size: 3rem;">📚</p>
+            <p style="color: #6b7280; margin-bottom: 1.5rem;">No courses yet. Add your first course to get started!</p>
+            <button class="btn btn-primary" disabled>+ Add New Course (Coming Soon)</button>
+        </div>
+    </div>
+</div>
+
+<button id="install-app-btn" class="btn btn-primary" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 1000;">
+    Install App
+</button>
+{% endblock %}
