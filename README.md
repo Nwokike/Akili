@@ -59,17 +59,17 @@ Your local `.env` file must be configured for the project to run.
 
 ## Project Structure
 
-### Team Lead (Complete ✅)
+### Team Lead (In Progress)
 * **core** - Base templates, PWA, AI utilities
 * **users** - Authentication, freemium credits, referrals
 * **admin_syllabus** - JAMB/SSCE/JSS syllabus storage
 
 ### Developer 1 (To Implement)
 * **courses** - Dashboard, course management, lessons
+* **quizzes** - Dynamic quiz generation
 * **profiles** - Profile page, referrals, account deletion
 
 ### Developer 2 (To Implement)
-* **quizzes** - Dynamic quiz generation
 * **exams** - Mock exam center
 * **payments** - Paystack integration
 
