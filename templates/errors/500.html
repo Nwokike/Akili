@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}500 - Server Error - Akili{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center px-4">
+  <div class="max-w-lg w-full text-center">
+    
+    <!-- Large 500 -->
+    <div class="mb-8">
+      <h1 class="text-9xl font-extrabold text-red-200">500</h1>
+      <div class="-mt-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-3">Server Error</h2>
+        <p class="text-gray-600 text-lg">
+          Something went wrong on our end. We're working to fix it!
+        </p>
+      </div>
+    </div>
+    
+    <!-- Illustration/Icon -->
+    <div class="mb-8">
+      <svg class="w-32 h-32 mx-auto text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+      </svg>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="{% url 'home' %}" class="btn-primary">
+        Go Home
+      </a>
+      <button onclick="location.reload()" class="btn-secondary">
+        Try Again
+      </button>
+    </div>
+    
+  </div>
+</div>
+{% endblock %}

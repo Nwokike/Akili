@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}403 - Access Forbidden - Akili{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center px-4">
+  <div class="max-w-lg w-full text-center">
+    
+    <!-- Large 403 -->
+    <div class="mb-8">
+      <h1 class="text-9xl font-extrabold text-accent-200">403</h1>
+      <div class="-mt-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-3">Access Forbidden</h2>
+        <p class="text-gray-600 text-lg">
+          You don't have permission to access this page.
+        </p>
+      </div>
+    </div>
+    
+    <!-- Illustration/Icon -->
+    <div class="mb-8">
+      <svg class="w-32 h-32 mx-auto text-accent-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+      </svg>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="{% url 'home' %}" class="btn-primary">
+        Go Home
+      </a>
+      <button onclick="history.back()" class="btn-secondary">
+        Go Back
+      </button>
+    </div>
+    
+  </div>
+</div>
+{% endblock %}

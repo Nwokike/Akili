@@ -4,15 +4,21 @@
 <header class="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-40">
   <div class="flex items-center justify-between px-4 py-3">
     
-    <!-- Left Side: Back Button (when applicable) -->
+    <!-- Left Side: Back Button or Logo -->
     <div class="flex items-center">
       {% if request.resolver_match.url_name != 'home' and request.resolver_match.url_name != 'dashboard' %}
-        <button onclick="history.back()" class="p-2 hover:bg-gray-100 rounded-lg transition duration-200">
+        <button onclick="history.back()" class="p-2 hover:bg-gray-100 rounded-lg transition duration-200 mr-2">
           <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
           </svg>
         </button>
       {% endif %}
+      
+      <!-- Logo (Always Visible) -->
+      <a href="{% url 'home' %}" class="flex items-center space-x-2">
+        <img src="{% static 'images/logo.png' %}" alt="Akili" class="w-8 h-8">
+        <span class="text-xl font-bold text-gray-900 hidden sm:block">Akili</span>
+      </a>
     </div>
     
     <!-- Right Side: Profile or Login -->
