@@ -97,6 +97,9 @@
       {% block content %}{% endblock %}
     </main>
     
+    <!-- Footer -->
+    {% include 'partials/footer.html' %}
+    
     <!-- Mobile Bottom Navigation (for authenticated users) -->
     {% if user.is_authenticated %}
       {% include 'partials/bottom_nav.html' %}

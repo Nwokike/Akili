@@ -11,7 +11,7 @@
   <!-- Welcome Section -->
   <div class="mb-8">
     <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-      Welcome back, <span class="gradient-text">{{ user.email|truncatechars:20 }}</span>!
+      Welcome back, <span class="gradient-text">{{ user.get_full_name }}</span>!
     </h1>
     <p class="text-gray-600 text-lg">Ready to ace your exams today?</p>
   </div>

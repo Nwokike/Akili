@@ -7,10 +7,12 @@ import uuid
 class CustomUser(AbstractUser):
     """
     Custom User model for Akili platform with freemium credit system.
-    Email-only authentication with auto-generated username.
+    Email-only authentication with auto-generated username from email.
     """
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=150, unique=True, editable=False)
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
     
     # Freemium Credit System Fields
     tutor_credits = models.IntegerField(default=settings.AKILI_DAILY_FREE_CREDITS)
@@ -21,12 +23,13 @@ class CustomUser(AbstractUser):
     referred_by = models.CharField(max_length=150, blank=True, null=True)
     
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['first_name', 'last_name']
     
     def save(self, *args, **kwargs):
-        """Auto-generate username from email if not set"""
+        """Auto-generate username from email (just the part before @)"""
         if not self.username:
-            self.username = self.email.split('@')[0] + str(uuid.uuid4())[:8]
+            email_base = self.email.split('@')[0]
+            self.username = email_base + str(uuid.uuid4())[:8]
         super().save(*args, **kwargs)
     
     class Meta:
@@ -35,7 +38,11 @@ class CustomUser(AbstractUser):
         verbose_name_plural = 'Users'
     
     def __str__(self):
-        return self.username
+        return self.get_full_name() or self.email
+    
+    def get_full_name(self):
+        """Return the user's full name"""
+        return f"{self.first_name} {self.last_name}".strip()
     
     @property
     def referral_url(self):

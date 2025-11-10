@@ -222,47 +222,4 @@
   </div>
 </section>
 
-<!-- Footer -->
-<footer class="bg-gray-50 border-t border-gray-200 py-12">
-  <div class="max-w-6xl mx-auto px-6">
-    <div class="grid md:grid-cols-3 gap-8 mb-8">
-      
-      <!-- Brand with Logo -->
-      <div>
-        <div class="flex items-center space-x-3 mb-4">
-          <img src="{% static 'images/logo.png' %}" alt="Akili Logo" class="w-12 h-12">
-          <span class="text-2xl font-bold text-gray-900">Akili</span>
-        </div>
-        <p class="text-gray-600">
-          Your personal AI-powered study platform for Nigerian exams.
-        </p>
-      </div>
-      
-      <!-- Quick Links -->
-      <div>
-        <h4 class="font-bold text-gray-900 mb-4">Quick Links</h4>
-        <ul class="space-y-2">
-          <li><a href="{% url 'about' %}" class="text-gray-600 hover:text-primary-600 transition">About</a></li>
-          <li><a href="{% url 'signup' %}" class="text-gray-600 hover:text-primary-600 transition">Sign Up</a></li>
-          <li><a href="{% url 'login' %}" class="text-gray-600 hover:text-primary-600 transition">Login</a></li>
-        </ul>
-      </div>
-      
-      <!-- Legal -->
-      <div>
-        <h4 class="font-bold text-gray-900 mb-4">Legal</h4>
-        <ul class="space-y-2">
-          <li><a href="{% url 'privacy' %}" class="text-gray-600 hover:text-primary-600 transition">Privacy Policy</a></li>
-          <li><a href="{% url 'terms' %}" class="text-gray-600 hover:text-primary-600 transition">Terms of Service</a></li>
-        </ul>
-      </div>
-      
-    </div>
-    
-    <div class="border-t border-gray-200 pt-8 text-center text-sm text-gray-500">
-      &copy; 2025 Akili. All rights reserved.
-    </div>
-  </div>
-</footer>
-
 {% endblock %}
