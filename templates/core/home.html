@@ -5,93 +5,96 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="min-h-screen flex items-center justify-center py-20">
-  <div class="max-w-6xl mx-auto text-center">
+<section class="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-50">
+  <div class="max-w-5xl mx-auto text-center px-6 py-20">
     
-    <!-- Logo -->
-    <div class="mb-8 flex justify-center">
-      <img src="{% static 'images/logo.png' %}" alt="Akili Logo" class="w-24 h-24">
-    </div>
-    
-    <!-- Heading -->
-    <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-      Your Personal <span class="gradient-text">AI Tutor</span><br/>
-      for Nigerian Exams
+    <!-- Main Heading -->
+    <h1 class="text-6xl md:text-7xl font-extrabold text-gray-900 mb-6 leading-tight">
+      Your Personal<br/>
+      <span class="gradient-text">AI Tutor</span>
     </h1>
     
     <!-- Subheading -->
-    <p class="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
-      Master JAMB, WAEC, NECO, and JSS exams with AI-powered personalized learning. 
-      Get instant explanations, practice questions, and full mock exams.
+    <p class="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+      Master JAMB, WAEC, NECO, and JSS exams with AI-powered personalized learning
     </p>
     
     <!-- CTA Buttons -->
-    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-      <a href="{% url 'signup' %}" class="btn-primary text-lg px-8 py-4 w-full sm:w-auto">
-        Start Learning Free →
-      </a>
-      <a href="{% url 'about' %}" class="btn-secondary text-lg px-8 py-4 w-full sm:w-auto">
-        Learn More
+    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+      <a href="{% url 'signup' %}" class="bg-primary-600 hover:bg-primary-700 text-white font-bold px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 text-lg w-full sm:w-auto">
+        Start Learning Free
       </a>
     </div>
     
-    <!-- Free Credits Badge -->
-    <div class="inline-flex items-center space-x-2 bg-accent-100 text-accent-800 px-6 py-3 rounded-full">
-      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-      </svg>
-      <span class="font-semibold">Resets to 10 Free Credits Daily • No Credit Card Required</span>
+    <!-- Value Props -->
+    <div class="grid md:grid-cols-3 gap-8 mb-16">
+      
+      <div class="text-center">
+        <div class="text-5xl font-bold text-accent-600 mb-2">10</div>
+        <p class="text-gray-600 font-medium">Free Credits Daily</p>
+      </div>
+      
+      <div class="text-center">
+        <div class="text-5xl font-bold text-primary-600 mb-2">∞</div>
+        <p class="text-gray-600 font-medium">AI-Generated Content</p>
+      </div>
+      
+      <div class="text-center">
+        <div class="text-5xl font-bold text-green-600 mb-2">24/7</div>
+        <p class="text-gray-600 font-medium">Study Anytime</p>
+      </div>
+      
     </div>
     
   </div>
 </section>
 
 <!-- Features Section -->
-<section class="py-20 bg-gray-50">
-  <div class="max-w-6xl mx-auto">
+<section class="py-24 bg-white">
+  <div class="max-w-6xl mx-auto px-6">
     
-    <h2 class="text-4xl font-bold text-center text-gray-900 mb-12">
-      Why Choose Akili?
+    <h2 class="text-4xl md:text-5xl font-bold text-center text-gray-900 mb-16">
+      Everything You Need to Excel
     </h2>
     
-    <div class="grid md:grid-cols-3 gap-8">
+    <div class="grid md:grid-cols-3 gap-12">
       
-      <!-- Feature 1 -->
-      <div class="card card-hover text-center">
-        <div class="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- Feature 1: AI Tutor -->
+      <div class="text-center">
+        <div class="w-20 h-20 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <svg class="w-10 h-10 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
           </svg>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">AI-Powered Learning</h3>
-        <p class="text-gray-600">
-          Get instant, personalized explanations for any topic. Our AI tutor adapts to your learning style.
+        <h3 class="text-2xl font-bold text-gray-900 mb-4">Personal AI Tutor</h3>
+        <p class="text-gray-600 leading-relaxed">
+          Get instant, detailed explanations for any topic. Like having a private tutor available 24/7.
         </p>
       </div>
       
-      <!-- Feature 2 -->
-      <div class="card card-hover text-center">
-        <div class="w-16 h-16 bg-accent-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <svg class="w-8 h-8 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- Feature 2: Mock Exams -->
+      <div class="text-center">
+        <div class="w-20 h-20 bg-accent-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <svg class="w-10 h-10 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
           </svg>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">Full Mock Exams</h3>
-        <p class="text-gray-600">
-          Practice with syllabus-grounded mock exams that mirror the real JAMB, WAEC, and NECO experience.
+        <h3 class="text-2xl font-bold text-gray-900 mb-4">Full Mock Exams</h3>
+        <p class="text-gray-600 leading-relaxed">
+          Practice with syllabus-grounded exams that mirror real JAMB, WAEC, and NECO standards.
         </p>
       </div>
       
-      <!-- Feature 3 -->
-      <div class="card card-hover text-center">
-        <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      <!-- Feature 3: Works Offline -->
+      <div class="text-center">
+        <div class="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
           </svg>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">Study Anytime</h3>
-        <p class="text-gray-600">
-          Access your courses 24/7. Works offline as a Progressive Web App. Install on your phone!
+        <h3 class="text-2xl font-bold text-gray-900 mb-4">Works Offline</h3>
+        <p class="text-gray-600 leading-relaxed">
+          Install as a mobile app. Access your courses anytime, even without internet.
         </p>
       </div>
       
@@ -100,58 +103,58 @@
 </section>
 
 <!-- How It Works -->
-<section class="py-20">
-  <div class="max-w-4xl mx-auto">
+<section class="py-24 bg-gray-50">
+  <div class="max-w-4xl mx-auto px-6">
     
-    <h2 class="text-4xl font-bold text-center text-gray-900 mb-12">
-      Get Started in 3 Easy Steps
+    <h2 class="text-4xl md:text-5xl font-bold text-center text-gray-900 mb-16">
+      Get Started in Minutes
     </h2>
     
-    <div class="space-y-8">
+    <div class="space-y-12">
       
       <!-- Step 1 -->
       <div class="flex items-start space-x-6">
-        <div class="flex-shrink-0 w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-xl">
+        <div class="flex-shrink-0 w-16 h-16 bg-primary-600 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg">
           1
         </div>
-        <div>
+        <div class="pt-3">
           <h3 class="text-2xl font-bold text-gray-900 mb-2">Sign Up Free</h3>
-          <p class="text-gray-600 text-lg">
-            Create your account in seconds. No credit card required. Get 10 free credits daily.
+          <p class="text-gray-600 text-lg leading-relaxed">
+            Create your account in seconds. Get 10 free credits daily. No credit card needed.
           </p>
         </div>
       </div>
       
       <!-- Step 2 -->
       <div class="flex items-start space-x-6">
-        <div class="flex-shrink-0 w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-xl">
+        <div class="flex-shrink-0 w-16 h-16 bg-primary-600 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg">
           2
         </div>
-        <div>
+        <div class="pt-3">
           <h3 class="text-2xl font-bold text-gray-900 mb-2">Choose Your Exam & Subject</h3>
-          <p class="text-gray-600 text-lg">
-            Select from JAMB, WAEC, NECO, or JSS. Pick any subject you want to master.
+          <p class="text-gray-600 text-lg leading-relaxed">
+            Select JAMB, WAEC, NECO, or JSS. Pick the subjects you want to master.
           </p>
         </div>
       </div>
       
       <!-- Step 3 -->
       <div class="flex items-start space-x-6">
-        <div class="flex-shrink-0 w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-xl">
+        <div class="flex-shrink-0 w-16 h-16 bg-primary-600 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg">
           3
         </div>
-        <div>
+        <div class="pt-3">
           <h3 class="text-2xl font-bold text-gray-900 mb-2">Start Learning</h3>
-          <p class="text-gray-600 text-lg">
-            Get personalized lessons, take quizzes, and practice with full mock exams.
+          <p class="text-gray-600 text-lg leading-relaxed">
+            Get personalized lessons, practice quizzes, and full mock exams powered by AI.
           </p>
         </div>
       </div>
       
     </div>
     
-    <div class="text-center mt-12">
-      <a href="{% url 'signup' %}" class="btn-primary text-lg px-8 py-4 inline-block">
+    <div class="text-center mt-16">
+      <a href="{% url 'signup' %}" class="bg-primary-600 hover:bg-primary-700 text-white font-bold px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 text-lg inline-block">
         Get Started Now →
       </a>
     </div>
@@ -159,20 +162,106 @@
   </div>
 </section>
 
-<!-- Footer -->
-<footer class="bg-gray-900 text-gray-300 py-12">
-  <div class="max-w-6xl mx-auto text-center">
-    <div class="mb-6">
-      <span class="text-3xl font-bold text-white">Akili</span>
-    </div>
-    <div class="flex flex-wrap justify-center gap-6 mb-6">
-      <a href="{% url 'about' %}" class="hover:text-white transition">About</a>
-      <a href="{% url 'privacy' %}" class="hover:text-white transition">Privacy Policy</a>
-      <a href="{% url 'terms' %}" class="hover:text-white transition">Terms of Service</a>
-    </div>
-    <p class="text-sm text-gray-400">
-      &copy; 2025 Akili. All rights reserved.
+<!-- Social Proof / Stats -->
+<section class="py-24 bg-white">
+  <div class="max-w-6xl mx-auto px-6 text-center">
+    
+    <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+      Trusted by Nigerian Students
+    </h2>
+    <p class="text-xl text-gray-600 mb-16 max-w-2xl mx-auto">
+      Join thousands of students who are already improving their exam scores with Akili
     </p>
+    
+    <div class="grid md:grid-cols-4 gap-8">
+      
+      <div class="p-6">
+        <div class="text-4xl font-bold text-primary-600 mb-2">JAMB</div>
+        <p class="text-gray-600">University Entrance</p>
+      </div>
+      
+      <div class="p-6">
+        <div class="text-4xl font-bold text-green-600 mb-2">WAEC</div>
+        <p class="text-gray-600">Senior School Cert</p>
+      </div>
+      
+      <div class="p-6">
+        <div class="text-4xl font-bold text-accent-600 mb-2">NECO</div>
+        <p class="text-gray-600">National Exam</p>
+      </div>
+      
+      <div class="p-6">
+        <div class="text-4xl font-bold text-purple-600 mb-2">JSS</div>
+        <p class="text-gray-600">Junior Secondary</p>
+      </div>
+      
+    </div>
+    
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="py-24 bg-gradient-to-r from-primary-600 to-blue-700 text-white">
+  <div class="max-w-4xl mx-auto text-center px-6">
+    
+    <h2 class="text-4xl md:text-5xl font-bold mb-6">
+      Ready to Excel in Your Exams?
+    </h2>
+    <p class="text-xl mb-10 opacity-90">
+      Start learning with your personal AI tutor today
+    </p>
+    
+    <a href="{% url 'signup' %}" class="bg-white text-primary-600 hover:bg-gray-100 font-bold px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 text-lg inline-block">
+      Start Free Today
+    </a>
+    
+    <p class="mt-6 text-sm opacity-75">
+      10 free credits daily • No credit card required • Cancel anytime
+    </p>
+    
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-gray-50 border-t border-gray-200 py-12">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="grid md:grid-cols-3 gap-8 mb-8">
+      
+      <!-- Brand with Logo -->
+      <div>
+        <div class="flex items-center space-x-3 mb-4">
+          <img src="{% static 'images/logo.png' %}" alt="Akili Logo" class="w-12 h-12">
+          <span class="text-2xl font-bold text-gray-900">Akili</span>
+        </div>
+        <p class="text-gray-600">
+          Your personal AI-powered study platform for Nigerian exams.
+        </p>
+      </div>
+      
+      <!-- Quick Links -->
+      <div>
+        <h4 class="font-bold text-gray-900 mb-4">Quick Links</h4>
+        <ul class="space-y-2">
+          <li><a href="{% url 'about' %}" class="text-gray-600 hover:text-primary-600 transition">About</a></li>
+          <li><a href="{% url 'signup' %}" class="text-gray-600 hover:text-primary-600 transition">Sign Up</a></li>
+          <li><a href="{% url 'login' %}" class="text-gray-600 hover:text-primary-600 transition">Login</a></li>
+        </ul>
+      </div>
+      
+      <!-- Legal -->
+      <div>
+        <h4 class="font-bold text-gray-900 mb-4">Legal</h4>
+        <ul class="space-y-2">
+          <li><a href="{% url 'privacy' %}" class="text-gray-600 hover:text-primary-600 transition">Privacy Policy</a></li>
+          <li><a href="{% url 'terms' %}" class="text-gray-600 hover:text-primary-600 transition">Terms of Service</a></li>
+        </ul>
+      </div>
+      
+    </div>
+    
+    <div class="border-t border-gray-200 pt-8 text-center text-sm text-gray-500">
+      &copy; 2025 Akili. All rights reserved.
+    </div>
   </div>
 </footer>
 

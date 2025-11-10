@@ -6,10 +6,11 @@ import uuid
 
 class CustomUser(AbstractUser):
     """
-    Custom User model for Akili platform with freemium credit system
+    Custom User model for Akili platform with freemium credit system.
+    Email-only authentication with auto-generated username.
     """
     email = models.EmailField(unique=True)
-    username = models.CharField(max_length=150, unique=True)
+    username = models.CharField(max_length=150, unique=True, editable=False)
     
     # Freemium Credit System Fields
     tutor_credits = models.IntegerField(default=settings.AKILI_DAILY_FREE_CREDITS)
@@ -19,8 +20,14 @@ class CustomUser(AbstractUser):
     # Referral System
     referred_by = models.CharField(max_length=150, blank=True, null=True)
     
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+    
+    def save(self, *args, **kwargs):
+        """Auto-generate username from email if not set"""
+        if not self.username:
+            self.username = self.email.split('@')[0] + str(uuid.uuid4())[:8]
+        super().save(*args, **kwargs)
     
     class Meta:
         db_table = 'akili_users'

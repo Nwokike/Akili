@@ -16,21 +16,7 @@ def signup_view(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            
-            # Auto-generate username from email
-            email = form.cleaned_data['email']
-            base_username = email.split('@')[0].lower().replace('.', '_').replace('+', '_')
-            username = base_username
-            
-            # Ensure username is unique
-            counter = 1
-            while CustomUser.objects.filter(username=username).exists():
-                username = f"{base_username}{counter}"
-                counter += 1
-            
-            user.username = username
-            user.save()
+            user = form.save()
             
             # Handle referral
             if referred_by:
@@ -43,7 +29,7 @@ def signup_view(request):
                     pass
             
             login(request, user)
-            messages.success(request, f'Welcome to Akili!')
+            messages.success(request, 'Welcome to Akili!')
             return redirect('dashboard')
     else:
         form = SignupForm()
@@ -55,7 +41,7 @@ def signup_view(request):
 
 
 def login_view(request):
-    """Handle user login"""
+    """Handle user login with email"""
     if request.user.is_authenticated:
         return redirect('dashboard')
     
@@ -65,17 +51,13 @@ def login_view(request):
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             
-            try:
-                user_obj = CustomUser.objects.get(email=email)
-                user = authenticate(request, username=user_obj.username, password=password)
-                
-                if user is not None:
-                    login(request, user)
-                    messages.success(request, 'Welcome back!')
-                    return redirect('dashboard')
-                else:
-                    messages.error(request, 'Invalid email or password.')
-            except CustomUser.DoesNotExist:
+            user = authenticate(request, username=email, password=password)
+            
+            if user is not None:
+                login(request, user)
+                messages.success(request, 'Welcome back!')
+                return redirect('dashboard')
+            else:
                 messages.error(request, 'Invalid email or password.')
     else:
         form = LoginForm()
