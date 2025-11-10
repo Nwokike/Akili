@@ -24,24 +24,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-cnw@ty7umh9lgb&$i3w(euttky6ceria*z@tr0h&bni^ne-nnz')
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+# Set this in your .env file.
+# For local dev: ALLOWED_HOSTS=127.0.0.1,localhost
+# For production: ALLOWED_HOSTS=your-domain.com,www.your-domain.com
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
-# CSRF Settings for Replit
-CSRF_TRUSTED_ORIGINS = [
-    'https://*.replit.dev',
-    'https://*.repl.co',
-]
-
-# Get Replit domains for CSRF
-REPLIT_DOMAINS = os.getenv('REPLIT_DOMAINS', '')
-if REPLIT_DOMAINS:
-    for domain in REPLIT_DOMAINS.split(','):
-        CSRF_TRUSTED_ORIGINS.append(f'https://{domain.strip()}')
+# CSRF Settings
+# For production, set this in .env (e.g., CSRF_TRUSTED_ORIGINS=https://your-domain.com)
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
+# Remove any empty strings that might result from a blank env var
+CSRF_TRUSTED_ORIGINS = [origin for origin in CSRF_TRUSTED_ORIGINS if origin]
 
 
 # Application definition
@@ -53,17 +50,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # Akili Apps - Team Lead
+
+    # Akili Apps
     'core',
     'users',
     'admin_syllabus',
-    
-    # Akili Apps - Developer 1
     'courses',
     'profiles',
-    
-    # Akili Apps - Developer 2
     'quizzes',
     'exams',
     'payments',
@@ -103,26 +96,21 @@ WSGI_APPLICATION = 'akili_project.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+#
+# Configured to use PostgreSQL for all environments.
+# Your team must set these variables in their local .env file.
+# You must also install the driver: pip install psycopg2-binary
 
-# Use PostgreSQL if environment variables are set, otherwise use SQLite
-if os.getenv('PGDATABASE'):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('PGDATABASE'),
-            'USER': os.getenv('PGUSER'),
-            'PASSWORD': os.getenv('PGPASSWORD'),
-            'HOST': os.getenv('PGHOST'),
-            'PORT': os.getenv('PGPORT', '5432'),
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('PGDATABASE'),
+        'USER': os.getenv('PGUSER'),
+        'PASSWORD': os.getenv('PGPASSWORD'),
+        'HOST': os.getenv('PGHOST'),
+        'PORT': os.getenv('PGPORT', '5432'),
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+}
 
 
 # Custom User Model
