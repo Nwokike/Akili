@@ -5,15 +5,13 @@ Akili is Nigeria's first personal AI-powered study platform designed to make one
 
 ## Current State
 - **Platform**: Django 5.2.8 web application
-- **Database**: PostgreSQL (Replit managed)
-- **Environment**: Configured for Replit deployment
-- **Status**: Imported from GitHub, setup in progress
+- **Database**: PostgreSQL 
 
 ## Project Architecture
 
 ### Django Apps Structure
 
-**Team Lead (Complete):**
+**Team Lead:**
 - `akili_core`: Base template, PWA, AI utilities, context processors
 - `akili_users`: CustomUser model, authentication, referral system
 - `akili_admin_syllabus`: JAMB/SSCE/JSS syllabus storage
@@ -98,23 +96,11 @@ All AI prompts automatically include LaTeX formatting instructions for math/scie
 - Install button (auto-shows on eligible devices)
 - Offline-ready static assets
 
-## Replit Configuration
-
-### Development Server
-- Port: 5000
-- Host: 0.0.0.0
-- Command: `python manage.py runserver 0.0.0.0:5000`
-
-### Database
-- Replit-managed PostgreSQL
-- Environment variables automatically configured
-- Migrations: `python manage.py migrate`
-
-### Required API Keys (Optional)
+### Required API Keys
 - `GEMINI_API_KEY`: For AI content generation
 - `GROQ_API_KEY`: For AI fallback tier
 
-## User Preferences
+## Project Preferences
 
 ### Code Style
 - Standard Django conventions
@@ -126,11 +112,6 @@ All AI prompts automatically include LaTeX formatting instructions for math/scie
 - PostgreSQL for dev consistency (no SQLite)
 - Migrations managed via Django ORM
 - No manual SQL except for debugging
-
-## Recent Changes
-- 2025-11-10: Imported from GitHub to Replit
-- 2025-11-10: Configured for Replit environment (port 5000, database settings)
-- 2025-11-10: Added CSRF trusted origins for Replit domains
 
 ## Next Steps for Developers
 
