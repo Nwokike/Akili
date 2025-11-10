@@ -5,12 +5,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from akili_core import views as core_views
+from core import views as core_views
 
 urlpatterns = [
     path('', core_views.home_view, name='home'),
     path('admin/', admin.site.urls),
-    path('', include('akili_users.urls')),
+    path('', include('users.urls')),
     path('dashboard/', core_views.dashboard_view, name='dashboard'),
     path('exam-center/', core_views.exam_center_view, name='exam_center'),
     path('profile/', core_views.profile_view, name='profile'),

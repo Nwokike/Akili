@@ -37,6 +37,12 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.repl.co',
 ]
 
+# Get Replit domains for CSRF
+REPLIT_DOMAINS = os.getenv('REPLIT_DOMAINS', '')
+if REPLIT_DOMAINS:
+    for domain in REPLIT_DOMAINS.split(','):
+        CSRF_TRUSTED_ORIGINS.append(f'https://{domain.strip()}')
+
 
 # Application definition
 
@@ -49,18 +55,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # Akili Apps - Team Lead
-    'akili_core',
-    'akili_users',
-    'akili_admin_syllabus',
+    'core',
+    'users',
+    'admin_syllabus',
     
     # Akili Apps - Developer 1
-    'akili_courses',
-    'akili_profiles',
+    'courses',
+    'profiles',
     
     # Akili Apps - Developer 2
-    'akili_quizzes',
-    'akili_exams',
-    'akili_payments',
+    'quizzes',
+    'exams',
+    'payments',
 ]
 
 MIDDLEWARE = [
@@ -86,7 +92,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'akili_core.context_processors.credits_processor',
+                'core.context_processors.credits_processor',
             ],
         },
     },
@@ -111,7 +117,7 @@ DATABASES = {
 
 
 # Custom User Model
-AUTH_USER_MODEL = 'akili_users.CustomUser'
+AUTH_USER_MODEL = 'users.CustomUser'
 
 
 # Password validation

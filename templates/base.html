@@ -1,87 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Akili - AI-Powered Nigerian Exam Prep Platform">
-    <meta name="theme-color" content="#2563eb">
-    
-    <title>{% block title %}Akili - AI Exam Prep{% endblock %}</title>
-    
-    {% load static %}
-    
-    <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
-    <link rel="apple-touch-icon" href="{% static 'images/logo.png' %}">
-    <link rel="manifest" href="{% static 'pwa/manifest.json' %}">
-    
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    
-    {% block extra_css %}{% endblock %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Akili - Your Personal AI-Powered Study Platform for JAMB, WAEC, NECO, and JSS exams">
+  <meta name="theme-color" content="#3b82f6">
+  
+  <title>{% block title %}Akili - AI Tutor for Nigerian Exams{% endblock %}</title>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="{% static 'pwa/manifest.json' %}">
+  <link rel="icon" href="{% static 'images/logo.png' %}">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            accent: {
+              50: '#fefce8',
+              100: '#fef9c3',
+              200: '#fef08a',
+              300: '#fde047',
+              400: '#facc15',
+              500: '#eab308',
+              600: '#ca8a04',
+              700: '#a16207',
+              800: '#854d0e',
+              900: '#713f12',
+            },
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <!-- Custom CSS -->
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+  
+  <!-- KaTeX for LaTeX rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  {% block extra_head %}{% endblock %}
 </head>
-<body>
-    {% if user.is_authenticated %}
-    <nav class="navbar {% if request.user_agent.is_mobile %}mobile-nav{% else %}desktop-nav{% endif %}">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <img src="{% static 'images/logo.png' %}" alt="Akili Logo">
-                <span>Akili</span>
-            </div>
-            
-            <div class="nav-links">
-                <a href="{% url 'dashboard' %}" class="nav-link">
-                    <span>📚</span> Dashboard
-                </a>
-                <a href="{% url 'exam_center' %}" class="nav-link">
-                    <span>📝</span> Mock Exams
-                </a>
-                <a href="{% url 'profile' %}" class="nav-link">
-                    <span>👤</span> Profile
-                </a>
-            </div>
-            
-            <div class="credits-display">
-                <span class="credits-icon">⭐</span>
-                <span class="credits-count">{{ user_credits }}</span>
-            </div>
+<body class="bg-gray-50 text-gray-900 font-sans antialiased">
+  
+  <!-- Django Messages -->
+  {% if messages %}
+    <div class="fixed top-4 right-4 z-50 space-y-2">
+      {% for message in messages %}
+        <div class="django-message px-6 py-3 rounded-lg shadow-lg {% if message.tags == 'success' %}bg-green-500{% elif message.tags == 'error' %}bg-red-500{% else %}bg-blue-500{% endif %} text-white font-semibold transition-opacity duration-300">
+          {{ message }}
         </div>
-    </nav>
+      {% endfor %}
+    </div>
+  {% endif %}
+  
+  <!-- Main Content Wrapper -->
+  <div class="min-h-screen {% if user.is_authenticated %}pb-20 md:pb-0 md:pl-64{% endif %}">
+    
+    <!-- Desktop Sidebar (for authenticated users) -->
+    {% if user.is_authenticated %}
+      {% include 'partials/sidebar.html' %}
     {% endif %}
     
-    <main class="main-content">
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-        
-        {% block content %}{% endblock %}
+    <!-- Page Content -->
+    <main class="{% if not user.is_authenticated %}container mx-auto{% endif %}">
+      {% block content %}{% endblock %}
     </main>
     
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-    <script src="{% static 'js/main.js' %}"></script>
-    <script src="{% static 'pwa/serviceworker.js' %}"></script>
-    
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register("{% static 'pwa/serviceworker.js' %}");
-        }
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: '$$', right: '$$', display: true},
-                    {left: '$', right: '$', display: false}
-                ]
-            });
-        });
-    </script>
-    
-    {% block extra_js %}{% endblock %}
+    <!-- Mobile Bottom Navigation (for authenticated users) -->
+    {% if user.is_authenticated %}
+      {% include 'partials/bottom_nav.html' %}
+    {% endif %}
+  </div>
+  
+  <!-- Credit Purchase Modal -->
+  {% if user.is_authenticated %}
+    {% include 'partials/credit_modal.html' %}
+  {% endif %}
+  
+  <!-- Main JavaScript -->
+  <script src="{% static 'js/main.js' %}"></script>
+  
+  {% block extra_scripts %}{% endblock %}
 </body>
 </html>

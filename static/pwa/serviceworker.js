@@ -1,7 +1,7 @@
-const CACHE_NAME = 'akili-v1';
+const CACHE_NAME = 'akili-v2';
 const urlsToCache = [
   '/',
-  '/static/css/main.css',
+  '/static/css/custom.css',
   '/static/js/main.js',
   '/static/images/logo.png'
 ];
