@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,7 +54,6 @@
   </script>
   
   <!-- Custom CSS -->
-  {% load static %}
   <link rel="stylesheet" href="{% static 'css/custom.css' %}">
   
   <!-- KaTeX for LaTeX rendering -->
@@ -89,8 +89,11 @@
       {% include 'partials/sidebar.html' %}
     {% endif %}
     
+    <!-- Top Header -->
+    {% include 'partials/header.html' %}
+    
     <!-- Page Content -->
-    <main class="{% if not user.is_authenticated %}container mx-auto{% endif %}">
+    <main class="{% if not user.is_authenticated %}container mx-auto px-4{% endif %}">
       {% block content %}{% endblock %}
     </main>
     

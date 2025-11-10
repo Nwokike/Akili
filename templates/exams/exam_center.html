@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mock Exam Center - Akili{% endblock %}
+
+{% block page_title %}Mock Exam Center{% endblock %}
+
+{% block content %}
+<div class="p-4 md:p-8 max-w-6xl mx-auto">
+  
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+      Mock Exam Center
+    </h1>
+    <p class="text-gray-600 text-lg">
+      Practice with full syllabus-grounded mock exams
+    </p>
+  </div>
+  
+  <!-- Cost Notice -->
+  <div class="card bg-accent-50 border-accent-200 mb-8">
+    <div class="flex items-start space-x-4">
+      <svg class="w-6 h-6 text-accent-600 flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+      </svg>
+      <div>
+        <p class="font-semibold text-accent-900 mb-1">Mock exams cost 5 credits each</p>
+        <p class="text-sm text-gray-700">
+          You currently have <span class="font-bold text-accent-700">{{ user_credits|default:0 }} credits</span>. 
+          Each exam is grounded in the official syllabus for maximum accuracy.
+        </p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Exam Type Selection -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Select Exam Type</h2>
+    <div class="grid md:grid-cols-3 gap-4">
+      
+      <!-- JAMB -->
+      <button class="card card-hover text-left group border-2 border-gray-200 hover:border-primary-500 hover:bg-primary-50">
+        <div class="mb-4">
+          <div class="w-14 h-14 bg-primary-100 group-hover:bg-primary-200 rounded-xl flex items-center justify-center mb-3">
+            <span class="text-2xl font-bold text-primary-600">J</span>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">JAMB</h3>
+          <p class="text-sm text-gray-600">
+            Joint Admissions and Matriculation Board
+          </p>
+        </div>
+        <p class="text-xs text-primary-600 font-semibold">Select →</p>
+      </button>
+      
+      <!-- WAEC/NECO (SSCE) -->
+      <button class="card card-hover text-left group border-2 border-gray-200 hover:border-green-500 hover:bg-green-50">
+        <div class="mb-4">
+          <div class="w-14 h-14 bg-green-100 group-hover:bg-green-200 rounded-xl flex items-center justify-center mb-3">
+            <span class="text-2xl font-bold text-green-600">W</span>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">WAEC / NECO</h3>
+          <p class="text-sm text-gray-600">
+            Senior Secondary Certificate Examination
+          </p>
+        </div>
+        <p class="text-xs text-green-600 font-semibold">Select →</p>
+      </button>
+      
+      <!-- JSS -->
+      <button class="card card-hover text-left group border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50">
+        <div class="mb-4">
+          <div class="w-14 h-14 bg-purple-100 group-hover:bg-purple-200 rounded-xl flex items-center justify-center mb-3">
+            <span class="text-2xl font-bold text-purple-600">J</span>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">JSS</h3>
+          <p class="text-sm text-gray-600">
+            Junior Secondary School Examination
+          </p>
+        </div>
+        <p class="text-xs text-purple-600 font-semibold">Select →</p>
+      </button>
+      
+    </div>
+  </div>
+  
+  <!-- Recent Exams -->
+  <div>
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Your Recent Exams</h2>
+    
+    <!-- Empty State -->
+    <div class="card text-center py-12">
+      <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+      </div>
+      <h3 class="text-xl font-bold text-gray-900 mb-2">No exams yet</h3>
+      <p class="text-gray-600 mb-6">
+        Take your first mock exam to start tracking your progress
+      </p>
+      <button class="btn-primary">
+        Take Your First Exam
+      </button>
+    </div>
+  </div>
+  
+</div>
+{% endblock %}
