@@ -1,34 +1,31 @@
 services:
-- type: psql
-  name: akili-db
-  databaseName: akili_db
-  user: akili_user
-  plan: free
+  - type: postgresql
+    name: akili-db
+    databaseName: akili_db
+    user: akili_user
+    plan: free
 
-- type: web
-  name: akili
-  plan: free
-  env: python
-  buildCommand: |
-    pip install -r requirements.txt
-    python manage.py collectstatic --no-input
-    python manage.py migrate
-  startCommand: gunicorn akili_project.wsgi
-  envVars:
-    - key: DATABASE_URL
-      fromService:
-        type: psql
-        name: akili-db
-        property: connectionString
-    - key: SECRET_KEY
-      generateValue: true
-    - key: DEBUG
-      value: False
-    - key: ALLOWED_HOSTS
-      value: .onrender.com
-    - key: CSRF_TRUSTED_ORIGINS
-      value: https://*.onrender.com
-    - key: GEMINI_API_KEY
-      sync: false
-    - key: GROQ_API_KEY
-      sync: false
+  - type: web
+    name: akili
+    plan: free
+    env: python
+    buildCommand: ./build.sh
+    startCommand: gunicorn akili_project.wsgi
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          type: postgresql
+          name: akili-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+      - key: ALLOWED_HOSTS
+        value: .onrender.com
+      - key: CSRF_TRUSTED_ORIGINS
+        value: https://*.onrender.com
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
