@@ -1,10 +1,10 @@
-services:
-  - type: postgresql
-    name: akili-db
+databases:
+  - name: akili-db
     databaseName: akili_db
     user: akili_user
     plan: free
 
+services:
   - type: web
     name: akili
     plan: free
@@ -13,8 +13,7 @@ services:
     startCommand: gunicorn akili_project.wsgi
     envVars:
       - key: DATABASE_URL
-        fromService:
-          type: postgresql
+        fromDatabase:
           name: akili-db
           property: connectionString
       - key: SECRET_KEY
