@@ -35,6 +35,13 @@ class Module(models.Model):
     title = models.CharField(max_length=300)
     order = models.IntegerField()
     syllabus_topic = models.CharField(max_length=500)
+    lesson_content = models.ForeignKey(
+        'CachedLesson',
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='modules_using_lesson'
+    )
     
     class Meta:
         db_table = 'modules'
@@ -56,6 +63,13 @@ class CachedLesson(models.Model):
     report_count = models.IntegerField(default=0)
     is_validated = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    requested_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='requested_lessons'
+    )
     
     class Meta:
         db_table = 'cached_lessons'

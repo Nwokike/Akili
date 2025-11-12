@@ -1,7 +1,43 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.contrib.auth.base_user import BaseUserManager # <-- NEW IMPORT
 import uuid
+
+
+class CustomUserManager(BaseUserManager):
+    """
+    Custom user model manager where email is the unique identifier
+    for authentication instead of usernames.
+    This fixes the createsuperuser TypeError.
+    """
+    def create_user(self, email, password, **extra_fields):
+        if not email:
+            raise ValueError(('The Email must be set'))
+        email = self.normalize_email(email)
+        
+        # Ensure 'username' is set by deriving it from the email if not provided
+        if 'username' not in extra_fields:
+            email_base = email.split('@')[0]
+            extra_fields.setdefault('username', email_base + str(uuid.uuid4())[:8])
+
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save()
+        return user
+
+    def create_superuser(self, email, password, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError(('Superuser must have is_staff=True.'))
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError(('Superuser must have is_superuser=True.'))
+        
+        # The CustomUserManager handles the missing username and calls create_user
+        return self.create_user(email, password, **extra_fields)
 
 
 class CustomUser(AbstractUser):
@@ -13,6 +49,9 @@ class CustomUser(AbstractUser):
     username = models.CharField(max_length=150, unique=True, editable=False)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
+    
+    # NEW: Link the custom manager to the model
+    objects = CustomUserManager() 
     
     # Freemium Credit System Fields
     tutor_credits = models.IntegerField(default=settings.AKILI_DAILY_FREE_CREDITS)
@@ -29,7 +68,8 @@ class CustomUser(AbstractUser):
         """Auto-generate username from email (just the part before @)"""
         if not self.username:
             email_base = self.email.split('@')[0]
-            self.username = email_base + str(uuid.uuid4())[:8]
+            # Add a short unique identifier to ensure uniqueness
+            self.username = email_base + str(uuid.uuid4())[:8] 
         super().save(*args, **kwargs)
     
     class Meta:
@@ -78,7 +118,7 @@ class CustomUser(AbstractUser):
         """Increase daily credit limit (from referrals)"""
         new_limit = min(
             self.daily_credit_limit + amount,
-            settings.AKILI_MAX_REFERRAL_CREDITS
+            settings.AKILI_MAX_REFERRAL_CREDITS # Assuming this constant is defined in settings
         )
         self.daily_credit_limit = new_limit
         self.save()

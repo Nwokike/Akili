@@ -1,15 +1,23 @@
 import os
 import requests
 from django.conf import settings
+import json  # Added for safe JSON parsing
 
+# --- Core Fallback Logic ---
 
-def call_ai_with_fallback(prompt, system_prompt=None):
+def call_ai_with_fallback(prompt, system_prompt=None, max_tokens=None, is_json=False):
     """
     4-tier AI Smart Fallback system
     Tier 1: Gemini 2.5 Flash (Free)
     Tier 2: Groq API (Free)
     Tier 3: Gemini Paid (Paid)
     Tier 4: Circuit Breaker (Graceful error)
+    
+    Args:
+        prompt (str): The primary query for the AI.
+        system_prompt (str, optional): Instructions for the AI's persona.
+        max_tokens (int, optional): Maximum tokens for the response.
+        is_json (bool): If True, instructs the AI to return a JSON object.
     """
     
     latex_instruction = (
@@ -17,47 +25,62 @@ def call_ai_with_fallback(prompt, system_prompt=None):
         "and scientific notation using LaTeX (e.g., $E=mc^2$ or $$\\int_a^b f(x)dx$$)."
     )
     
+    # Add JSON instruction to the system prompt if required
+    json_instruction = "\nYour output MUST be a single, raw JSON object/list." if is_json else ""
+    
     if system_prompt:
-        full_prompt = f"{system_prompt}\n{latex_instruction}\n\n{prompt}"
+        full_prompt = f"{system_prompt}{json_instruction}\n{latex_instruction}\n\n{prompt}"
     else:
-        full_prompt = f"{latex_instruction}\n\n{prompt}"
-    
+        full_prompt = f"{json_instruction}\n{latex_instruction}\n\n{prompt}"
+        
+    # --- Tier 1: Gemini 2.5 Flash (Free) ---
     gemini_key = settings.GEMINI_API_KEY
+    if gemini_key:
+        result = _try_gemini_flash(full_prompt, gemini_key, max_tokens, is_json)
+        if result:
+            return result
+    
+    # --- Tier 2: Groq API (Free) ---
     groq_key = settings.GROQ_API_KEY
-    
-    if gemini_key:
-        result = _try_gemini_flash(full_prompt, gemini_key)
-        if result:
-            return result
-    
     if groq_key:
-        result = _try_groq(full_prompt, groq_key)
+        result = _try_groq(full_prompt, groq_key, max_tokens, is_json)
         if result:
             return result
     
+    # --- Tier 3: Gemini Paid ---
     if gemini_key:
-        result = _try_gemini_paid(full_prompt, gemini_key)
+        result = _try_gemini_paid(full_prompt, gemini_key, max_tokens, is_json)
         if result:
             return result
     
+    # --- Tier 4: Circuit Breaker ---
     return {
         'success': False,
-        'content': "Our AI tutors are at full capacity. Please try again in 2–3 minutes."
+        'content': "Our AI tutors are at full capacity. Please try again in 2–3 minutes.",
+        'tier': 'Circuit Breaker'
     }
 
 
-def _try_gemini_flash(prompt, api_key):
+# --- Tier Implementations ---
+
+def _try_gemini_flash(prompt, api_key, max_tokens, is_json):
     """Try Gemini 2.5 Flash (Tier 1)"""
     try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={api_key}"
         headers = {"Content-Type": "application/json"}
+        
+        config = {}
+        if max_tokens:
+            config['maxOutputTokens'] = max_tokens
+        if is_json:
+            config['responseMimeType'] = 'application/json' # Correct setting for JSON output
+
         data = {
-            "contents": [{
-                "parts": [{"text": prompt}]
-            }]
+            "contents": [{"parts": [{"text": prompt}]}],
+            "config": config
         }
         
-        response = requests.post(url, json=data, headers=headers, timeout=30)
+        response = requests.post(url, json=data, headers=headers, timeout=40)
         
         if response.status_code == 200:
             result = response.json()
@@ -70,7 +93,7 @@ def _try_gemini_flash(prompt, api_key):
     return None
 
 
-def _try_groq(prompt, api_key):
+def _try_groq(prompt, api_key, max_tokens, is_json):
     """Try Groq API (Tier 2)"""
     try:
         url = "https://api.groq.com/openai/v1/chat/completions"
@@ -78,14 +101,21 @@ def _try_groq(prompt, api_key):
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json"
         }
+        
         data = {
             "model": "llama-3.3-70b-versatile",
             "messages": [
                 {"role": "user", "content": prompt}
-            ]
+            ],
+            "response_format": {"type": "json_object"} if is_json else {"type": "text"}, # Groq JSON instruction
+            "max_tokens": max_tokens if max_tokens else None,
         }
         
-        response = requests.post(url, json=data, headers=headers, timeout=30)
+        # Remove max_tokens if None to avoid API error
+        if not data['max_tokens']:
+            del data['max_tokens']
+            
+        response = requests.post(url, json=data, headers=headers, timeout=40)
         
         if response.status_code == 200:
             result = response.json()
@@ -98,18 +128,24 @@ def _try_groq(prompt, api_key):
     return None
 
 
-def _try_gemini_paid(prompt, api_key):
+def _try_gemini_paid(prompt, api_key, max_tokens, is_json):
     """Try Gemini Paid tier (Tier 3)"""
     try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={api_key}"
         headers = {"Content-Type": "application/json"}
+        
+        config = {}
+        if max_tokens:
+            config['maxOutputTokens'] = max_tokens
+        if is_json:
+            config['responseMimeType'] = 'application/json' # Correct setting for JSON output
+            
         data = {
-            "contents": [{
-                "parts": [{"text": prompt}]
-            }]
+            "contents": [{"parts": [{"text": prompt}]}],
+            "config": config
         }
         
-        response = requests.post(url, json=data, headers=headers, timeout=30)
+        response = requests.post(url, json=data, headers=headers, timeout=60)
         
         if response.status_code == 200:
             result = response.json()
@@ -135,6 +171,7 @@ Content to review:
 {content}
 """
     
+    # We call the main fallback function here
     result = call_ai_with_fallback(validation_prompt)
     
     if result['success']:
