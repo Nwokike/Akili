@@ -1,0 +1,53 @@
+{% extends "base.html" %} 
+{% load static %} 
+
+{% block title %}
+    {{ title }}
+{% endblock title %}
+
+{% block content %}
+    <header class="page-header">
+        <h1>{{ title }}</h1>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-6">
+        
+        <div class="md:col-span-2 card p-6">
+            <h2 class="text-xl font-bold mb-4">Account Information</h2>
+            <p><strong>Full Name:</strong> {{ user_profile.get_full_name }}</p>
+            <p><strong>Email:</strong> {{ user_profile.email }}</p>
+            <p><strong>Member Since:</strong> {{ user_profile.date_joined|date:"M d, Y" }}</p>
+            <p class="mt-4"><a href="#" class="text-primary-600 hover:underline">Edit Profile (TBD)</a></p>
+        </div>
+
+        <div class="card p-6 bg-gradient-to-br from-green-50 to-teal-50">
+            <h2 class="text-xl font-bold mb-4">Invite Friends</h2>
+            <p class="text-sm text-gray-700 mb-3">
+                Share your unique link and earn +2 daily credits for every referral (Max {{ max_referral_credits }}).
+            </p>
+            
+            <div class="bg-white border rounded-lg p-2 flex justify-between items-center">
+                <input type="text" value="{{ user_profile.referral_url }}" id="referralLinkInput" readonly 
+                       class="flex-1 bg-transparent text-sm overflow-hidden whitespace-nowrap overflow-ellipsis" />
+                <button onclick="copyReferralLink()" class="btn btn-sm btn-secondary ml-2">Copy</button>
+            </div>
+        </div>
+        
+        <div class="md:col-span-3 border-t border-red-200 pt-6 mt-4">
+    <h2 class="text-xl font-bold text-red-700 mb-2">Account Deletion</h2>
+    <p class="text-gray-600 mb-4">
+        Permanently close your account and delete all associated data. This action cannot be undone.
+    </p>
+
+    <button id="deleteAccountBtn" class="btn btn-danger" onclick="showDeleteConfirmation()">
+        Delete Account
+    </button>
+</div>
+
+<form id="deleteAccountForm" method="post" action="{% url 'profiles:delete_account' %}" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="confirm_delete" value="true">
+</form>
+
+    </div>
+{% endblock content %}

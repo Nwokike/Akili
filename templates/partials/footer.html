@@ -1,11 +1,9 @@
 {% load static %}
 
-<!-- Modern Footer - Visible for all users -->
 <footer class="bg-gradient-to-b from-gray-50 to-white border-t border-gray-200 {% if user.is_authenticated %}md:ml-64{% endif %}">
   <div class="max-w-7xl mx-auto px-4 py-12">
     <div class="grid md:grid-cols-4 gap-8 mb-8">
       
-      <!-- Brand Section -->
       <div class="md:col-span-2">
         <div class="mb-4">
           <img src="{% static 'images/logo.png' %}" alt="Akili Logo" class="w-14 h-14">
@@ -26,7 +24,6 @@
         </div>
       </div>
       
-      <!-- Quick Links -->
       <div>
         <h4 class="font-bold text-gray-900 mb-4">Platform</h4>
         <ul class="space-y-2">
@@ -36,12 +33,11 @@
           <li><a href="{% url 'login' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Login</a></li>
           {% else %}
           <li><a href="{% url 'dashboard' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Dashboard</a></li>
-          <li><a href="{% url 'exam_center' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Mock Exams</a></li>
+          <li><a href="{% url 'profiles:my_profile' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Profile</a></li> <li><a href="{% url 'courses:dashboard' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Courses</a></li> <li><a href="{% url 'exam_center' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Mock Exams</a></li>
           {% endif %}
         </ul>
       </div>
       
-      <!-- Legal -->
       <div>
         <h4 class="font-bold text-gray-900 mb-4">Legal</h4>
         <ul class="space-y-2">
@@ -52,7 +48,6 @@
       
     </div>
     
-    <!-- Bottom Bar -->
     <div class="border-t border-gray-200 pt-8 flex flex-col md:flex-row items-center justify-between text-sm text-gray-500">
       <p>&copy; 2025 Akili. All rights reserved.</p>
       <p class="mt-2 md:mt-0">Made with ❤️ in Nigeria</p>

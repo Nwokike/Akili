@@ -52,16 +52,21 @@ function toggleMobileMenu(id) {
   }
 }
 
-// Copy Referral Link
+// Copy Referral Link (EXISTING FUNCTION - ALREADY WORKS)
 function copyReferralLink(link) {
-  navigator.clipboard.writeText(link).then(() => {
-    showToast('Referral link copied!');
-  }).catch(err => {
-    console.error('Failed to copy:', err);
-  });
+  // Use the link value from the profile template's input field
+  const referralInput = document.getElementById('referralLinkInput');
+  if (referralInput) {
+    navigator.clipboard.writeText(referralInput.value).then(() => {
+      showToast('Referral link copied!');
+    }).catch(err => {
+      console.error('Failed to copy:', err);
+      showToast('Copy failed. Check console.', 'error');
+    });
+  }
 }
 
-// Toast Notification
+// Toast Notification (EXISTING FUNCTION)
 function showToast(message, type = 'success') {
   const toast = document.createElement('div');
   toast.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg z-50 ${
@@ -77,10 +82,24 @@ function showToast(message, type = 'success') {
   }, 3000);
 }
 
-// Confirm Delete Actions
-function confirmDelete(message) {
-  return confirm(message || 'Are you sure you want to delete this?');
+// Confirm Delete Actions (UPDATED TO SECURE TWO-STEP PROCESS)
+function showDeleteConfirmation() {
+    // 1. Initial Confirmation
+    const isConfirmed = confirm("WARNING: Are you absolutely sure you want to permanently delete your account? This action cannot be reversed.");
+
+    if (isConfirmed) {
+        // 2. Secondary Confirmation (for safety)
+        const isDoubleConfirmed = confirm("Final Check: Click OK to confirm permanent account deletion.");
+
+        if (isDoubleConfirmed) {
+            // 3. Submit the hidden form defined in profile.html
+            document.getElementById('deleteAccountForm').submit();
+        } else {
+            alert("Account deletion cancelled.");
+        }
+    }
 }
+// Removed old confirmDelete(message) function as it's replaced by showDeleteConfirmation()
 
 // Auto-dismiss Django Messages
 document.addEventListener('DOMContentLoaded', () => {

@@ -13,7 +13,7 @@ urlpatterns = [
     path('', include('users.urls')),
     path('dashboard/', core_views.dashboard_view, name='dashboard'),
     path('exam-center/', core_views.exam_center_view, name='exam_center'),
-    path('profile/', core_views.profile_view, name='profile'),
+    path('profile/', include('profiles.urls')),
     
     # Legal pages
     path('privacy/', core_views.privacy_view, name='privacy'),
