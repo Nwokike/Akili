@@ -8,7 +8,6 @@
 {% block content %}
 <div class="p-4 md:p-8 max-w-7xl">
   
-  <!-- Welcome Section -->
   <div class="mb-8">
     <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
       Welcome back, <span class="gradient-text">{{ user.get_full_name }}</span>!
@@ -16,31 +15,26 @@
     <p class="text-gray-600 text-lg">Ready to ace your exams today?</p>
   </div>
   
-  <!-- Stats Cards (Mobile: 2 cols, Desktop: 4 cols) -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
     
-    <!-- Credits Card -->
     <div class="card text-center bg-gradient-to-br from-accent-50 to-accent-100 border-accent-200">
       <p class="text-sm text-gray-600 font-medium mb-1">Credits</p>
       <p class="text-4xl font-bold text-accent-700 mb-1">{{ user_credits|default:0 }}</p>
       <p class="text-xs text-gray-500">of {{ user_daily_limit|default:10 }} daily</p>
     </div>
     
-    <!-- Courses Card -->
     <div class="card text-center bg-gradient-to-br from-primary-50 to-blue-50 border-primary-200">
       <p class="text-sm text-gray-600 font-medium mb-1">Courses</p>
       <p class="text-4xl font-bold text-primary-700 mb-1">0</p>
       <p class="text-xs text-gray-500">in progress</p>
     </div>
     
-    <!-- Quizzes Card -->
     <div class="card text-center bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
       <p class="text-sm text-gray-600 font-medium mb-1">Quizzes</p>
       <p class="text-4xl font-bold text-green-700 mb-1">0</p>
       <p class="text-xs text-gray-500">completed</p>
     </div>
     
-    <!-- Exams Card -->
     <div class="card text-center bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200">
       <p class="text-sm text-gray-600 font-medium mb-1">Mock Exams</p>
       <p class="text-4xl font-bold text-purple-700 mb-1">0</p>
@@ -49,13 +43,11 @@
     
   </div>
   
-  <!-- Quick Actions -->
   <div class="mb-8">
     <h2 class="text-2xl font-bold text-gray-900 mb-4">Quick Actions</h2>
     <div class="grid md:grid-cols-2 gap-4">
       
-      <!-- Add Course -->
-      <button class="card card-hover text-left group border-2 border-dashed border-gray-300 hover:border-primary-500 hover:bg-primary-50">
+      <a href="{% url 'courses:create_course' %}" class="card card-hover text-left group border-2 border-dashed border-gray-300 hover:border-primary-500 hover:bg-primary-50">
         <div class="flex items-center space-x-4">
           <div class="w-14 h-14 bg-primary-100 group-hover:bg-primary-200 rounded-xl flex items-center justify-center flex-shrink-0">
             <svg class="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -67,9 +59,8 @@
             <p class="text-sm text-gray-600">Start learning a new subject</p>
           </div>
         </div>
-      </button>
+      </a>
       
-      <!-- Take Mock Exam -->
       <a href="{% url 'exam_center' %}" class="card card-hover text-left group border-2 border-gray-200 hover:border-accent-500 hover:bg-accent-50">
         <div class="flex items-center space-x-4">
           <div class="w-14 h-14 bg-accent-100 group-hover:bg-accent-200 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -87,16 +78,14 @@
     </div>
   </div>
   
-  <!-- My Courses Section -->
   <div class="mb-8">
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-2xl font-bold text-gray-900">My Courses</h2>
-      <button class="text-primary-600 hover:text-primary-700 font-semibold text-sm">
+      <a href="{% url 'courses:dashboard' %}" class="text-primary-600 hover:text-primary-700 font-semibold text-sm">
         View All →
-      </button>
+      </a>
     </div>
     
-    <!-- Empty State -->
     <div class="card text-center py-12">
       <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
         <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,13 +94,12 @@
       </div>
       <h3 class="text-xl font-bold text-gray-900 mb-2">No courses yet</h3>
       <p class="text-gray-600 mb-6">Get started by adding your first course</p>
-      <button class="btn-primary">
+      <a href="{% url 'courses:create_course' %}" class="btn-primary">
         Add Your First Course
-      </button>
+      </a>
     </div>
   </div>
   
-  <!-- Referral Section -->
   <div class="card bg-gradient-to-r from-primary-50 via-blue-50 to-purple-50 border-primary-200">
     <div class="flex flex-col md:flex-row items-center justify-between">
       <div class="mb-4 md:mb-0">

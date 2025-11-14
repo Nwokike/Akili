@@ -103,7 +103,8 @@ def _try_groq(prompt, api_key, max_tokens, is_json):
         }
         
         data = {
-            "model": "llama-3.3-70b-versatile",
+            # UPDATED MODEL NAME BASED ON TEAM LEAD'S INSTRUCTION
+            "model": "llama-3.1-8b-instant", # <-- FIX APPLIED HERE
             "messages": [
                 {"role": "user", "content": prompt}
             ],

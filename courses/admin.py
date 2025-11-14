@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Course, Module, CachedLesson
+# FIX: Removed CachedLesson from import list as it no longer exists in courses.models
+from .models import Course, Module 
 
 
 @admin.register(Course)
@@ -16,8 +17,5 @@ class ModuleAdmin(admin.ModelAdmin):
     search_fields = ['title', 'syllabus_topic']
 
 
-@admin.register(CachedLesson)
-class CachedLessonAdmin(admin.ModelAdmin):
-    list_display = ['topic', 'is_validated', 'report_count', 'created_at']
-    list_filter = ['is_validated', 'created_at']
-    search_fields = ['topic']
+# FIX: The registration block for CachedLesson is REMOVED entirely 
+# as the model is no longer in courses/models.py.
