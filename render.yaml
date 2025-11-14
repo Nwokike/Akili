@@ -1,3 +1,7 @@
+databases:
+  - name: akili-db
+    plan: free
+
 services:
   - type: web
     name: akili
