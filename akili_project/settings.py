@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
+# Load .env file if it exists (for local development)
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,21 +25,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-key-replace-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-# Set this in your .env file.
-# For local dev: ALLOWED_HOSTS=127.0.0.1,localhost
-# For production: ALLOWED_HOSTS=your-domain.com,www.your-domain.com
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+# ALLOWED_HOSTS configuration
+ALLOWED_HOSTS = ['*']  # Accept all hosts - configure this properly in production
 
 # CSRF Settings
-# For production, set this in .env (e.g., CSRF_TRUSTED_ORIGINS=https://your-domain.com)
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
-# Remove any empty strings that might result from a blank env var
-CSRF_TRUSTED_ORIGINS = [origin for origin in CSRF_TRUSTED_ORIGINS if origin]
+CSRF_TRUSTED_ORIGINS_ENV = os.getenv('CSRF_TRUSTED_ORIGINS', '')
+CSRF_TRUSTED_ORIGINS = [origin for origin in CSRF_TRUSTED_ORIGINS_ENV.split(',') if origin]
+
+# Cookie settings for production
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
 
 
 # Application definition
@@ -176,7 +179,7 @@ AKILI_DAILY_FREE_CREDITS = 10
 AKILI_MAX_REFERRAL_CREDITS = 30
 AKILI_CREDITS_PER_REFERRAL = 2
 
-# PROFILES APP SETTING (FIXES ACCOUNT DELETION CRASH)
+# Profiles App Settings
 ACCOUNT_DELETION_DISABLED = False
 
 

@@ -6,7 +6,7 @@
       
       <div class="md:col-span-2">
         <div class="mb-4">
-          <img src="{% static 'images/logo.png' %}" alt="Akili Logo" class="w-14 h-14">
+          <img src="{% static 'images/logo.png' %}" alt="Akili Logo" class="w-20 h-20">
         </div>
         <p class="text-gray-600 mb-4 max-w-md">
           Nigeria's first AI-powered personal exam prep platform. Master JAMB, WAEC, NECO, and JSS with personalized AI tutoring.
@@ -34,7 +34,7 @@
           {% else %}
           <li><a href="{% url 'dashboard' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Dashboard</a></li>
           <li><a href="{% url 'profiles:my_profile' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Profile</a></li>
-          <li><a href="{% url 'courses:dashboard' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Courses</a></li>
+          <li><a href="{% url 'courses:course_list' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Courses</a></li>
           <li><a href="{% url 'exam_center' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Mock Exams</a></li>
           {% endif %}
         </ul>

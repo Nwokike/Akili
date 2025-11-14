@@ -1,88 +1,92 @@
 from django.db import transaction
-from courses.models import Course, Module, CachedLesson
 import json
-import uuid # For unique IDs
 
-# Import the corrected fallback utility
-from core.utils.ai_fallback import call_ai_with_fallback 
+from core.utils.ai_fallback import call_ai_with_fallback
 
-def trigger_module_generation(course: Course):
+
+def generate_course_modules(course):
     """
-    Generates 15 Modules and their corresponding CachedLessons for a given Course 
-    using the AI Fallback system.
+    Generates 15 Modules for a given Course using AI and syllabus data.
+    Returns True on success, False on failure.
     """
-    # ... (Omitted Syllabus lookup, assuming it will be added by the team)
+    from courses.models import Module
+    from admin_syllabus.models import JAMBSyllabus, SSCESyllabus, JSSSyllabus
     
-    # --- AI Prompt Construction ---
+    # 1. Get syllabus content
+    syllabus_content = ""
+    try:
+        if course.exam_type == 'JAMB':
+            syllabus = JAMBSyllabus.objects.get(subject=course.subject)
+            syllabus_content = syllabus.syllabus_content
+        elif course.exam_type == 'SSCE':
+            syllabus = SSCESyllabus.objects.get(subject=course.subject)
+            syllabus_content = syllabus.syllabus_content
+        elif course.exam_type == 'JSS':
+            syllabus = JSSSyllabus.objects.get(subject=course.subject)
+            syllabus_content = syllabus.syllabus_content
+    except Exception as e:
+        print(f"Syllabus not found for {course.exam_type} {course.subject}: {e}")
+        syllabus_content = ""
+    
+    # 2. AI Prompt Construction
     prompt = f"""
-    You are an expert Nigerian education curriculum planner. Generate a structured 
-    study plan consisting of EXACTLY 15 modules for a student preparing for the 
-    {course.exam_type} exam in the subject: {course.subject}.
+    Based on the following official {course.exam_type} syllabus for {course.subject}, 
+    generate a structured study plan consisting of EXACTLY 15 modules.
+    
+    Syllabus Content:
+    {syllabus_content if syllabus_content else "General curriculum topics"}
     
     The output MUST be a single JSON list of 15 objects. Each object must have 
-    two keys: "title" (a concise module title) and "topic" (a single specific 
+    two keys: "title" (a concise module title) and "topic" (a specific 
     syllabus topic covered by the module).
     
-    JSON Output Format Example:
+    JSON Output Format:
     [
         {{"title": "Introduction to Linear Motion", "topic": "Uniform acceleration and deceleration"}},
-        ... (13 more modules)
+        {{"title": "Forces and Newton's Laws", "topic": "Newton's three laws of motion"}}
     ]
     """
     
-    # 1. Call the AI using the new arguments
-    # Set max_tokens high enough for 15 module titles/topics. is_json MUST be True.
-    result = call_ai_with_fallback(prompt, max_tokens=1500, is_json=True) 
+    # 3. Call AI with fallback system
+    result = call_ai_with_fallback(prompt, max_tokens=2000, is_json=True)
     
     if not result['success']:
-        # Circuit Breaker was triggered or all tiers failed
         print(f"AI Module Generation Failed for Course {course.id}. Tier: {result.get('tier')}")
         return False
     
     response_text = result['content']
     
-    # 2. Parse the JSON response
+    # 4. Parse JSON response
     try:
-        # Some AIs wrap JSON in code blocks, so we attempt to clean it
         if response_text.startswith('```json'):
             response_text = response_text.strip().lstrip('```json').rstrip('```')
+        elif response_text.startswith('```'):
+            response_text = response_text.strip().lstrip('```').rstrip('```')
             
         module_list = json.loads(response_text)
         
-        # Basic sanity check
         if not isinstance(module_list, list) or len(module_list) == 0:
-             raise ValueError("AI response was not a valid list.")
+            raise ValueError("AI response was not a valid list.")
+        
+        # Validate exactly 15 modules as per spec
+        if len(module_list) != 15:
+            print(f"AI returned {len(module_list)} modules instead of 15 for Course {course.id}")
+            return False
              
     except (json.JSONDecodeError, ValueError) as e:
         print(f"JSON Parsing Failed for Course {course.id}: {e}")
         return False
     
-    # --- Data Saving ---
-    
-    # 3. Save Modules and Placeholder Lessons
+    # 5. Save modules to database
+    from courses.models import Module
     with transaction.atomic():
         for index, item in enumerate(module_list):
-            
-            # A. Create a Placeholder CachedLesson
-            # A background task would replace the content later.
-            lesson_to_use = CachedLesson.objects.create(
-                topic=item.get('topic', 'Unspecified Topic'),
-                content="Placeholder: Content is being generated by AI (Async Task).",
-                syllabus_version="V1.0", 
-                # requested_by=course.user 
-                cache_key=str(uuid.uuid4()), # Generate a unique ID
-            )
-
-            # B. Create the Module linking to the Course and the Lesson
             Module.objects.create(
                 course=course,
                 title=item.get('title', 'Untitled Module'),
                 order=index + 1,
                 syllabus_topic=item.get('topic', 'Unspecified Topic'),
-                lesson_content=lesson_to_use
+                lesson_content=None  # Lesson content will be generated on-demand
             )
-            
-        # 4. Deduct Credits (If applicable, ensure this is done)
-        # course.user.deduct_credits(amount=5)
         
     return True

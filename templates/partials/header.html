@@ -2,12 +2,12 @@
 
 <!-- Top Header - Visible on all pages -->
 <header class="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-40">
-  <div class="{% if user.is_authenticated %}flex items-center justify-center{% else %}flex items-center justify-between{% endif %} px-4 py-3">
+  <div class="flex items-center justify-center px-4 py-3 relative">
     
     {% if user.is_authenticated %}
       <!-- Centered Logo for Logged In Users -->
       <a href="{% url 'dashboard' %}" class="flex items-center">
-        <img src="{% static 'images/logo.png' %}" alt="Akili" class="h-16 w-auto">
+        <img src="{% static 'images/logo.png' %}" alt="Akili" class="h-20 w-auto">
       </a>
       
       <!-- Profile Dropdown (Right Side) -->
@@ -51,13 +51,13 @@
         </div>
       </div>
     {% else %}
-      <!-- Logo (Left Side) -->
+      <!-- Centered Logo for Logged Out Users -->
       <a href="{% url 'home' %}" class="flex items-center">
-        <img src="{% static 'images/logo.png' %}" alt="Akili" class="h-10 w-auto">
+        <img src="{% static 'images/logo.png' %}" alt="Akili" class="h-20 w-auto">
       </a>
       
-      <!-- Login Button (Right Side) -->
-      <a href="{% url 'login' %}" class="bg-primary-600 hover:bg-primary-700 text-white font-medium px-4 py-1.5 rounded-lg transition-all duration-200 text-sm">
+      <!-- Login Button (Absolute Right) -->
+      <a href="{% url 'login' %}" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-primary-600 hover:bg-primary-700 text-white font-medium px-5 py-2 rounded-lg transition-all duration-200 text-sm">
         Login
       </a>
     {% endif %}
@@ -66,7 +66,7 @@
 </header>
 
 <!-- Spacer to prevent content from going under fixed header -->
-<div class="h-16"></div>
+<div class="h-20"></div>
 
 <script>
 // Profile dropdown toggle

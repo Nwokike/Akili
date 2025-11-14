@@ -45,22 +45,12 @@ class Module(models.Model):
         related_name='modules_using_lesson'
     )
     
-    # FIX: REMOVE THE FOREIGN KEY TO CACHEDLESSON, as that model no longer exists
-    # lesson_content = models.ForeignKey(
-    #     'CachedLesson',
-    #     on_delete=models.SET_NULL, 
-    #     null=True, 
-    #     blank=True,
-    #     related_name='modules_using_lesson'
-    # )
-    
     class Meta:
         db_table = 'modules'
         ordering = ['order']
         unique_together = ['course', 'order']
     
     def __str__(self):
-        # FIX: Access subject via parent course
         return f"{self.course.subject} - Module {self.order}: {self.title}"
 
 
