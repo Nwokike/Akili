@@ -40,4 +40,5 @@ class CustomUserAdmin(UserAdmin):
         }),
     )
     
-    readonly_fields = ['username', 'last_login', 'date_joined']
+    # This line is corrected to include 'last_daily_reset'
+    readonly_fields = ['username', 'last_login', 'date_joined', 'last_daily_reset']
