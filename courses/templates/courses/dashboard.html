@@ -23,41 +23,21 @@
         <h2>My Courses ({{ courses.count }})</h2>
         
         {% if courses %}
-            <div class="course-section space-y-8">
+            <div class="card-grid">
                 {% for course in courses %}
-                    <div class="course-details card p-5 border">
-                        <h3 class="text-2xl font-bold">{{ course.subject }} ({{ course.exam_type }})</h3>
+                    <div class="course-card">
+                        <h3 class="exam-type-{{ course.exam_type }}">{{ course.exam_type }}</h3>
+                        <p class="subject">{{ course.subject }}</p>
+                        
+                        <a href="#" class="btn btn-secondary btn-sm">View Modules (Placeholder)</a> 
+                        
                         <small>Created: {{ course.created_at|date:"M d, Y" }}</small>
-                        
-                        <h4 class="mt-4 mb-3 text-lg font-semibold">Study Modules</h4>
-                        
-                        {% for module in course.modules.all %} 
-                            <div class="module-item flex items-center justify-between py-3 border-b">
-                                <div>
-                                    <p class="font-medium">Module {{ module.order }}: {{ module.title }}</p>
-                                </div>
-                                
-                                <form method="post" action="{% url 'quizzes:start_quiz' module_id=module.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-warning btn-sm">
-                                        Take Quiz (5 Credits)
-                                    </button>
-                                </form>
-                            </div>
-                        {% empty %}
-                            <p class="text-sm text-gray-500">Modules loading. Create a new course if needed.</p>
-                        {% endfor %}
-                        </div>
+                    </div>
                 {% endfor %}
             </div>
         {% else %}
-            <div class="empty-state text-center p-5">
-                <p class="lead">No courses yet</p>
-                <p class="text-muted">Get started by adding your first course</p>
-                
-                <a href="{% url 'courses:create_course' %}" class="btn btn-primary btn-lg mt-3">
-                    Add Your First Course
-                </a>
+            <div class="alert alert-info">
+                You haven't created any study courses yet. Click the button above to get started!
             </div>
         {% endif %}
     </section>

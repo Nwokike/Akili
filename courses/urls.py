@@ -9,5 +9,8 @@ urlpatterns = [
     path('', views.CourseDashboardView.as_view(), name='dashboard'),
     
     # URL for creating a new course
-    path('new/', views.CourseCreationView.as_view(), name='create_course'), 
+    path('new/', views.CourseCreationView.as_view(), name='create_course'),
+    
+    # You will add a path for LessonDetailView later, e.g.,
+    # path('lesson/<int:pk>/', views.LessonDetailView.as_view(), name='lesson_detail'),
 ]

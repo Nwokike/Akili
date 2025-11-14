@@ -1,18 +1,11 @@
-# courses/views.py
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
-from django.contrib import messages
-from .models import Course, Module 
+from .models import Course, Module, CachedLesson
+from .forms import CourseCreationForm # You will create this form next
 
-# FIX: Ensure CourseCreationForm is imported
-from .forms import CourseCreationForm 
-
-# Import the AI generation utility you created
-from core.utils.ai_module_generator import trigger_module_generation
-# If you decide to implement credit check later, uncomment this:
+# Assume the Akili project has a utility to check credits
 # from core.utils import check_tutor_credits 
 
 
@@ -21,11 +14,16 @@ class CourseDashboardView(LoginRequiredMixin, View):
     Developer 1 Task: Displays a list of all courses personalized for the logged-in user.
     """
     def get(self, request):
+        # Retrieve all courses belonging to the current user
         user_courses = Course.objects.filter(user=request.user).order_by('-created_at')
+        
+        # Example of contextual data you might need:
+        # has_credits = check_tutor_credits(request.user) # Check utility for credit system
         
         context = {
             'courses': user_courses,
             'title': 'My Akili Courses',
+            # 'has_credits': has_credits, 
         }
         
         return render(request, 'courses/dashboard.html', context)
@@ -34,9 +32,10 @@ class CourseDashboardView(LoginRequiredMixin, View):
 class CourseCreationView(LoginRequiredMixin, View):
     """
     Developer 1 Task: Handles the form submission to create a new personalized course.
+    This involves selecting exam_type and subject, then using AI to generate modules.
     """
     def get(self, request):
-        # FIX: The form instantiation is now correct because of the import
+        # Display the form to select exam type and subject
         form = CourseCreationForm()
         context = {
             'form': form,
@@ -53,35 +52,31 @@ class CourseCreationView(LoginRequiredMixin, View):
             
             # 1. Check if the user already has this exact course
             if Course.objects.filter(user=request.user, exam_type=exam_type, subject=subject).exists():
+                # Prevent duplicates and redirect to the dashboard
                 return redirect(reverse('courses:dashboard')) 
             
-            # 2. Create the Course instance
+            # 2. Check Credits (Essential for Akili's business logic)
+            # if not check_tutor_credits(request.user, amount=5): # Assume 5 credits per course
+            #     # Handle insufficient credits gracefully
+            #     return render(request, 'courses/course_creation.html', {'form': form, 'error': 'Insufficient credits.'})
+            
+            # 3. Create the Course instance (The modules are generated later)
             new_course = Course.objects.create(
                 user=request.user,
                 exam_type=exam_type,
                 subject=subject,
             )
             
-            # 3. Trigger AI Module Generation
-            print(f"--- DEBUG: Starting AI generation for {exam_type} {subject}")
-            success = trigger_module_generation(new_course)
+            # 4. Trigger AI Module Generation (You'll implement this complex logic separately)
+            # from core.utils.ai_fallback import trigger_module_generation
+            # trigger_module_generation(new_course) 
             
-            if not success:
-                error_message = 'AI service failed to generate modules. Please try again.'
-                print(f"--- ERROR: AI generation FAILED for {new_course.id}. Deleting course. Error: {error_message}")
-                new_course.delete() # Prevent a broken course from being saved
-                messages.error(request, error_message)
-                return redirect(reverse('courses:create_course'))
-            
-            messages.success(request, f"Course created successfully for {subject}!")
-            return redirect(reverse('courses:dashboard'))
-            
-        else:
-            print("--- DEBUG: Form is NOT valid. Errors:", form.errors)
+            return redirect(reverse('courses:dashboard')) # Go back to dashboard after creation
             
         context = {
             'form': form,
             'title': 'Create New Course',
-            'error': 'Please correct the errors below.'
         }
         return render(request, 'courses/course_creation.html', context)
+
+# You will add more views here later, like LessonDetailView
