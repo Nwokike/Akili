@@ -1,5 +1,29 @@
 // Akili - Main JavaScript File
 
+// ---------------------------------------------
+// DARK MODE TOGGLE
+// ---------------------------------------------
+function toggleDarkMode() {
+  const html = document.documentElement;
+  const isDark = html.classList.contains('dark');
+  
+  if (isDark) {
+    html.classList.remove('dark');
+    localStorage.setItem('darkMode', 'false');
+  } else {
+    html.classList.add('dark');
+    localStorage.setItem('darkMode', 'true');
+  }
+}
+
+// Initialize dark mode toggle button
+document.addEventListener('DOMContentLoaded', () => {
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener('click', toggleDarkMode);
+  }
+});
+
 // PWA Install Prompt
 let deferredPrompt;
 const installButton = document.getElementById('install-button');

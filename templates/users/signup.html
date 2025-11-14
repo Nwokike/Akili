@@ -12,8 +12,8 @@
     <!-- Logo & Welcome -->
     <div class="text-center mb-8">
       <img src="{% static 'images/logo.png' %}" alt="Akili Logo" class="w-32 h-32 mx-auto mb-4">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Start Learning Free</h1>
-      <p class="text-gray-600">Join thousands of students mastering Nigerian exams</p>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Start Learning Free</h1>
+      <p class="text-gray-600 dark:text-gray-400">Join thousands of students mastering Nigerian exams</p>
     </div>
     
     <!-- Referral Notice -->
@@ -34,7 +34,7 @@
         <!-- Name Fields -->
         <div class="grid md:grid-cols-2 gap-4">
           <div>
-            <label for="id_first_name" class="block text-sm font-semibold text-gray-700 mb-2">
+            <label for="id_first_name" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               First Name
             </label>
             <input 
@@ -52,7 +52,7 @@
           </div>
           
           <div>
-            <label for="id_last_name" class="block text-sm font-semibold text-gray-700 mb-2">
+            <label for="id_last_name" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               Last Name
             </label>
             <input 
@@ -72,7 +72,7 @@
         
         <!-- Email Field -->
         <div>
-          <label for="id_email" class="block text-sm font-semibold text-gray-700 mb-2">
+          <label for="id_email" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
             Email Address
           </label>
           <input 
@@ -91,7 +91,7 @@
         
         <!-- Password Field -->
         <div>
-          <label for="id_password1" class="block text-sm font-semibold text-gray-700 mb-2">
+          <label for="id_password1" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
             Password
           </label>
           <input 
@@ -105,14 +105,14 @@
           {% if form.password1.errors %}
             <p class="mt-1 text-sm text-red-600">{{ form.password1.errors.0 }}</p>
           {% endif %}
-          <p class="mt-1 text-xs text-gray-500">
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
             Must be at least 8 characters long
           </p>
         </div>
         
         <!-- Confirm Password Field -->
         <div>
-          <label for="id_password2" class="block text-sm font-semibold text-gray-700 mb-2">
+          <label for="id_password2" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
             Confirm Password
           </label>
           <input 
@@ -154,7 +154,7 @@
         {% endif %}
         
         <!-- Terms Notice -->
-        <p class="text-xs text-gray-500 text-center">
+        <p class="text-xs text-gray-500 dark:text-gray-400 text-center">
           By signing up, you agree to our 
           <a href="{% url 'terms' %}" class="text-primary-600 hover:underline">Terms of Service</a> 
           and 
@@ -165,7 +165,7 @@
     </div>
     
     <!-- Login Link -->
-    <p class="text-center mt-6 text-gray-600">
+    <p class="text-center mt-6 text-gray-600 dark:text-gray-400">
       Already have an account? 
       <a href="{% url 'login' %}" class="text-primary-600 hover:text-primary-700 font-semibold">
         Login

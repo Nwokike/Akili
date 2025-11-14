@@ -18,10 +18,21 @@
   transition: all 0.3s ease;
 }
 
+.dark .card {
+  background: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
 .card-hover:hover {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04);
   transform: translateY(-2px);
   border-color: #e5e7eb;
+}
+
+.dark .card-hover:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 4px 10px rgba(0, 0, 0, 0.3);
+  border-color: #4b5563;
 }
 
 /* Beautiful Input Fields */
@@ -33,12 +44,24 @@
   font-size: 16px;
   transition: all 0.2s ease;
   background: white;
+  color: #111827;
+}
+
+.dark .input-field {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f9fafb;
 }
 
 .input-field:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.dark .input-field:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.2);
 }
 
 /* Premium Button Styles */
@@ -208,13 +231,25 @@
   background: #f3f4f6;
 }
 
+.dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
 ::-webkit-scrollbar-thumb {
   background: #d1d5db;
   border-radius: 4px;
 }
 
+.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
 ::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
 }
 
 /* Selection Color */

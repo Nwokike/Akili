@@ -17,11 +17,11 @@ def start_quiz_view(request, module_id):
     
     if request.method != 'POST':
         messages.error(request, "Quiz generation requires a valid request.")
-        return redirect(reverse('courses:dashboard'))
+        return redirect(reverse('courses:course_list'))
         
     if request.user.tutor_credits < 5: 
         messages.error(request, "Insufficient credits to generate a new quiz.")
-        return redirect(reverse('courses:dashboard')) 
+        return redirect(reverse('courses:course_list')) 
 
     success, result_id_or_error = generate_quiz_and_save(module, request.user, num_questions=5)
     
@@ -31,7 +31,7 @@ def start_quiz_view(request, module_id):
     else:
         error_message = result_id_or_error 
         messages.error(request, f"Failed to generate quiz: {error_message}")
-        return redirect(reverse('courses:dashboard'))
+        return redirect(reverse('courses:course_list'))
 
 
 @login_required

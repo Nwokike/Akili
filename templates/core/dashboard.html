@@ -9,45 +9,45 @@
 <div class="p-4 md:p-8 max-w-7xl">
   
   <div class="mb-8">
-    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
       Welcome back, <span class="gradient-text">{{ user.get_full_name }}</span>!
     </h1>
-    <p class="text-gray-600 text-lg">Ready to ace your exams today?</p>
+    <p class="text-gray-600 dark:text-gray-400 text-lg">Ready to ace your exams today?</p>
   </div>
   
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
     
     <div class="card text-center bg-gradient-to-br from-accent-50 to-accent-100 border-accent-200">
-      <p class="text-sm text-gray-600 font-medium mb-1">Credits</p>
+      <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">Credits</p>
       <p class="text-4xl font-bold text-accent-700 mb-1">{{ user_credits|default:0 }}</p>
-      <p class="text-xs text-gray-500">of {{ user_daily_limit|default:10 }} daily</p>
+      <p class="text-xs text-gray-500 dark:text-gray-400">of {{ user_daily_limit|default:10 }} daily</p>
     </div>
     
     <div class="card text-center bg-gradient-to-br from-primary-50 to-blue-50 border-primary-200">
-      <p class="text-sm text-gray-600 font-medium mb-1">Courses</p>
+      <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">Courses</p>
       <p class="text-4xl font-bold text-primary-700 mb-1">0</p>
-      <p class="text-xs text-gray-500">in progress</p>
+      <p class="text-xs text-gray-500 dark:text-gray-400">in progress</p>
     </div>
     
     <div class="card text-center bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-      <p class="text-sm text-gray-600 font-medium mb-1">Quizzes</p>
+      <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">Quizzes</p>
       <p class="text-4xl font-bold text-green-700 mb-1">0</p>
-      <p class="text-xs text-gray-500">completed</p>
+      <p class="text-xs text-gray-500 dark:text-gray-400">completed</p>
     </div>
     
     <div class="card text-center bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200">
-      <p class="text-sm text-gray-600 font-medium mb-1">Mock Exams</p>
+      <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">Mock Exams</p>
       <p class="text-4xl font-bold text-purple-700 mb-1">0</p>
-      <p class="text-xs text-gray-500">taken</p>
+      <p class="text-xs text-gray-500 dark:text-gray-400">taken</p>
     </div>
     
   </div>
   
   <div class="mb-8">
-    <h2 class="text-2xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h2>
     <div class="grid md:grid-cols-2 gap-4">
       
-      <a href="{% url 'courses:create_course' %}" class="card card-hover text-left group border-2 border-dashed border-gray-300 hover:border-primary-500 hover:bg-primary-50">
+      <a href="{% url 'courses:create_course' %}" class="card card-hover text-left group border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-primary-500 hover:bg-primary-50">
         <div class="flex items-center space-x-4">
           <div class="w-14 h-14 bg-primary-100 group-hover:bg-primary-200 rounded-xl flex items-center justify-center flex-shrink-0">
             <svg class="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,13 +55,13 @@
             </svg>
           </div>
           <div>
-            <h3 class="font-bold text-gray-900 text-lg mb-1">Add New Course</h3>
-            <p class="text-sm text-gray-600">Start learning a new subject</p>
+            <h3 class="font-bold text-gray-900 dark:text-gray-100 text-lg mb-1">Add New Course</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Start learning a new subject</p>
           </div>
         </div>
       </a>
       
-      <a href="{% url 'exam_center' %}" class="card card-hover text-left group border-2 border-gray-200 hover:border-accent-500 hover:bg-accent-50">
+      <a href="{% url 'exam_center' %}" class="card card-hover text-left group border-2 border-gray-200 dark:border-gray-700 hover:border-accent-500 hover:bg-accent-50">
         <div class="flex items-center space-x-4">
           <div class="w-14 h-14 bg-accent-100 group-hover:bg-accent-200 rounded-xl flex items-center justify-center flex-shrink-0">
             <svg class="w-7 h-7 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,8 +69,8 @@
             </svg>
           </div>
           <div>
-            <h3 class="font-bold text-gray-900 text-lg mb-1">Take Mock Exam</h3>
-            <p class="text-sm text-gray-600">Practice with full exams (5 credits)</p>
+            <h3 class="font-bold text-gray-900 dark:text-gray-100 text-lg mb-1">Take Mock Exam</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Practice with full exams (5 credits)</p>
           </div>
         </div>
       </a>
@@ -80,20 +80,20 @@
   
   <div class="mb-8">
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-2xl font-bold text-gray-900">My Courses</h2>
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">My Courses</h2>
       <a href="{% url 'courses:course_list' %}" class="text-primary-600 hover:text-primary-700 font-semibold text-sm">
         View All →
       </a>
     </div>
     
     <div class="card text-center py-12">
-      <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <div class="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
         <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
         </svg>
       </div>
-      <h3 class="text-xl font-bold text-gray-900 mb-2">No courses yet</h3>
-      <p class="text-gray-600 mb-6">Get started by adding your first course</p>
+      <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">No courses yet</h3>
+      <p class="text-gray-600 dark:text-gray-400 mb-6">Get started by adding your first course</p>
       <a href="{% url 'courses:create_course' %}" class="btn-primary">
         Add Your First Course
       </a>
@@ -103,10 +103,10 @@
   <div class="card bg-gradient-to-r from-primary-50 via-blue-50 to-purple-50 border-primary-200">
     <div class="flex flex-col md:flex-row items-center justify-between">
       <div class="mb-4 md:mb-0">
-        <h3 class="text-xl font-bold text-gray-900 mb-2">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
           🎉 Invite Friends & Earn Credits
         </h3>
-        <p class="text-gray-700 mb-3">
+        <p class="text-gray-700 dark:text-gray-300 mb-3">
           Get <span class="font-bold text-primary-600">+2 daily credits</span> for each friend who joins (max 30)
         </p>
         <div class="flex items-center space-x-2">
@@ -114,7 +114,7 @@
             type="text" 
             readonly 
             value="{{ referral_url }}" 
-            class="input-field bg-white text-sm flex-1"
+            class="input-field bg-white dark:bg-gray-800 text-sm flex-1"
             id="referral-input"
           >
           <button 

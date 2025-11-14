@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="transition-colors duration-200">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,10 +13,21 @@
   <link rel="manifest" href="{% static 'pwa/manifest.json' %}">
   <link rel="icon" href="{% static 'images/logo.png' %}">
   
+  <!-- Dark Mode Script (must run before body renders) -->
+  <script>
+    // Initialize dark mode from localStorage before page renders
+    if (localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
+  
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
@@ -68,7 +79,7 @@
   
   {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans antialiased">
+<body class="bg-gray-50 dark:bg-gray-900 dark:bg-gray-900 text-gray-900 dark:text-gray-100 dark:text-gray-100 font-sans antialiased transition-colors duration-200">
   
   <!-- Django Messages -->
   {% if messages %}

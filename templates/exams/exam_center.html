@@ -10,10 +10,10 @@
   
   <!-- Header -->
   <div class="mb-8">
-    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
       Mock Exam Center
     </h1>
-    <p class="text-gray-600 text-lg">
+    <p class="text-gray-600 dark:text-gray-400 text-lg">
       Practice with full syllabus-grounded mock exams
     </p>
   </div>
@@ -26,7 +26,7 @@
       </svg>
       <div>
         <p class="font-semibold text-accent-900 mb-1">Mock exams cost 5 credits each</p>
-        <p class="text-sm text-gray-700">
+        <p class="text-sm text-gray-700 dark:text-gray-300">
           You currently have <span class="font-bold text-accent-700">{{ user_credits|default:0 }} credits</span>. 
           Each exam is grounded in the official syllabus for maximum accuracy.
         </p>
@@ -36,17 +36,17 @@
   
   <!-- Exam Type Selection -->
   <div class="mb-8">
-    <h2 class="text-2xl font-bold text-gray-900 mb-4">Select Exam Type</h2>
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Select Exam Type</h2>
     <div class="grid md:grid-cols-3 gap-4">
       
       <!-- JAMB -->
-      <button class="card card-hover text-left group border-2 border-gray-200 hover:border-primary-500 hover:bg-primary-50">
+      <button class="card card-hover text-left group border-2 border-gray-200 dark:border-gray-700 hover:border-primary-500 hover:bg-primary-50">
         <div class="mb-4">
           <div class="w-14 h-14 bg-primary-100 group-hover:bg-primary-200 rounded-xl flex items-center justify-center mb-3">
             <span class="text-2xl font-bold text-primary-600">J</span>
           </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-2">JAMB</h3>
-          <p class="text-sm text-gray-600">
+          <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">JAMB</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
             Joint Admissions and Matriculation Board
           </p>
         </div>
@@ -54,13 +54,13 @@
       </button>
       
       <!-- WAEC/NECO (SSCE) -->
-      <button class="card card-hover text-left group border-2 border-gray-200 hover:border-green-500 hover:bg-green-50">
+      <button class="card card-hover text-left group border-2 border-gray-200 dark:border-gray-700 hover:border-green-500 hover:bg-green-50">
         <div class="mb-4">
           <div class="w-14 h-14 bg-green-100 group-hover:bg-green-200 rounded-xl flex items-center justify-center mb-3">
             <span class="text-2xl font-bold text-green-600">W</span>
           </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-2">WAEC / NECO</h3>
-          <p class="text-sm text-gray-600">
+          <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">WAEC / NECO</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
             Senior Secondary Certificate Examination
           </p>
         </div>
@@ -68,13 +68,13 @@
       </button>
       
       <!-- JSS -->
-      <button class="card card-hover text-left group border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50">
+      <button class="card card-hover text-left group border-2 border-gray-200 dark:border-gray-700 hover:border-purple-500 hover:bg-purple-50">
         <div class="mb-4">
           <div class="w-14 h-14 bg-purple-100 group-hover:bg-purple-200 rounded-xl flex items-center justify-center mb-3">
             <span class="text-2xl font-bold text-purple-600">J</span>
           </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-2">JSS</h3>
-          <p class="text-sm text-gray-600">
+          <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">JSS</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
             Junior Secondary School Examination
           </p>
         </div>
@@ -86,17 +86,17 @@
   
   <!-- Recent Exams -->
   <div>
-    <h2 class="text-2xl font-bold text-gray-900 mb-4">Your Recent Exams</h2>
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Your Recent Exams</h2>
     
     <!-- Empty State -->
     <div class="card text-center py-12">
-      <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <div class="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
         <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
       </div>
-      <h3 class="text-xl font-bold text-gray-900 mb-2">No exams yet</h3>
-      <p class="text-gray-600 mb-6">
+      <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">No exams yet</h3>
+      <p class="text-gray-600 dark:text-gray-400 mb-6">
         Take your first mock exam to start tracking your progress
       </p>
       <button class="btn-primary">

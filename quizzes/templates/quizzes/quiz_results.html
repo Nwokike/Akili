@@ -22,7 +22,7 @@
                 <p class="text-sm mt-1">Completed on {{ quiz.completed_at|date:"M j, Y H:i" }}</p>
             </div>
             
-            <p class="text-lg text-gray-700 mt-4">Module: {{ quiz.module.title }}</p>
+            <p class="text-lg text-gray-700 dark:text-gray-300 mt-4">Module: {{ quiz.module.title }}</p>
         </header>
 
         <section class="question-review">
@@ -74,9 +74,9 @@
                         {% endfor %}
                     </div>
 
-                    <div class="mt-4 p-3 border-t border-gray-200">
-                        <p class="font-semibold text-gray-800">Explanation:</p>
-                        <p class="text-gray-600 explanation-text">{{ question.explanation }}</p>
+                    <div class="mt-4 p-3 border-t border-gray-200 dark:border-gray-700">
+                        <p class="font-semibold text-gray-800 dark:text-gray-200">Explanation:</p>
+                        <p class="text-gray-600 dark:text-gray-400 explanation-text">{{ question.explanation }}</p>
                     </div>
                 </div>
                 

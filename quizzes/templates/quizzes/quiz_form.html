@@ -6,8 +6,8 @@
 {% block content %}
     <div class="max-w-3xl mx-auto p-4">
         <header class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-900">Quiz: {{ quiz.module.title }}</h1>
-            <p class="text-gray-600">Total Questions: {{ quiz.total_questions }}</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Quiz: {{ quiz.module.title }}</h1>
+            <p class="text-gray-600 dark:text-gray-400">Total Questions: {{ quiz.total_questions }}</p>
         </header>
 
         <form method="post" action="{% url 'quizzes:quiz_detail' quiz_id=quiz.id %}">
@@ -21,7 +21,7 @@
                     
                     <div class="space-y-2">
                         {% for choice in question.choices %}
-                            <label class="block cursor-pointer p-3 border rounded-lg hover:bg-gray-50">
+                            <label class="block cursor-pointer p-3 border rounded-lg hover:bg-gray-50 dark:bg-gray-900">
                                 <input type="radio" 
                                        name="q_{{ forloop.parentloop.counter0 }}" 
                                        value="{{ forloop.counter0 }}" 

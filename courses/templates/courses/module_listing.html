@@ -11,7 +11,7 @@
     <div class="module-item flex items-center justify-between py-3 border-b">
         <div>
             <p class="font-medium">Module {{ module.order }}: {{ module.title }}</p>
-            <p class="text-sm text-gray-500">{{ module.syllabus_topic|truncatechars:70 }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ module.syllabus_topic|truncatechars:70 }}</p>
         </div>
         
         <form method="post" action="{% url 'quizzes:start_quiz' module_id=module.id %}">
@@ -22,5 +22,5 @@
         </form>
     </div>
 {% empty %}
-    <p class="text-sm text-gray-500">No modules generated yet. AI is working...</p>
+    <p class="text-sm text-gray-500 dark:text-gray-400">No modules generated yet. AI is working...</p>
 {% endfor %}

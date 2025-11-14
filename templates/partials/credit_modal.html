@@ -1,11 +1,11 @@
 <!-- Credit Purchase Modal -->
 <div id="credit-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-  <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+  <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
     
     <!-- Modal Header -->
     <div class="flex items-center justify-between mb-6">
-      <h2 class="text-2xl font-bold text-gray-900">Buy Tutor Credits</h2>
-      <button onclick="closeCreditModal()" class="text-gray-400 hover:text-gray-600">
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Buy Tutor Credits</h2>
+      <button onclick="closeCreditModal()" class="text-gray-400 hover:text-gray-600 dark:text-gray-400">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
@@ -14,17 +14,17 @@
     
     <!-- Current Credits -->
     <div class="mb-6 p-4 bg-gradient-to-r from-accent-50 to-accent-100 rounded-lg">
-      <p class="text-sm text-gray-600 mb-1">Your Current Credits</p>
+      <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Your Current Credits</p>
       <p class="text-3xl font-bold text-accent-700">{{ user_credits|default:0 }}</p>
     </div>
     
     <!-- Credit Packages -->
     <div class="space-y-3 mb-6">
-      <button class="card-hover w-full p-4 bg-white border-2 border-gray-200 hover:border-primary-500 rounded-xl text-left transition duration-200">
+      <button class="card-hover w-full p-4 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 hover:border-primary-500 rounded-xl text-left transition duration-200">
         <div class="flex items-center justify-between">
           <div>
-            <p class="font-bold text-lg text-gray-900">20 Credits</p>
-            <p class="text-sm text-gray-600">Perfect for quizzes</p>
+            <p class="font-bold text-lg text-gray-900 dark:text-gray-100">20 Credits</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Perfect for quizzes</p>
           </div>
           <p class="text-2xl font-bold text-primary-600">₦500</p>
         </div>
@@ -33,18 +33,18 @@
       <button class="card-hover w-full p-4 bg-gradient-to-r from-primary-50 to-blue-50 border-2 border-primary-200 hover:border-primary-500 rounded-xl text-left transition duration-200">
         <div class="flex items-center justify-between">
           <div>
-            <p class="font-bold text-lg text-gray-900">50 Credits</p>
+            <p class="font-bold text-lg text-gray-900 dark:text-gray-100">50 Credits</p>
             <p class="text-sm text-primary-700 font-semibold">🔥 Most Popular</p>
           </div>
           <p class="text-2xl font-bold text-primary-600">₦1,000</p>
         </div>
       </button>
       
-      <button class="card-hover w-full p-4 bg-white border-2 border-gray-200 hover:border-primary-500 rounded-xl text-left transition duration-200">
+      <button class="card-hover w-full p-4 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 hover:border-primary-500 rounded-xl text-left transition duration-200">
         <div class="flex items-center justify-between">
           <div>
-            <p class="font-bold text-lg text-gray-900">100 Credits</p>
-            <p class="text-sm text-gray-600">Best value!</p>
+            <p class="font-bold text-lg text-gray-900 dark:text-gray-100">100 Credits</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Best value!</p>
           </div>
           <div class="text-right">
             <p class="text-2xl font-bold text-primary-600">₦1,800</p>
@@ -55,13 +55,13 @@
     </div>
     
     <!-- Payment Note -->
-    <p class="text-xs text-gray-500 text-center mb-4">
+    <p class="text-xs text-gray-500 dark:text-gray-400 text-center mb-4">
       Secure payment via Paystack. Credits never expire.
     </p>
     
     <!-- Free Alternative -->
-    <div class="p-3 bg-gray-50 rounded-lg text-center border border-gray-200">
-      <p class="text-sm text-gray-700">
+    <div class="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg text-center border border-gray-200 dark:border-gray-700">
+      <p class="text-sm text-gray-700 dark:text-gray-300">
         <span class="font-semibold">Or wait!</span> Your daily credits reset every day.
       </p>
     </div>
