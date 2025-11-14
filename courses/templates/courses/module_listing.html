@@ -1,0 +1,26 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<h4 class="mt-4 mb-3 text-lg font-semibold">Study Modules</h4>
+
+{% comment %} 
+    NOTE: Since your view doesn't provide Module objects, we are mocking one loop 
+    to demonstrate where the Quiz button goes. You would loop through actual modules here.
+{% endcomment %}
+
+{% for module in course.modules.all %} 
+    <div class="module-item flex items-center justify-between py-3 border-b">
+        <div>
+            <p class="font-medium">Module {{ module.order }}: {{ module.title }}</p>
+            <p class="text-sm text-gray-500">{{ module.syllabus_topic|truncatechars:70 }}</p>
+        </div>
+        
+        <form method="post" action="{% url 'quizzes:start_quiz' module_id=module.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning btn-sm">
+                Take Quiz (5 Credits)
+            </button>
+        </form>
+    </div>
+{% empty %}
+    <p class="text-sm text-gray-500">No modules generated yet. AI is working...</p>
+{% endfor %}

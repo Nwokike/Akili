@@ -1,3 +1,119 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.urls import reverse
+from django.utils import timezone 
+import json 
 
-# Create your views here.
+from courses.models import Module 
+from .utils import generate_quiz_and_save 
+from .models import QuizAttempt 
+
+
+@login_required
+def start_quiz_view(request, module_id):
+    """View to trigger AI generation of a new quiz based on a module."""
+    module = get_object_or_404(Module, pk=module_id)
+    
+    if request.method != 'POST':
+        messages.error(request, "Quiz generation requires a valid request.")
+        return redirect(reverse('courses:dashboard'))
+        
+    if request.user.tutor_credits < 5: 
+        messages.error(request, "Insufficient credits to generate a new quiz.")
+        return redirect(reverse('courses:dashboard')) 
+
+    success, result_id_or_error = generate_quiz_and_save(module, request.user, num_questions=5)
+    
+    if success:
+        messages.success(request, f"Quiz successfully generated for {module.title}!")
+        return redirect('quizzes:quiz_detail', quiz_id=result_id_or_error)
+    else:
+        error_message = result_id_or_error 
+        messages.error(request, f"Failed to generate quiz: {error_message}")
+        return redirect(reverse('courses:dashboard'))
+
+
+@login_required
+def quiz_detail_view(request, quiz_id):
+    """Displays the quiz questions and handles submission (scoring)."""
+    
+    # 1. Retrieve the quiz attempt
+    quiz_attempt = get_object_or_404(
+        QuizAttempt.objects.filter(user=request.user),
+        pk=quiz_id
+    )
+    
+    # Check if the quiz is already completed (read-only mode)
+    is_completed = bool(quiz_attempt.completed_at)
+
+    if request.method == 'POST' and not is_completed:
+        # --- SCORING AND SUBMISSION LOGIC ---
+        
+        total_correct = 0
+        user_answers = {}
+        
+        # Iterate over the questions stored in the JSONField
+        for index, question in enumerate(quiz_attempt.questions_data):
+            user_choice_str = request.POST.get(f'q_{index}')
+            
+            # CRITICAL FIX: Use .get() with None default for safety
+            correct_index_value = question.get('correct_index')
+            
+            # Process the answer only if a choice was made AND the correct index exists in the data
+            if user_choice_str and correct_index_value is not None:
+                user_choice = int(user_choice_str)
+                correct_index = int(correct_index_value) 
+                
+                is_correct = (user_choice == correct_index)
+                
+                if is_correct:
+                    total_correct += 1
+                
+                # Store the user's choice
+                user_answers[str(index)] = {'chosen': user_choice, 'is_correct': is_correct}
+            else:
+                # Store skipped or malformed question answer
+                user_answers[str(index)] = {'chosen': -1, 'is_correct': False}
+
+        # 2. Update QuizAttempt record
+        quiz_attempt.score = total_correct
+        quiz_attempt.total_questions = len(quiz_attempt.questions_data)
+        quiz_attempt.completed_at = timezone.now() # Record completion time
+        quiz_attempt.user_answers = user_answers 
+        
+        quiz_attempt.save()
+        
+        messages.success(request, f"Quiz submitted! You scored {total_correct} out of {quiz_attempt.total_questions}.")
+        return redirect('quizzes:quiz_detail', quiz_id=quiz_attempt.id)
+        
+    
+    # --- GET REQUEST (Display Form/Results) ---
+
+    if is_completed:
+        template_name = 'quizzes/quiz_results.html'
+    else:
+        template_name = 'quizzes/quiz_form.html'
+        
+    context = {
+        'quiz': quiz_attempt,
+        'questions': quiz_attempt.questions_data, 
+        'title': f"Quiz for {quiz_attempt.module.title}",
+        'user_answers': quiz_attempt.user_answers if is_completed else None, 
+    }
+    
+    return render(request, template_name, context)
+
+
+@login_required
+def quiz_history_view(request):
+    """Displays a list of all completed quiz attempts."""
+    
+    history = QuizAttempt.objects.filter(user=request.user).order_by('-completed_at')
+    
+    context = {
+        'history': history,
+        'title': 'Quiz History',
+    }
+    
+    return render(request, 'quizzes/quiz_history.html', context)

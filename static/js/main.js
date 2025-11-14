@@ -4,6 +4,7 @@
 let deferredPrompt;
 const installButton = document.getElementById('install-button');
 
+// --- PWA LOGIC ---
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
@@ -52,21 +53,11 @@ function toggleMobileMenu(id) {
   }
 }
 
-// Copy Referral Link (EXISTING FUNCTION - ALREADY WORKS)
-function copyReferralLink(link) {
-  // Use the link value from the profile template's input field
-  const referralInput = document.getElementById('referralLinkInput');
-  if (referralInput) {
-    navigator.clipboard.writeText(referralInput.value).then(() => {
-      showToast('Referral link copied!');
-    }).catch(err => {
-      console.error('Failed to copy:', err);
-      showToast('Copy failed. Check console.', 'error');
-    });
-  }
-}
+// ---------------------------------------------
+// CORE UTILITIES (MUST BE FIRST)
+// ---------------------------------------------
 
-// Toast Notification (EXISTING FUNCTION)
+// Toast Notification (MOVED TO TOP)
 function showToast(message, type = 'success') {
   const toast = document.createElement('div');
   toast.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg z-50 ${
@@ -80,6 +71,43 @@ function showToast(message, type = 'success') {
     toast.classList.add('opacity-0');
     setTimeout(() => toast.remove(), 300);
   }, 3000);
+}
+
+// Copy Referral Link (FINAL ROBUST VERSION)
+function copyReferralLink() { 
+    if (typeof showToast !== 'function') { 
+        console.error('showToast utility is missing.');
+        return;
+    }
+
+    // FINAL ID FIX: Search all possible input IDs used in the project
+    const referralInput = document.getElementById('referralLinkInput') || 
+                          document.getElementById('referral-input') ||
+                          document.getElementById('profile-referral-input'); 
+    
+    if (!referralInput) {
+        showToast('Error: Referral input field not found.', 'error');
+        return;
+    }
+    
+    // 1. Attempt the modern Clipboard API
+    navigator.clipboard.writeText(referralInput.value)
+        .then(() => {
+            showToast('Referral link copied!');
+        })
+        .catch(err => {
+            // 2. Fallback to older document.execCommand('copy')
+            try {
+                // To use execCommand, you must first select the text
+                referralInput.select();
+                referralInput.setSelectionRange(0, 99999); // For mobile compatibility
+                document.execCommand('copy'); 
+                showToast('Referral link copied (using fallback)!');
+            } catch (fallbackErr) {
+                console.error('Failed to copy using all methods:', fallbackErr);
+                showToast('Copy failed. Please copy manually.', 'error');
+            }
+        });
 }
 
 // Confirm Delete Actions (UPDATED TO SECURE TWO-STEP PROCESS)
@@ -99,38 +127,41 @@ function showDeleteConfirmation() {
         }
     }
 }
-// Removed old confirmDelete(message) function as it's replaced by showDeleteConfirmation()
+// ---------------------------------------------
+// END CORE UTILITIES
+// ---------------------------------------------
+
 
 // Auto-dismiss Django Messages
 document.addEventListener('DOMContentLoaded', () => {
-  const messages = document.querySelectorAll('.django-message');
-  messages.forEach(msg => {
-    setTimeout(() => {
-      msg.style.opacity = '0';
-      setTimeout(() => msg.remove(), 300);
-    }, 5000);
-  });
+    const messages = document.querySelectorAll('.django-message');
+    messages.forEach(msg => {
+        setTimeout(() => {
+            msg.style.opacity = '0';
+            setTimeout(() => msg.remove(), 300);
+        }, 5000);
+    });
 });
 
 // Credit Purchase Modal
 function openCreditModal() {
-  const modal = document.getElementById('credit-modal');
-  if (modal) {
-    modal.classList.remove('hidden');
-  }
+    const modal = document.getElementById('credit-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+    }
 }
 
 function closeCreditModal() {
-  const modal = document.getElementById('credit-modal');
-  if (modal) {
-    modal.classList.add('hidden');
-  }
+    const modal = document.getElementById('credit-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
 }
 
 // Close modal on outside click
 window.addEventListener('click', (e) => {
-  const modal = document.getElementById('credit-modal');
-  if (modal && e.target === modal) {
-    closeCreditModal();
-  }
+    const modal = document.getElementById('credit-modal');
+    if (modal && e.target === modal) {
+        closeCreditModal();
+    }
 });

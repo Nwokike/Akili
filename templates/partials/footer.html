@@ -33,7 +33,9 @@
           <li><a href="{% url 'login' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Login</a></li>
           {% else %}
           <li><a href="{% url 'dashboard' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Dashboard</a></li>
-          <li><a href="{% url 'profiles:my_profile' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Profile</a></li> <li><a href="{% url 'courses:dashboard' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Courses</a></li> <li><a href="{% url 'exam_center' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Mock Exams</a></li>
+          <li><a href="{% url 'profiles:my_profile' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Profile</a></li>
+          <li><a href="{% url 'courses:dashboard' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Courses</a></li>
+          <li><a href="{% url 'exam_center' %}" class="text-gray-600 hover:text-primary-600 transition text-sm">Mock Exams</a></li>
           {% endif %}
         </ul>
       </div>

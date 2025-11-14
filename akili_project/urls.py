@@ -13,7 +13,13 @@ urlpatterns = [
     path('', include('users.urls')),
     path('dashboard/', core_views.dashboard_view, name='dashboard'),
     path('exam-center/', core_views.exam_center_view, name='exam_center'),
+    
+    # RESOLVED CONFLICT: Including both Profiles and Courses apps
     path('profile/', include('profiles.urls')),
+    path('courses/', include('courses.urls')),
+    
+    # NEW: Include the Quizzes app URLs
+    path('quizzes/', include('quizzes.urls')),
     
     # Legal pages
     path('privacy/', core_views.privacy_view, name='privacy'),

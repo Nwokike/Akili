@@ -1,29 +1,25 @@
-from django.conf import settings
-from django.contrib.auth import get_user_model
+from django.urls import path
+from django.contrib.auth import views as auth_views
+from . import views
 
-User = get_user_model()
-
-def process_referral(new_user: User, referral_username: str):
-    """
-    Checks if a user signed up via a referral link and updates credits.
-    """
-    if not referral_username:
-        return
-
-    try:
-        # 1. Find the referring user (the person whose link was used)
-        referrer = User.objects.get(username=referral_username)
-    except User.DoesNotExist:
-        # Ignore if the referral link is invalid or the referrer was deleted
-        return
-
-    # 2. Check the referred_by field on the new user's model
-    # Note: Your registration process must ensure new_user.referred_by is set 
-    # to the referrer's username upon sign-up.
-
-    # 3. Update the referrer's credit limit
-    # The 'increase_daily_limit' method handles the max limit logic
-    referrer.increase_daily_limit(settings.AKILI_CREDITS_PER_REFERRAL)
+urlpatterns = [
+    # Auth Views
+    path('signup/', views.signup_view, name='signup'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
     
-    # You might also want to notify the referrer, but that's a later task.
-    print(f"--- INFO: Increased credits for referrer {referrer.username}")
+    # Referral Handling (e.g., /join/username)
+    path('join/<str:username>/', views.referral_signup_view, name='referral_signup'),
+    
+    # Dashboard (if dashboard is kept in the users app)
+    path('dashboard/', views.dashboard_view, name='dashboard'),
+    
+    # --- PROFILES / ACCOUNT DELETION PATH ---
+    path('delete-account/', views.delete_account_view, name='delete_account'),
+    
+    # Password Reset URLs
+    path('password-reset/', auth_views.PasswordResetView.as_view(template_name='registration/password_reset_form.html'), name='password_reset'),
+    path('password-reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done.html'), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+]

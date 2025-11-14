@@ -1,0 +1,65 @@
+{% extends "base.html" %} 
+{% load static %} 
+
+{% block title %}
+    {{ title }} | Akili Platform
+{% endblock title %}
+
+{% block content %}
+    <header class="page-header">
+        <h1>Welcome back, {{ user.first_name }}!</h1>
+        <p>Manage your personalized JAMB, SSCE, and JSS study courses below.</p>
+    </header>
+
+    <hr>
+
+    <div class="course-actions">
+        <a href="{% url 'courses:create_course' %}" class="btn btn-primary">
+            + Create New Course
+        </a>
+    </div>
+
+    <section class="course-list mt-4">
+        <h2>My Courses ({{ courses.count }})</h2>
+        
+        {% if courses %}
+            <div class="course-section space-y-8">
+                {% for course in courses %}
+                    <div class="course-details card p-5 border">
+                        <h3 class="text-2xl font-bold">{{ course.subject }} ({{ course.exam_type }})</h3>
+                        <small>Created: {{ course.created_at|date:"M d, Y" }}</small>
+                        
+                        <h4 class="mt-4 mb-3 text-lg font-semibold">Study Modules</h4>
+                        
+                        {% for module in course.modules.all %} 
+                            <div class="module-item flex items-center justify-between py-3 border-b">
+                                <div>
+                                    <p class="font-medium">Module {{ module.order }}: {{ module.title }}</p>
+                                </div>
+                                
+                                <form method="post" action="{% url 'quizzes:start_quiz' module_id=module.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-warning btn-sm">
+                                        Take Quiz (5 Credits)
+                                    </button>
+                                </form>
+                            </div>
+                        {% empty %}
+                            <p class="text-sm text-gray-500">Modules loading. Create a new course if needed.</p>
+                        {% endfor %}
+                        </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state text-center p-5">
+                <p class="lead">No courses yet</p>
+                <p class="text-muted">Get started by adding your first course</p>
+                
+                <a href="{% url 'courses:create_course' %}" class="btn btn-primary btn-lg mt-3">
+                    Add Your First Course
+                </a>
+            </div>
+        {% endif %}
+    </section>
+
+{% endblock content %}
