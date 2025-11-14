@@ -10,10 +10,10 @@
     </a>
     
     {% comment %} 
-    The 'courses:dashboard' URL is defined in your courses/urls.py 
+    The 'courses:course_list' URL is defined in your courses/urls.py 
     This uses the 'courses/' prefix from the main urls.py
 {% endcomment %}
-<a href="{% url 'courses:dashboard' %}" 
+<a href="{% url 'courses:course_list' %}" 
     class="flex flex-col items-center py-2 px-3 
           {% if 'courses' in request.path %}text-primary-600{% else %}text-gray-600{% endif %} 
           transition-colors">

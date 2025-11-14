@@ -6,7 +6,7 @@ app_name = 'courses'
 
 urlpatterns = [
     # URL for the main course list/dashboard
-    path('', views.CourseDashboardView.as_view(), name='dashboard'),
+    path('', views.CourseDashboardView.as_view(), name='course_list'),
     
     # URL for creating a new course
     path('new/', views.CourseCreationView.as_view(), name='create_course'),
