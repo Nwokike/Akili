@@ -3,19 +3,6 @@
 ## Project Overview
 Nigeria's first personal AI-powered study platform for JAMB, WAEC, NECO, and JSS exams with a freemium business model.
 
-## Recent Changes (Nov 14, 2025)
-
-### Critical Fixes Applied
-- **Fixed CSRF Cookie Issues**: Configured for production with proper cookie settings
-- **Fixed Admin Interface**: Resolved FieldError for non-editable username field in CustomUser admin
-- **Fixed Import Errors**: Restored CachedLesson import in courses/views.py
-- **Fixed URL Namespaces**: Added all missing app URLs (profiles, quizzes, exams, payments)
-- **Added Missing Views**: Implemented ModuleListingView, LessonDetailView, AskTutorView, ReportErrorView, DeleteCourseView
-- **Implemented Two-Pass AI Validation**: Lessons are generated and validated before display
-- **Completed Module Generation**: AI-powered course module creation with syllabus integration
-- **Removed Replit-Specific Code**: Simplified settings for production deployment
-- **Updated Logo Design**: Centered logo in header, increased size across all pages (h-20 in header, w-32 h-32 in auth pages)
-
 ### Environment Configuration
 - Django development server running on 0.0.0.0:5000
 - PostgreSQL database (Replit Helium): heliumdb
@@ -177,9 +164,6 @@ Enter email, first name, last name, and password. Username auto-generates.
 - [ ] AI fallback tiers under load
 - [ ] LaTeX formula rendering in lessons
 
-### Known Issues
-- None currently blocking
-
 ## Deployment Configuration
 
 ### Production Settings (Render)
@@ -195,16 +179,6 @@ Enter email, first name, last name, and password. Username auto-generates.
 ```
 Installs dependencies, collects static files, runs migrations.
 
-## Best Practices Followed
-- Email-only authentication with auto-generated usernames
-- Credit system with proper transaction handling
-- Two-pass AI validation for content quality
-- Syllabus-grounded AI generation
-- Mobile-first responsive design
-- PWA for offline capability
-- Proper CSRF protection
-- Environment-based configuration
-
 ## Future Enhancements (v2.0)
 1. Social login (Google)
 2. Enhanced security (CAPTCHA)
@@ -213,6 +187,3 @@ Installs dependencies, collects static files, runs migrations.
 5. Advanced analytics dashboard
 6. Spaced repetition learning
 7. Community study groups
-
-## Contact & Support
-For technical questions, check the code comments or review the spec document in `attached_assets/`.
