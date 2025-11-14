@@ -1,5 +1,7 @@
+asgiref==3.10.0
 Django==5.2.8
+psycopg==3.2.12
 psycopg2-binary==2.9.11
-gunicorn==23.0.0
 python-dotenv==1.2.1
-requests==2.32.3
+sqlparse==0.5.3
+tzdata==2025.2

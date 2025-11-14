@@ -2,27 +2,48 @@ from django.db import models
 from django.conf import settings
 
 
-class MockExam(models.Model):
+class Exam(models.Model):
     """
-    Mock exam attempts (5 credits)
-    Developer 2: Implement syllabus-grounded exam generation
+    Represents a full mock exam attempt by a user.
     """
-    EXAM_CHOICES = [
-        ('JAMB', 'JAMB'),
-        ('SSCE', 'SSCE'),
-        ('JSS', 'JSS'),
-    ]
-    
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mock_exams')
-    exam_type = models.CharField(max_length=10, choices=EXAM_CHOICES)
-    subject = models.CharField(max_length=200)
-    question_count = models.IntegerField()
-    score = models.IntegerField(null=True, blank=True)
-    questions_data = models.JSONField()
-    completed_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        db_table = 'mock_exams'
-    
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="exam_attempts"
+    )
+    module = models.ForeignKey(
+        "courses.Module",
+        on_delete=models.CASCADE,
+        related_name="exam_attempts"
+    )
+    title = models.CharField(max_length=255)
+    score = models.IntegerField(default=0)
+    total_questions = models.PositiveIntegerField(default=0)
+    started_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
     def __str__(self):
-        return f"{self.user.username} - {self.exam_type} {self.subject} ({self.question_count}Q)"
+        return f"{self.user} - {self.title}"
+
+    @property
+    def percentage(self):
+        return round((self.score / self.total_questions) * 100, 2) if self.total_questions else 0
+
+
+class ExamQuestion(models.Model):
+    """
+    Questions shown to a user during a mock exam.
+    """
+    exam = models.ForeignKey(
+        Exam,
+        on_delete=models.CASCADE,
+        related_name="exam_questions"
+    )
+    question_text = models.TextField()
+    options = models.JSONField(default=dict)
+    correct_answer = models.CharField(max_length=255)
+    user_answer = models.CharField(max_length=255, blank=True)
+    is_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.question_text[:50]
