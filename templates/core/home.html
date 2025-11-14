@@ -5,7 +5,7 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-50">
+<section class="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
   <div class="max-w-5xl mx-auto text-center px-6 py-20">
     
     <!-- Main Heading -->
@@ -21,7 +21,7 @@
     
     <!-- CTA Buttons -->
     <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-      <a href="{% url 'signup' %}" class="bg-primary-600 hover:bg-primary-700 text-white font-bold px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 text-lg w-full sm:w-auto">
+      <a href="{% url 'signup' %}" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600 text-white font-bold px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 text-lg w-full sm:w-auto">
         Start Learning Free
       </a>
     </div>
@@ -30,17 +30,17 @@
     <div class="grid md:grid-cols-3 gap-8 mb-16">
       
       <div class="text-center">
-        <div class="text-5xl font-bold text-accent-600 mb-2">10</div>
+        <div class="text-5xl font-bold text-accent-600 dark:text-accent-400 mb-2">10</div>
         <p class="text-gray-600 dark:text-gray-400 font-medium">Free Credits Daily</p>
       </div>
       
       <div class="text-center">
-        <div class="text-5xl font-bold text-primary-600 mb-2">∞</div>
+        <div class="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-2">∞</div>
         <p class="text-gray-600 dark:text-gray-400 font-medium">AI-Generated Content</p>
       </div>
       
       <div class="text-center">
-        <div class="text-5xl font-bold text-green-600 mb-2">24/7</div>
+        <div class="text-5xl font-bold text-green-600 dark:text-green-400 mb-2">24/7</div>
         <p class="text-gray-600 dark:text-gray-400 font-medium">Study Anytime</p>
       </div>
       
@@ -61,8 +61,8 @@
       
       <!-- Feature 1: AI Tutor -->
       <div class="text-center">
-        <div class="w-20 h-20 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <svg class="w-10 h-10 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="w-20 h-20 bg-primary-100 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <svg class="w-10 h-10 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
           </svg>
         </div>
@@ -74,8 +74,8 @@
       
       <!-- Feature 2: Mock Exams -->
       <div class="text-center">
-        <div class="w-20 h-20 bg-accent-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <svg class="w-10 h-10 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="w-20 h-20 bg-accent-100 dark:bg-accent-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <svg class="w-10 h-10 text-accent-600 dark:text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
           </svg>
         </div>
@@ -87,8 +87,8 @@
       
       <!-- Feature 3: Works Offline -->
       <div class="text-center">
-        <div class="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <svg class="w-10 h-10 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
           </svg>
         </div>
@@ -114,7 +114,7 @@
       
       <!-- Step 1 -->
       <div class="flex items-start space-x-6">
-        <div class="flex-shrink-0 w-16 h-16 bg-primary-600 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg">
+        <div class="flex-shrink-0 w-16 h-16 bg-primary-600 dark:bg-primary-700 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg">
           1
         </div>
         <div class="pt-3">
@@ -127,7 +127,7 @@
       
       <!-- Step 2 -->
       <div class="flex items-start space-x-6">
-        <div class="flex-shrink-0 w-16 h-16 bg-primary-600 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg">
+        <div class="flex-shrink-0 w-16 h-16 bg-primary-600 dark:bg-primary-700 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg">
           2
         </div>
         <div class="pt-3">
@@ -140,7 +140,7 @@
       
       <!-- Step 3 -->
       <div class="flex items-start space-x-6">
-        <div class="flex-shrink-0 w-16 h-16 bg-primary-600 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg">
+        <div class="flex-shrink-0 w-16 h-16 bg-primary-600 dark:bg-primary-700 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg">
           3
         </div>
         <div class="pt-3">
@@ -154,7 +154,7 @@
     </div>
     
     <div class="text-center mt-16">
-      <a href="{% url 'signup' %}" class="bg-primary-600 hover:bg-primary-700 text-white font-bold px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 text-lg inline-block">
+      <a href="{% url 'signup' %}" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600 text-white font-bold px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 text-lg inline-block">
         Get Started Now →
       </a>
     </div>
@@ -176,22 +176,22 @@
     <div class="grid md:grid-cols-4 gap-8">
       
       <div class="p-6">
-        <div class="text-4xl font-bold text-primary-600 mb-2">JAMB</div>
+        <div class="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">JAMB</div>
         <p class="text-gray-600 dark:text-gray-400">University Entrance</p>
       </div>
       
       <div class="p-6">
-        <div class="text-4xl font-bold text-green-600 mb-2">WAEC</div>
+        <div class="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">WAEC</div>
         <p class="text-gray-600 dark:text-gray-400">Senior School Cert</p>
       </div>
       
       <div class="p-6">
-        <div class="text-4xl font-bold text-accent-600 mb-2">NECO</div>
+        <div class="text-4xl font-bold text-accent-600 dark:text-accent-400 mb-2">NECO</div>
         <p class="text-gray-600 dark:text-gray-400">National Exam</p>
       </div>
       
       <div class="p-6">
-        <div class="text-4xl font-bold text-purple-600 mb-2">JSS</div>
+        <div class="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">JSS</div>
         <p class="text-gray-600 dark:text-gray-400">Junior Secondary</p>
       </div>
       
@@ -211,7 +211,7 @@
       Start learning with your personal AI tutor today
     </p>
     
-    <a href="{% url 'signup' %}" class="bg-white dark:bg-gray-800 text-primary-600 hover:bg-gray-100 dark:bg-gray-700 font-bold px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 text-lg inline-block">
+    <a href="{% url 'signup' %}" class="bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-700 font-bold px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 text-lg inline-block">
       Start Free Today
     </a>
     

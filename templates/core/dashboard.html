@@ -17,27 +17,27 @@
   
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
     
-    <div class="card text-center bg-gradient-to-br from-accent-50 to-accent-100 border-accent-200">
+    <div class="card text-center bg-gradient-to-br from-accent-50 to-accent-100 dark:from-accent-900/20 dark:to-accent-800/20 border-accent-200 dark:border-accent-800">
       <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">Credits</p>
-      <p class="text-4xl font-bold text-accent-700 mb-1">{{ user_credits|default:0 }}</p>
+      <p class="text-4xl font-bold text-accent-700 dark:text-accent-400 mb-1">{{ user_credits|default:0 }}</p>
       <p class="text-xs text-gray-500 dark:text-gray-400">of {{ user_daily_limit|default:10 }} daily</p>
     </div>
     
-    <div class="card text-center bg-gradient-to-br from-primary-50 to-blue-50 border-primary-200">
+    <div class="card text-center bg-gradient-to-br from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 border-primary-200 dark:border-primary-800">
       <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">Courses</p>
-      <p class="text-4xl font-bold text-primary-700 mb-1">0</p>
+      <p class="text-4xl font-bold text-primary-700 dark:text-primary-400 mb-1">0</p>
       <p class="text-xs text-gray-500 dark:text-gray-400">in progress</p>
     </div>
     
-    <div class="card text-center bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+    <div class="card text-center bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-800">
       <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">Quizzes</p>
-      <p class="text-4xl font-bold text-green-700 mb-1">0</p>
+      <p class="text-4xl font-bold text-green-700 dark:text-green-400 mb-1">0</p>
       <p class="text-xs text-gray-500 dark:text-gray-400">completed</p>
     </div>
     
-    <div class="card text-center bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200">
+    <div class="card text-center bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 border-purple-200 dark:border-purple-800">
       <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">Mock Exams</p>
-      <p class="text-4xl font-bold text-purple-700 mb-1">0</p>
+      <p class="text-4xl font-bold text-purple-700 dark:text-purple-400 mb-1">0</p>
       <p class="text-xs text-gray-500 dark:text-gray-400">taken</p>
     </div>
     
@@ -47,10 +47,10 @@
     <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h2>
     <div class="grid md:grid-cols-2 gap-4">
       
-      <a href="{% url 'courses:create_course' %}" class="card card-hover text-left group border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-primary-500 hover:bg-primary-50">
+      <a href="{% url 'courses:create_course' %}" class="card card-hover text-left group border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20">
         <div class="flex items-center space-x-4">
-          <div class="w-14 h-14 bg-primary-100 group-hover:bg-primary-200 rounded-xl flex items-center justify-center flex-shrink-0">
-            <svg class="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="w-14 h-14 bg-primary-100 dark:bg-primary-900/30 group-hover:bg-primary-200 dark:group-hover:bg-primary-800/40 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-7 h-7 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
           </div>
@@ -61,10 +61,10 @@
         </div>
       </a>
       
-      <a href="{% url 'exam_center' %}" class="card card-hover text-left group border-2 border-gray-200 dark:border-gray-700 hover:border-accent-500 hover:bg-accent-50">
+      <a href="{% url 'exam_center' %}" class="card card-hover text-left group border-2 border-gray-200 dark:border-gray-700 hover:border-accent-500 hover:bg-accent-50 dark:hover:bg-accent-900/20">
         <div class="flex items-center space-x-4">
-          <div class="w-14 h-14 bg-accent-100 group-hover:bg-accent-200 rounded-xl flex items-center justify-center flex-shrink-0">
-            <svg class="w-7 h-7 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="w-14 h-14 bg-accent-100 dark:bg-accent-900/30 group-hover:bg-accent-200 dark:group-hover:bg-accent-800/40 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-7 h-7 text-accent-600 dark:text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
             </svg>
           </div>
@@ -100,14 +100,14 @@
     </div>
   </div>
   
-  <div class="card bg-gradient-to-r from-primary-50 via-blue-50 to-purple-50 border-primary-200">
+  <div class="card bg-gradient-to-r from-primary-50 via-blue-50 to-purple-50 dark:from-primary-900/20 dark:via-blue-900/20 dark:to-purple-900/20 border-primary-200 dark:border-primary-800">
     <div class="flex flex-col md:flex-row items-center justify-between">
       <div class="mb-4 md:mb-0">
         <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
           🎉 Invite Friends & Earn Credits
         </h3>
         <p class="text-gray-700 dark:text-gray-300 mb-3">
-          Get <span class="font-bold text-primary-600">+2 daily credits</span> for each friend who joins (max 30)
+          Get <span class="font-bold text-primary-600 dark:text-primary-400">+2 daily credits</span> for each friend who joins (max 30)
         </p>
         <div class="flex items-center space-x-2">
           <input 

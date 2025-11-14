@@ -19,15 +19,15 @@
   </div>
   
   <!-- Cost Notice -->
-  <div class="card bg-accent-50 border-accent-200 mb-8">
+  <div class="card bg-accent-50 dark:bg-accent-900/20 border-accent-200 dark:border-accent-800 mb-8">
     <div class="flex items-start space-x-4">
-      <svg class="w-6 h-6 text-accent-600 flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
+      <svg class="w-6 h-6 text-accent-600 dark:text-accent-400 flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
       </svg>
       <div>
-        <p class="font-semibold text-accent-900 mb-1">Mock exams cost 5 credits each</p>
+        <p class="font-semibold text-accent-900 dark:text-accent-100 mb-1">Mock exams cost 5 credits each</p>
         <p class="text-sm text-gray-700 dark:text-gray-300">
-          You currently have <span class="font-bold text-accent-700">{{ user_credits|default:0 }} credits</span>. 
+          You currently have <span class="font-bold text-accent-700 dark:text-accent-400">{{ user_credits|default:0 }} credits</span>. 
           Each exam is grounded in the official syllabus for maximum accuracy.
         </p>
       </div>
@@ -40,45 +40,45 @@
     <div class="grid md:grid-cols-3 gap-4">
       
       <!-- JAMB -->
-      <button class="card card-hover text-left group border-2 border-gray-200 dark:border-gray-700 hover:border-primary-500 hover:bg-primary-50">
+      <button class="card card-hover text-left group border-2 border-gray-200 dark:border-gray-700 hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20">
         <div class="mb-4">
-          <div class="w-14 h-14 bg-primary-100 group-hover:bg-primary-200 rounded-xl flex items-center justify-center mb-3">
-            <span class="text-2xl font-bold text-primary-600">J</span>
+          <div class="w-14 h-14 bg-primary-100 dark:bg-primary-900/30 group-hover:bg-primary-200 dark:group-hover:bg-primary-800/40 rounded-xl flex items-center justify-center mb-3">
+            <span class="text-2xl font-bold text-primary-600 dark:text-primary-400">J</span>
           </div>
           <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">JAMB</h3>
           <p class="text-sm text-gray-600 dark:text-gray-400">
             Joint Admissions and Matriculation Board
           </p>
         </div>
-        <p class="text-xs text-primary-600 font-semibold">Select →</p>
+        <p class="text-xs text-primary-600 dark:text-primary-400 font-semibold">Select →</p>
       </button>
       
       <!-- WAEC/NECO (SSCE) -->
-      <button class="card card-hover text-left group border-2 border-gray-200 dark:border-gray-700 hover:border-green-500 hover:bg-green-50">
+      <button class="card card-hover text-left group border-2 border-gray-200 dark:border-gray-700 hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20">
         <div class="mb-4">
-          <div class="w-14 h-14 bg-green-100 group-hover:bg-green-200 rounded-xl flex items-center justify-center mb-3">
-            <span class="text-2xl font-bold text-green-600">W</span>
+          <div class="w-14 h-14 bg-green-100 dark:bg-green-900/30 group-hover:bg-green-200 dark:group-hover:bg-green-800/40 rounded-xl flex items-center justify-center mb-3">
+            <span class="text-2xl font-bold text-green-600 dark:text-green-400">W</span>
           </div>
           <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">WAEC / NECO</h3>
           <p class="text-sm text-gray-600 dark:text-gray-400">
             Senior Secondary Certificate Examination
           </p>
         </div>
-        <p class="text-xs text-green-600 font-semibold">Select →</p>
+        <p class="text-xs text-green-600 dark:text-green-400 font-semibold">Select →</p>
       </button>
       
       <!-- JSS -->
-      <button class="card card-hover text-left group border-2 border-gray-200 dark:border-gray-700 hover:border-purple-500 hover:bg-purple-50">
+      <button class="card card-hover text-left group border-2 border-gray-200 dark:border-gray-700 hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20">
         <div class="mb-4">
-          <div class="w-14 h-14 bg-purple-100 group-hover:bg-purple-200 rounded-xl flex items-center justify-center mb-3">
-            <span class="text-2xl font-bold text-purple-600">J</span>
+          <div class="w-14 h-14 bg-purple-100 dark:bg-purple-900/30 group-hover:bg-purple-200 dark:group-hover:bg-purple-800/40 rounded-xl flex items-center justify-center mb-3">
+            <span class="text-2xl font-bold text-purple-600 dark:text-purple-400">J</span>
           </div>
           <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">JSS</h3>
           <p class="text-sm text-gray-600 dark:text-gray-400">
             Junior Secondary School Examination
           </p>
         </div>
-        <p class="text-xs text-purple-600 font-semibold">Select →</p>
+        <p class="text-xs text-purple-600 dark:text-purple-400 font-semibold">Select →</p>
       </button>
       
     </div>
