@@ -107,11 +107,11 @@ WSGI_APPLICATION = 'akili_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('PGDATABASE'),
-        'USER': os.getenv('PGUSER'),
-        'PASSWORD': os.getenv('PGPASSWORD'),
-        'HOST': os.getenv('PGHOST'),
-        'PORT': os.getenv('PGPORT', '5432'),
+        'NAME': 'akili_db',
+        'USER': 'akili_user',
+        'PASSWORD': 'Ogechiobinwa123.',
+        'HOST': 'localhost',
+        'PORT':  '5432',
     }
 }
 
