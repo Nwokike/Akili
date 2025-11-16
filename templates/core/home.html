@@ -223,3 +223,14 @@
 </section>
 
 {% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const installButton = document.getElementById('install-button');
+  if (installButton) {
+    installButton.style.display = 'none';
+  }
+});
+</script>
+{% endblock extra_scripts %}
