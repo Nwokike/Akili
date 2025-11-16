@@ -189,12 +189,12 @@ function closeDeleteModal(event) {
 
 // PWA Install Prompt
 let deferredPrompt;
-const installButton = document.getElementById('install-button'); // This ID must exist in your HTML (e.g., header)
 
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
   
+  const installButton = document.getElementById('install-button');
   if (installButton) {
     installButton.classList.remove('hidden');
   }
@@ -289,6 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // PWA Install Button
+    const installButton = document.getElementById('install-button');
     if (installButton) {
       installButton.addEventListener('click', async () => {
         if (!deferredPrompt) {

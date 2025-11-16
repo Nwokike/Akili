@@ -18,7 +18,7 @@ def start_quiz_view(request, module_id):
 
     if request.method != 'POST':
         messages.error(request, "Quiz generation requires a valid request.")
-        return redirect(reverse('courses:course_list'))
+        return redirect('dashboard')
 
     # Check if user already has an incomplete quiz for this module
     existing_quiz = QuizAttempt.objects.filter(
