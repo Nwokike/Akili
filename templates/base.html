@@ -6,13 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Akili - Your Personal AI-Powered Study Platform for JAMB, WAEC, NECO, and JSS exams">
   <meta name="theme-color" content="#3b82f6">
-  
+
   <title>{% block title %}Akili - AI Tutor for Nigerian Exams{% endblock %}</title>
-  
+
   <!-- PWA Manifest -->
   <link rel="manifest" href="{% static 'pwa/manifest.json' %}">
   <link rel="icon" href="{% static 'images/logo.png' %}">
-  
+
   <!-- Dark Mode Script (must run before body renders) -->
   <script>
     // Initialize dark mode from localStorage before page renders
@@ -22,7 +22,7 @@
       document.documentElement.classList.remove('dark');
     }
   </script>
-  
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -63,27 +63,28 @@
       },
     }
   </script>
-  
+
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{% static 'css/custom.css' %}">
-  
+
   <!-- KaTeX for LaTeX rendering -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
-  
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
+
   {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans antialiased transition-colors duration-200">
-  
+
   <!-- Django Messages -->
   {% if messages %}
-    <div class="fixed top-4 right-4 z-50 space-y-2">
+    <!-- z-[110] is higher than the loading spinner (z-[100]) -->
+    <div class="fixed top-4 right-4 z-[110] space-y-2">
       {% for message in messages %}
         <div class="django-message px-6 py-3 rounded-lg shadow-lg {% if message.tags == 'success' %}bg-green-500{% elif message.tags == 'error' %}bg-red-500{% else %}bg-blue-500{% endif %} text-white font-semibold transition-opacity duration-300">
           {{ message }}
@@ -91,40 +92,46 @@
       {% endfor %}
     </div>
   {% endif %}
-  
+
   <!-- Main Content Wrapper -->
   <div class="min-h-screen {% if user.is_authenticated %}pb-20 md:pb-0 md:pl-64{% endif %}">
-    
+
     <!-- Desktop Sidebar (for authenticated users) -->
     {% if user.is_authenticated %}
       {% include 'partials/sidebar.html' %}
     {% endif %}
-    
+
     <!-- Top Header -->
     {% include 'partials/header.html' %}
-    
+
     <!-- Page Content -->
     <main class="{% if not user.is_authenticated %}container mx-auto px-4{% endif %}">
       {% block content %}{% endblock %}
     </main>
-    
+
     <!-- Footer -->
     {% include 'partials/footer.html' %}
-    
+
     <!-- Mobile Bottom Navigation (for authenticated users) -->
     {% if user.is_authenticated %}
       {% include 'partials/bottom_nav.html' %}
     {% endif %}
   </div>
-  
+
   <!-- Credit Purchase Modal -->
   {% if user.is_authenticated %}
     {% include 'partials/credit_modal.html' %}
   {% endif %}
-  
+
+  <!-- --- NEW: Fullscreen Loading Spinner --- -->
+  <div id="loading-overlay" class="fixed inset-0 z-[100] bg-gray-900 bg-opacity-75 flex-col items-center justify-center hidden">
+    <div class="w-16 h-16 border-4 border-t-transparent border-primary-500 rounded-full animate-spin"></div>
+    <p class="text-white text-lg mt-4 font-semibold">Akili is thinking... Please wait.</p>
+  </div>
+
   <!-- Main JavaScript -->
   <script src="{% static 'js/main.js' %}"></script>
-  
+
   {% block extra_scripts %}{% endblock %}
 </body>
 </html>

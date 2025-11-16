@@ -6,7 +6,7 @@
 {% block content %}
 <div class="min-h-screen bg-gradient-to-br from-primary-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 py-8 px-4 md:px-8">
   <div class="max-w-7xl mx-auto">
-    
+
     <!-- Header Section -->
     <div class="mb-8">
       <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-3">
@@ -19,7 +19,8 @@
 
     <!-- Create Course Button -->
     <div class="mb-8">
-      <a href="{% url 'courses:create_course' %}" class="btn-primary inline-flex items-center space-x-2">
+      <!-- --- FIX: Added onclick="showSpinner()" --- -->
+      <a href="{% url 'courses:create_course' %}" class="btn-primary inline-flex items-center space-x-2" onclick="showSpinner()">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
         </svg>
@@ -32,7 +33,7 @@
       <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
         My Courses <span class="text-primary-600">({{ courses.count }})</span>
       </h2>
-      
+
       {% if courses %}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {% for course in courses %}
@@ -46,12 +47,12 @@
                   {{ course.created_at|date:"M d, Y" }}
                 </span>
               </div>
-              
+
               <!-- Subject -->
               <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 group-hover:text-primary-600 transition-colors">
                 {{ course.subject }}
               </h3>
-              
+
               <!-- Module Count -->
               <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-400 mb-4">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,19 +60,20 @@
                 </svg>
                 <span class="text-sm font-medium">{{ course.modules.count }} Modules</span>
               </div>
-              
+
               <!-- Progress Bar -->
               <div class="progress-bar mb-4">
                 <div class="progress-fill" style="width: 0%"></div>
               </div>
-              
+
               <!-- Action Buttons -->
               <div class="flex items-center space-x-3">
                 <a href="{% url 'courses:module_listing' course.id %}" 
                    class="flex-1 text-center py-2 px-4 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors">
                   View Modules
                 </a>
-                
+
+                <!-- FIX: Added event.stopPropagation() to the onclick -->
                 <button type="button"
                         onclick="event.stopPropagation(); openDeleteModal('{{ course.id }}', '{{ course.exam_type }}', '{{ course.subject }}')"
                         class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
@@ -98,7 +100,8 @@
           <p class="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
             You haven't created any study courses yet. Click the button above to create your first personalized course!
           </p>
-          <a href="{% url 'courses:create_course' %}" class="btn-primary inline-block">
+          <!-- --- FIX: Added onclick="showSpinner()" --- -->
+          <a href="{% url 'courses:create_course' %}" class="btn-primary inline-block" onclick="showSpinner()">
             Get Started
           </a>
         </div>
@@ -109,6 +112,7 @@
 </div>
 
 <!-- Delete Course Modal -->
+<!-- This modal is now controlled by openDeleteModal() in main.js -->
 <div id="deleteCourseModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" onclick="closeDeleteModal(event)">
   <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4" onclick="event.stopPropagation()">
     <div class="p-6">
@@ -169,48 +173,4 @@
     </div>
   </div>
 </div>
-
-<script>
-function openDeleteModal(courseId, examType, subject) {
-  const modal = document.getElementById('deleteCourseModal');
-  const form = document.getElementById('deleteCourseForm');
-  const courseName = document.getElementById('courseName');
-  
-  // Set form action
-  form.action = `/courses/${courseId}/delete/`;
-  
-  // Set course name in warning
-  courseName.textContent = `${examType} ${subject}`;
-  
-  // Clear password field
-  document.getElementById('deletePassword').value = '';
-  
-  // Show modal
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
-  
-  // Focus password field
-  setTimeout(() => {
-    document.getElementById('deletePassword').focus();
-  }, 100);
-}
-
-function closeDeleteModal(event) {
-  const modal = document.getElementById('deleteCourseModal');
-  
-  // Only close if clicking outside the modal content or clicking close button
-  if (!event || event.target === modal || event.type === 'click') {
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-  }
-}
-
-// Close modal on Escape key
-document.addEventListener('keydown', function(event) {
-  if (event.key === 'Escape') {
-    closeDeleteModal();
-  }
-});
-</script>
-
 {% endblock content %}

@@ -7,7 +7,7 @@
 
 {% block content %}
 <div class="p-4 md:p-8 max-w-3xl mx-auto">
-  
+
   <!-- Header -->
   <div class="mb-8">
     <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
@@ -25,13 +25,16 @@
         <p class="text-sm text-red-700 dark:text-red-300">{{ error }}</p>
       </div>
     {% endif %}
-    
-    <form method="post" action="{% url 'courses:create_course' %}" class="space-y-6">
+
+    <!-- --- FIX: Added onsubmit="showSpinner()" --- -->
+    <form method="post" action="{% url 'courses:create_course' %}" class="space-y-6" onsubmit="showSpinner()">
       {% csrf_token %}
-      
+
       {% if form.non_field_errors %}
         <div class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <p class="text-sm text-red-700 dark:text-red-300">{{ form.non_field_errors }}</p>
+          {% for error in form.non_field_errors %}
+            <p class="text-sm text-red-700 dark:text-red-300">{{ error }}</p>
+          {% endfor %}
         </div>
       {% endif %}
 
@@ -40,92 +43,93 @@
         <label for="{{ form.exam_type.id_for_label }}" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
           {{ form.exam_type.label }}
         </label>
-        <select name="{{ form.exam_type.name }}" id="{{ form.exam_type.id_for_label }}" 
-                class="input-field" required>
-          <option value="">Select an exam type</option>
-          {% for value, label in form.exam_type.field.choices %}
-            {% if value %}
-              <option value="{{ value }}" {% if form.exam_type.value == value %}selected{% endif %}>{{ label }}</option>
-            {% endif %}
-          {% endfor %}
-        </select>
-        {% if form.exam_type.help_text %}
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ form.exam_type.help_text }}</p>
-        {% endif %}
+        <!-- This is how you render the field with its existing classes from forms.py -->
+        {{ form.exam_type }}
         {% if form.exam_type.errors %}
-          <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.exam_type.errors.0 }}</p>
+          <p class="text-red-600 text-sm mt-1">{{ form.exam_type.errors|first }}</p>
         {% endif %}
       </div>
 
-      <!-- Subject Field -->
-      <div>
+      <!-- Subject Field (Initially hidden) -->
+      <div id="subject-container" class="hidden">
         <label for="{{ form.subject.id_for_label }}" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
           {{ form.subject.label }}
         </label>
-        <select name="{{ form.subject.name }}" id="{{ form.subject.id_for_label }}" 
-                class="input-field" required>
-          <option value="">Select a subject</option>
-          {% for value, label in form.subject.field.choices %}
-            {% if value %}
-              <option value="{{ value }}" {% if form.subject.value == value %}selected{% endif %}>{{ label }}</option>
-            {% endif %}
-          {% endfor %}
-        </select>
-        {% if form.subject.help_text %}
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ form.subject.help_text }}</p>
-        {% endif %}
+        {{ form.subject }}
+        <p id="subject-loading" class="text-sm text-gray-500 mt-1 hidden">Loading subjects...</p>
         {% if form.subject.errors %}
-          <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.subject.errors.0 }}</p>
+          <p class="text-red-600 text-sm mt-1">{{ form.subject.errors|first }}</p>
         {% endif %}
       </div>
 
-      <!-- Action Buttons -->
-      <div class="flex items-center space-x-3 pt-4">
-        <button type="submit" class="btn-primary flex-1 md:flex-none">
-          Generate My Course
+      <!-- Submit Button -->
+      <div>
+        <button type="submit" id="create-course-btn" class="btn-primary w-full disabled:opacity-50" disabled>
+          Generate 15-Module Course (5 Credits)
         </button>
-        
-        <a href="{% url 'courses:course_list' %}" class="btn-secondary flex-1 md:flex-none">
-          Cancel
-        </a>
       </div>
     </form>
   </div>
-  
 </div>
+{% endblock %}
 
+{% block extra_scripts %}
+<!-- This script dynamically loads subjects based on the selected exam -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const examTypeSelect = document.getElementById('{{ form.exam_type.id_for_label }}');
+  const examSelect = document.getElementById('{{ form.exam_type.id_for_label }}');
+  const subjectContainer = document.getElementById('subject-container');
   const subjectSelect = document.getElementById('{{ form.subject.id_for_label }}');
-  
-  examTypeSelect.addEventListener('change', function() {
+  const subjectLoading = document.getElementById('subject-loading');
+  const createButton = document.getElementById('create-course-btn');
+
+  // Add the input-field class to the fields
+  examSelect.classList.add('input-field');
+  subjectSelect.classList.add('input-field');
+
+
+  examSelect.addEventListener('change', function() {
     const examType = this.value;
-    
+
+    // Reset and hide subject field
+    subjectSelect.innerHTML = '<option value="">Select a subject</option>';
+    subjectContainer.classList.add('hidden');
+    createButton.disabled = true;
+
     if (!examType) {
-      subjectSelect.innerHTML = '<option value="">Select an exam type first</option>';
       return;
     }
-    
-    subjectSelect.innerHTML = '<option value="">Loading...</option>';
-    
-    fetch(`{% url 'courses:get_subjects' %}?exam_type=${examType}`)
+
+    // Show loading text and container
+    subjectLoading.classList.remove('hidden');
+    subjectContainer.classList.remove('hidden');
+
+    // Fetch subjects
+    fetch(`/courses/api/subjects/?exam_type=${examType}`)
       .then(response => response.json())
       .then(data => {
-        subjectSelect.innerHTML = '<option value="">Select a subject</option>';
-        
-        data.subjects.forEach(subject => {
-          const option = document.createElement('option');
-          option.value = subject;
-          option.textContent = subject;
-          subjectSelect.appendChild(option);
+        // Populate subject dropdown
+        data.subjects.forEach(function(subject) {
+          const option = new Option(subject, subject);
+          subjectSelect.add(option);
         });
+
+        subjectLoading.classList.add('hidden');
       })
       .catch(error => {
         console.error('Error fetching subjects:', error);
-        subjectSelect.innerHTML = '<option value="">Error loading subjects</option>';
+        subjectLoading.textContent = 'Failed to load subjects.';
       });
+  });
+
+  subjectSelect.addEventListener('change', function() {
+    // Enable submit button only if a valid subject is chosen
+    if (this.value) {
+      createButton.disabled = false;
+    } else {
+      createButton.disabled = true;
+    }
   });
 });
 </script>
-{% endblock content %}
+{% endblock %}

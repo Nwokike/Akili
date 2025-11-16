@@ -7,20 +7,18 @@ from .models import Course, Module, CachedLesson
 from .forms import CourseCreationForm
 from core.utils.ai_module_generator import generate_course_modules
 from admin_syllabus.models import JAMBSyllabus, SSCESyllabus, JSSSyllabus
-from django.db import transaction  # <-- IMPORT ADDED HERE
+from django.db import transaction
+from django.http import JsonResponse
+
 
 class CourseDashboardView(LoginRequiredMixin, View):
     def get(self, request):
         # Retrieve all courses belonging to the current user
         user_courses = Course.objects.filter(user=request.user).order_by('-created_at')
 
-        # Example of contextual data you might need:
-        # has_credits = check_tutor_credits(request.user) # Check utility for credit system
-
         context = {
             'courses': user_courses,
             'title': 'My Akili Courses',
-            # 'has_credits': has_credits, 
         }
 
         return render(request, 'courses/dashboard.html', context)
@@ -49,14 +47,11 @@ class CourseCreationView(LoginRequiredMixin, View):
                 return redirect('dashboard') 
 
             try:
-                # --- MODIFICATION START ---
                 # Use a transaction to make this "all or nothing"
                 with transaction.atomic():
                     # 2. Check Credits (5 credits per course creation)
-                    # This will be rolled back if the AI fails
                     if not request.user.deduct_credits(5):
                         messages.error(request, 'Insufficient credits. You need 5 credits to create a course.')
-                        # No need to render, just return out of the 'try' block
                         return render(request, 'courses/course_creation.html', {'form': form, 'title': 'Create New Course'})
 
                     # 3. Create the Course instance
@@ -70,10 +65,8 @@ class CourseCreationView(LoginRequiredMixin, View):
                     success = generate_course_modules(new_course)
 
                     if not success:
-                        # This is the key: raise an error to trigger the rollback
+                        # This will trigger the transaction rollback
                         raise Exception("AI module generation failed.")
-
-                # --- MODIFICATION END ---
 
                 # If we are here, the transaction was successful
                 messages.success(request, f'Course "{subject}" created successfully with 15 modules!')
@@ -82,7 +75,8 @@ class CourseCreationView(LoginRequiredMixin, View):
             except Exception as e:
                 # The transaction was rolled back
                 print(f"Course creation failed and rolled back: {e}")
-                messages.error(request, 'Failed to create course. The AI tutor might be busy. Your credits were not deducted. Please try again.')
+                # --- FIX: Show user-friendly message ---
+                messages.error(request, 'Sorry, the AI tutor is busy or ran into an error. Your credits were not deducted. Please try again.')
 
         # If form is invalid or an error occurred, render the page again
         context = {
@@ -201,6 +195,7 @@ class LessonDetailView(LoginRequiredMixin, View):
         import markdown
 
         # Pass 1: Generate lesson content
+        # --- FIX: Added strict LaTeX escaping rule ---
         prompt = f"""Create a comprehensive lesson on the following topic for {module.course.exam_type} {module.course.subject}:
 
 Topic: {module.syllabus_topic}
@@ -214,6 +209,7 @@ IMPORTANT INSTRUCTIONS:
 5. DO NOT include solutions to practice problems or exercises
 6. If you include practice questions, only provide the questions without answers
 7. Focus on explaining concepts clearly for exam preparation
+8. CRITICAL: For all LaTeX, use double-escaped backslashes (e.g., $\\\\frac{{1}}{{2}}$).
 
 Provide a detailed, well-structured lesson covering all key concepts."""
 
@@ -270,12 +266,15 @@ class AskTutorView(LoginRequiredMixin, View):
 
         # Get AI response
         from core.utils.ai_fallback import call_ai_with_fallback
+        # --- FIX: Added strict LaTeX escaping rule ---
         prompt = f"""You are a tutor for {module.course.exam_type} {module.course.subject}.
 
 Topic: {module.syllabus_topic}
 Student Question: {question}
 
-Provide a clear, helpful answer."""
+Provide a clear, helpful answer.
+CRITICAL: For all LaTeX, use double-escaped backslashes (e.g., $\\\\frac{{1}}{{2}}$).
+"""
 
         result = call_ai_with_fallback(prompt, max_tokens=1000)
         if result['success']:
@@ -323,8 +322,6 @@ class DeleteCourseView(LoginRequiredMixin, View):
         messages.success(request, f'Course "{course_name}" deleted successfully.')
         return redirect('dashboard')
 
-
-from django.http import JsonResponse
 
 class GetAvailableSubjectsView(View):
     """
