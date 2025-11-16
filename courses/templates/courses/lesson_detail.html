@@ -3,11 +3,51 @@
 
 {% block title %}{{ module.title }} - Akili{% endblock %}
 
+{% block extra_head %}
+<!-- This style block fixes the responsiveness issue -->
+<style>
+  .lesson-content table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap; /* Ensures table content doesn't wrap weirdly */
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+  }
+  .lesson-content th,
+  .lesson-content td {
+    border: 1px solid #e2e8f0; /* Light gray border */
+    padding: 0.5rem 1rem;
+  }
+  .lesson-content pre {
+    overflow-x: auto;
+    width: 100%;
+    background-color: #f7fafc; /* Light background for code */
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+  .lesson-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+  }
+  /* Dark mode styles for tables and code */
+  .dark .lesson-content th,
+  .dark .lesson-content td {
+    border-color: #4a5568; /* Darker border for dark mode */
+  }
+  .dark .lesson-content pre {
+    background-color: #1a202c; /* Dark background for code */
+  }
+</style>
+{% endblock %}
+
 {% block page_title %}{{ module.title }}{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto py-8 px-4">
-  
+<!-- The max-w-4xl is good, but we add overflow-hidden to the parent container -->
+<div class="max-w-4xl mx-auto py-8 px-4 overflow-hidden">
+
   <!-- Breadcrumb -->
   <nav class="mb-6">
     <ol class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
@@ -38,6 +78,7 @@
     </div>
 
     <!-- Lesson Content -->
+    <!-- The 'prose' class is overridden by our styles for tables/code -->
     <div class="prose dark:prose-invert max-w-none mb-6">
       <div class="text-gray-800 dark:text-gray-200 leading-relaxed lesson-content">{{ lesson.content|safe }}</div>
     </div>
@@ -65,7 +106,7 @@
       </svg>
       Back to Modules
     </a>
-    
+
     {% if incomplete_quiz %}
       <a href="{% url 'quizzes:quiz_detail' quiz_id=incomplete_quiz.id %}" class="flex-1 bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600 text-white font-semibold px-4 py-2 rounded-lg transition flex items-center justify-center">
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,6 +131,6 @@
       </form>
     {% endif %}
   </div>
-  
+
 </div>
 {% endblock %}

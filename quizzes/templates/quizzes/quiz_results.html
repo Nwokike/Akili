@@ -8,7 +8,7 @@
     <div class="max-w-3xl mx-auto p-4">
         <header class="mb-8 text-center">
             <h1 class="text-4xl font-extrabold text-primary-700 mb-2">Quiz Results</h1>
-            
+
             <div class="p-6 rounded-xl shadow-md inline-block 
                         {% if quiz.score >= quiz.total_questions|divisibleby:2 %}
                             bg-green-100 text-green-700
@@ -21,7 +21,7 @@
                 </p>
                 <p class="text-sm mt-1">Completed on {{ quiz.completed_at|date:"M j, Y H:i" }}</p>
             </div>
-            
+
             <p class="text-lg text-gray-700 dark:text-gray-300 mt-4">Module: {{ quiz.module.title }}</p>
         </header>
 
@@ -31,28 +31,28 @@
             {% for question in questions %}
                 {% with question_index=forloop.counter0 %}
                 {% with answer_data=user_answers|get_item:question_index %}
-                
+
                 {% comment %} Define Variables for Styling and Icon {% endcomment %}
                 {% if answer_data.is_correct %}
                     {% with status_class='border-green-400 bg-green-50' status_icon='&#x2713;' text_class='text-green-700' %}
-                    {% endwith %}  {% elif not answer_data.is_correct and answer_data.chosen != -1 %}
+                    {% endwith %} {% elif not answer_data.is_correct and answer_data.chosen != -1 %}
                     {% with status_class='border-red-400 bg-red-50' status_icon='&#x2718;' text_class='text-red-700' %}
-                    {% endwith %}  {% else %}
+                    {% endwith %} {% else %}
                     {% with status_class='border-gray-400 bg-gray-50' status_icon='?' text_class='text-gray-700' %}
-                    {% endwith %}  {% endif %}
+                    {% endwith %} {% endif %}
 
                 <div class="card mb-6 p-5 border-2 {{ status_class }}">
                     <h3 class="text-xl font-bold mb-3 {{ text_class }}">
                         Question {{ forloop.counter }} 
                         <span class="float-right text-3xl">{{ status_icon }}</span>
                     </h3>
-                    
+
                     <p class="mb-4 question-text">{{ question.question_text }}</p>
-                    
+
                     <div class="space-y-2 text-sm">
                         {% for choice in question.choices %}
                             {% with choice_index=forloop.counter0 %}
-                            
+
                             {% comment %} Determine styling for choice buttons {% endcomment %}
                             {% if choice_index == question.correct_index %}
                                 {% with choice_style='bg-green-200 font-bold' %}{% endwith %}
@@ -61,7 +61,7 @@
                             {% else %}
                                 {% with choice_style='bg-gray-100' %}{% endwith %}
                             {% endif %}
-                            
+
                             <div class="p-3 rounded-lg {{ choice_style }}">
                                 <span>{{ forloop.counter }}.</span>
                                 <span class="ml-2">{{ choice }}</span>
@@ -69,7 +69,7 @@
                                     <span class="float-right text-xs font-bold">{{ status_icon }} YOUR ANSWER</span>
                                 {% endif %}
                             </div>
-                            
+
                             {% endwith %}
                         {% endfor %}
                     </div>
@@ -79,15 +79,18 @@
                         <p class="text-gray-600 dark:text-gray-400 explanation-text">{{ question.explanation }}</p>
                     </div>
                 </div>
-                
+
                 {% endwith %}
                 {% endwith %}
             {% endfor %}
         </section>
-        
+
         <div class="mt-8 text-center">
             <a href="{% url 'quizzes:quiz_history' %}" class="btn btn-secondary mr-4">View History</a>
-            <a href="{% url 'courses:dashboard' %}" class="btn btn-primary">Back to Courses</a>
+            <!--
+            FIX: Changed 'courses:dashboard' to 'courses:course_list' to match your courses/urls.py
+            -->
+            <a href="{% url 'courses:course_list' %}" class="btn btn-primary">Back to Courses</a>
         </div>
     </div>
 {% endblock content %}

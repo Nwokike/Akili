@@ -1,58 +1,61 @@
 import os
 import requests
 from django.conf import settings
-import json  # Added for safe JSON parsing
+import json # Added for safe JSON parsing
 
 # --- Core Fallback Logic ---
 
 def call_ai_with_fallback(prompt, system_prompt=None, max_tokens=None, is_json=False):
     """
     4-tier AI Smart Fallback system
+    UPDATED TIER ORDER: Prioritize all Gemini models first.
     Tier 1: Gemini 2.5 Flash (Free)
-    Tier 2: Groq API (Free)
-    Tier 3: Gemini Paid (Paid)
+    Tier 2: Gemini Paid (Paid)
+    Tier 3: Groq API (Free)
     Tier 4: Circuit Breaker (Graceful error)
-    
+
     Args:
         prompt (str): The primary query for the AI.
         system_prompt (str, optional): Instructions for the AI's persona.
         max_tokens (int, optional): Maximum tokens for the response.
         is_json (bool): If True, instructs the AI to return a JSON object.
     """
-    
+
     latex_instruction = (
         "\nYou are an expert tutor. Format all mathematical equations, formulas, "
         "and scientific notation using LaTeX (e.g., $E=mc^2$ or $$\\int_a^b f(x)dx$$)."
     )
-    
+
     # Add JSON instruction to the system prompt if required
     json_instruction = "\nYour output MUST be a single, raw JSON object/list." if is_json else ""
-    
+
     if system_prompt:
         full_prompt = f"{system_prompt}{json_instruction}\n{latex_instruction}\n\n{prompt}"
     else:
         full_prompt = f"{json_instruction}\n{latex_instruction}\n\n{prompt}"
-        
-    # --- Tier 1: Gemini 2.5 Flash (Free) ---
+
+    # --- UPDATED TIER ORDER ---
     gemini_key = settings.GEMINI_API_KEY
+
+    # --- Tier 1: Gemini 2.5 Flash (Free) ---
     if gemini_key:
         result = _try_gemini_flash(full_prompt, gemini_key, max_tokens, is_json)
         if result:
             return result
-    
-    # --- Tier 2: Groq API (Free) ---
+
+    # --- Tier 2: Gemini Paid (Was Tier 3) ---
+    if gemini_key:
+        result = _try_gemini_paid(full_prompt, gemini_key, max_tokens, is_json)
+        if result:
+            return result
+
+    # --- Tier 3: Groq API (Free - Fallback) (Was Tier 2) ---
     groq_key = settings.GROQ_API_KEY
     if groq_key:
         result = _try_groq(full_prompt, groq_key, max_tokens, is_json)
         if result:
             return result
-    
-    # --- Tier 3: Gemini Paid ---
-    if gemini_key:
-        result = _try_gemini_paid(full_prompt, gemini_key, max_tokens, is_json)
-        if result:
-            return result
-    
+
     # --- Tier 4: Circuit Breaker ---
     return {
         'success': False,
@@ -66,9 +69,10 @@ def call_ai_with_fallback(prompt, system_prompt=None, max_tokens=None, is_json=F
 def _try_gemini_flash(prompt, api_key, max_tokens, is_json):
     """Try Gemini 2.5 Flash (Tier 1)"""
     try:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={api_key}"
+        # --- FIX: Updated model name from gemini-2.0-flash-exp ---
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
         headers = {"Content-Type": "application/json"}
-        
+
         config = {}
         if max_tokens:
             config['maxOutputTokens'] = max_tokens
@@ -77,11 +81,11 @@ def _try_gemini_flash(prompt, api_key, max_tokens, is_json):
 
         data = {
             "contents": [{"parts": [{"text": prompt}]}],
-            "config": config
+            "generationConfig": config  # Corrected from 'config' to 'generationConfig'
         }
-        
+
         response = requests.post(url, json=data, headers=headers, timeout=40)
-        
+
         if response.status_code == 200:
             result = response.json()
             if 'candidates' in result and len(result['candidates']) > 0:
@@ -89,35 +93,34 @@ def _try_gemini_flash(prompt, api_key, max_tokens, is_json):
                 return {'success': True, 'content': content, 'tier': 'Gemini Flash'}
     except Exception as e:
         print(f"Gemini Flash failed: {e}")
-    
+
     return None
 
 
 def _try_groq(prompt, api_key, max_tokens, is_json):
-    """Try Groq API (Tier 2)"""
+    """Try Groq API (Tier 3 Fallback)"""
     try:
         url = "https://api.groq.com/openai/v1/chat/completions"
         headers = {
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json"
         }
-        
+
         data = {
-            # UPDATED MODEL NAME BASED ON TEAM LEAD'S INSTRUCTION
-            "model": "llama-3.1-8b-instant", # <-- FIX APPLIED HERE
+            "model": "llama-3.1-8b-instant",
             "messages": [
                 {"role": "user", "content": prompt}
             ],
             "response_format": {"type": "json_object"} if is_json else {"type": "text"}, # Groq JSON instruction
             "max_tokens": max_tokens if max_tokens else None,
         }
-        
+
         # Remove max_tokens if None to avoid API error
         if not data['max_tokens']:
             del data['max_tokens']
-            
+
         response = requests.post(url, json=data, headers=headers, timeout=40)
-        
+
         if response.status_code == 200:
             result = response.json()
             if 'choices' in result and len(result['choices']) > 0:
@@ -125,29 +128,29 @@ def _try_groq(prompt, api_key, max_tokens, is_json):
                 return {'success': True, 'content': content, 'tier': 'Groq'}
     except Exception as e:
         print(f"Groq failed: {e}")
-    
+
     return None
 
 
 def _try_gemini_paid(prompt, api_key, max_tokens, is_json):
-    """Try Gemini Paid tier (Tier 3)"""
+    """Try Gemini Paid tier (Tier 2)"""
     try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={api_key}"
         headers = {"Content-Type": "application/json"}
-        
+
         config = {}
         if max_tokens:
             config['maxOutputTokens'] = max_tokens
         if is_json:
             config['responseMimeType'] = 'application/json' # Correct setting for JSON output
-            
+
         data = {
             "contents": [{"parts": [{"text": prompt}]}],
-            "config": config
+            "generationConfig": config # Corrected from 'config' to 'generationConfig'
         }
-        
+
         response = requests.post(url, json=data, headers=headers, timeout=60)
-        
+
         if response.status_code == 200:
             result = response.json()
             if 'candidates' in result and len(result['candidates']) > 0:
@@ -155,7 +158,7 @@ def _try_gemini_paid(prompt, api_key, max_tokens, is_json):
                 return {'success': True, 'content': content, 'tier': 'Gemini Paid'}
     except Exception as e:
         print(f"Gemini Paid failed: {e}")
-    
+
     return None
 
 
@@ -165,17 +168,17 @@ def validate_ai_content(content):
     Returns 'OK' if valid, or correction message if errors found
     """
     validation_prompt = f"""You are a university professor. Review the following lesson content for accuracy.
-    
+
 Respond with ONLY 'OK' if the content is perfect, or provide a brief correction if errors are found.
 
 Content to review:
 {content}
 """
-    
+
     # We call the main fallback function here
     result = call_ai_with_fallback(validation_prompt)
-    
+
     if result['success']:
         return result['content'].strip()
-    
+
     return "OK"
