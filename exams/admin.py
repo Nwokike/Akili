@@ -1,9 +1,17 @@
 from django.contrib import admin
-from .models import MockExam
+from .models import Exam, ExamQuestion
 
 
-@admin.register(MockExam)
-class MockExamAdmin(admin.ModelAdmin):
-    list_display = ['user', 'exam_type', 'subject', 'question_count', 'score', 'completed_at']
-    list_filter = ['exam_type', 'completed_at']
-    search_fields = ['user__username', 'subject']
+@admin.register(Exam)
+class ExamAdmin(admin.ModelAdmin):
+    list_display = ['user', 'title', 'score', 'total_questions', 'percentage', 'started_at', 'completed_at']
+    list_filter = ['started_at', 'completed_at']
+    search_fields = ['user__username', 'title']
+    readonly_fields = ['started_at']
+
+
+@admin.register(ExamQuestion)
+class ExamQuestionAdmin(admin.ModelAdmin):
+    list_display = ['exam', 'question_text', 'is_correct']
+    list_filter = ['is_correct']
+    search_fields = ['question_text', 'exam__title']

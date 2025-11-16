@@ -2,9 +2,12 @@
 
 from django.db import models
 from django.conf import settings
-from courses.models import Module  # adjust import if needed
+from courses.models import Module
 
-class Question(models.Model):
+class QuizAttempt(models.Model):
+    """
+    Represents a quiz attempt by a user on a specific module.
+    """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -15,8 +18,19 @@ class Question(models.Model):
         on_delete=models.CASCADE,
         related_name='quiz_attempts'
     )
-    score = models.IntegerField()
-    questions_data = models.JSONField()
-
+    score = models.IntegerField(default=0)
+    total_questions = models.IntegerField(default=10)
+    questions_data = models.JSONField(default=list)
+    completed_at = models.DateTimeField(auto_now_add=True)
+    is_retake = models.BooleanField(default=False)
+    
+    class Meta:
+        db_table = 'quiz_attempts'
+        ordering = ['-completed_at']
+    
     def __str__(self):
-        return f"{self.user} - {self.module} ({self.score})"
+        return f"{self.user.username} - {self.module.title} ({self.score}/{self.total_questions})"
+    
+    @property
+    def percentage(self):
+        return round((self.score / self.total_questions) * 100, 2) if self.total_questions else 0

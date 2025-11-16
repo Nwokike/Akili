@@ -1,17 +1,10 @@
 from django.contrib import admin
-from .models import Transaction, CreditPurchase
+from .models import Payment
 
 
-@admin.register(Transaction)
-class TransactionAdmin(admin.ModelAdmin):
-    list_display = ['user', 'amount', 'credits_purchased', 'status', 'paystack_reference', 'created_at']
-    list_filter = ['status', 'created_at']
-    search_fields = ['user__username', 'paystack_reference']
-    readonly_fields = ['paystack_reference', 'created_at']
-
-
-@admin.register(CreditPurchase)
-class CreditPurchaseAdmin(admin.ModelAdmin):
-    list_display = ['user', 'credits', 'amount', 'transaction', 'created_at']
-    list_filter = ['created_at']
-    search_fields = ['user__username']
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ['user', 'reference', 'amount', 'verified', 'created_at']
+    list_filter = ['verified', 'created_at']
+    search_fields = ['user__username', 'user__email', 'reference']
+    readonly_fields = ['reference', 'created_at']

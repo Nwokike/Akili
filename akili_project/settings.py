@@ -67,6 +67,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -100,20 +101,29 @@ WSGI_APPLICATION = 'akili_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 #
-# Configured to use PostgreSQL for all environments.
-# Your team must set these variables in their local .env file.
-# You must also install the driver: pip install psycopg2-binary
+# Use environment variables for database configuration
+# For Replit dev: Uses SQLite (DATABASE_URL not set)
+# For Render production: Uses PostgreSQL (DATABASE_URL from environment)
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'akili_db',
-        'USER': 'akili_user',
-        'PASSWORD': 'Ogechiobinwa123.',
-        'HOST': 'localhost',
-        'PORT':  '5432',
+import dj_database_url
+
+if os.getenv('DATABASE_URL'):
+    # Production: Use PostgreSQL from DATABASE_URL
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+else:
+    # Development: Use SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Custom User Model
@@ -164,6 +174,9 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
+# Whitenoise settings for production static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -186,3 +199,6 @@ ACCOUNT_DELETION_DISABLED = False
 # AI Settings
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
 GROQ_API_KEY = os.getenv('GROQ_API_KEY', '')
+
+# Paystack Settings (for payments)
+PAYSTACK_SECRET_KEY = os.getenv('PAYSTACK_SECRET_KEY', '')
