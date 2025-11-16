@@ -141,6 +141,26 @@
           </div>
         </div>
         
+        <!-- Terms of Service Checkbox -->
+        <div class="flex items-start">
+          <input 
+            type="checkbox" 
+            name="agree_to_terms" 
+            id="id_agree_to_terms" 
+            required
+            class="mt-1 h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+          >
+          <label for="id_agree_to_terms" class="ml-2 text-sm text-gray-600 dark:text-gray-400">
+            I agree to the 
+            <a href="{% url 'terms' %}" target="_blank" class="text-primary-600 hover:underline">Terms of Service</a> 
+            and 
+            <a href="{% url 'privacy' %}" target="_blank" class="text-primary-600 hover:underline">Privacy Policy</a>
+          </label>
+        </div>
+        {% if form.agree_to_terms.errors %}
+          <p class="text-sm text-red-600">{{ form.agree_to_terms.errors.0 }}</p>
+        {% endif %}
+        
         <!-- Submit Button -->
         <button type="submit" class="btn-primary w-full">
           Create Account
