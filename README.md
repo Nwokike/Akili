@@ -19,11 +19,11 @@ Akili is a comprehensive AI-powered educational platform designed to help Nigeri
 ## 💻 Technology Stack
 
   * **Backend**: Django 5.2.8
-  * **Database**: PostgreSQL (production) / SQLite (development)
+  * **Database**: PostgreSQL
   * **AI Integration**: Google Gemini AI (2.5 Flash, Pro) & Groq API
   * **Frontend**: Tailwind CSS
   * **Math Rendering**: KaTeX (for LaTeX)
-  * **Deployment**: Render (production) / Replit (development)
+  * **Deployment**: Render (production) 
   * **Payments**: Paystack
 
 -----
