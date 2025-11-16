@@ -228,81 +228,89 @@ function toggleDarkMode() {
 
 // DOMContentLoaded listener for setup
 document.addEventListener('DOMContentLoaded', () => {
-    // Auto-dismiss Django Messages
-    const messages = document.querySelectorAll('.django-message');
-    messages.forEach(msg => {
-        setTimeout(() => {
-            msg.style.opacity = '0';
-            setTimeout(() => msg.remove(), 300);
-        }, 5000);
-    });
+    try {
+        // Auto-dismiss Django Messages
+        const messages = document.querySelectorAll('.django-message');
+        messages.forEach(msg => {
+            setTimeout(() => {
+                msg.style.opacity = '0';
+                setTimeout(() => msg.remove(), 300);
+            }, 5000);
+        });
 
-    // Dark Mode Toggle Button
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    if (darkModeToggle) {
-      darkModeToggle.addEventListener('click', toggleDarkMode);
-    }
+        // Dark Mode Toggle Button
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        if (darkModeToggle) {
+          darkModeToggle.addEventListener('click', toggleDarkMode);
+        }
   
-    // Header shrink on scroll
-    const header = document.getElementById('main-header');
-    const headerLogo = document.getElementById('header-logo');
-    const headerSpacer = document.getElementById('header-spacer');
-    const profileAvatar = document.getElementById('profile-avatar');
-    const headerContainer = header?.querySelector('div');
-    
-    if (header && headerLogo) {
-      window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-          header.classList.add('scrolled');
-          headerLogo.classList.remove('h-12');
-          headerLogo.classList.add('h-8');
-          if (profileAvatar) {
-            profileAvatar.classList.remove('w-10', 'h-10');
-            profileAvatar.classList.add('w-8', 'h-8');
-          }
-          if (headerSpacer) {
-            headerSpacer.classList.remove('h-16');
-            headerSpacer.classList.add('h-14');
-          }
-          if (headerContainer) {
-            headerContainer.classList.remove('py-3');
-            headerContainer.classList.add('py-2');
-          }
-        } else {
-          header.classList.remove('scrolled');
-          headerLogo.classList.remove('h-8');
-          headerLogo.classList.add('h-12');
-          if (profileAvatar) {
-            profileAvatar.classList.remove('w-8', 'h-8');
-            profileAvatar.classList.add('w-10', 'h-10');
-          }
-          if (headerSpacer) {
-            headerSpacer.classList.remove('h-14');
-            headerSpacer.classList.add('h-16');
-          }
-          if (headerContainer) {
-            headerContainer.classList.remove('py-2');
-            headerContainer.classList.add('py-3');
-          }
+        // Header shrink on scroll
+        const header = document.getElementById('main-header');
+        const headerLogo = document.getElementById('header-logo');
+        const headerSpacer = document.getElementById('header-spacer');
+        const profileAvatar = document.getElementById('profile-avatar');
+        const headerContainer = header?.querySelector('div');
+        
+        if (header && headerLogo) {
+          window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+              header.classList.add('scrolled');
+              headerLogo.classList.remove('h-12');
+              headerLogo.classList.add('h-8');
+              if (profileAvatar) {
+                profileAvatar.classList.remove('w-10', 'h-10');
+                profileAvatar.classList.add('w-8', 'h-8');
+              }
+              if (headerSpacer) {
+                headerSpacer.classList.remove('h-16');
+                headerSpacer.classList.add('h-14');
+              }
+              if (headerContainer) {
+                headerContainer.classList.remove('py-3');
+                headerContainer.classList.add('py-2');
+              }
+            } else {
+              header.classList.remove('scrolled');
+              headerLogo.classList.remove('h-8');
+              headerLogo.classList.add('h-12');
+              if (profileAvatar) {
+                profileAvatar.classList.remove('w-8', 'h-8');
+                profileAvatar.classList.add('w-10', 'h-10');
+              }
+              if (headerSpacer) {
+                headerSpacer.classList.remove('h-14');
+                headerSpacer.classList.add('h-16');
+              }
+              if (headerContainer) {
+                headerContainer.classList.remove('py-2');
+                headerContainer.classList.add('py-3');
+              }
+            }
+          });
         }
-      });
-    }
 
-    // PWA Install Button
-    const installButton = document.getElementById('install-button');
-    if (installButton) {
-      installButton.addEventListener('click', async () => {
-        if (!deferredPrompt) {
-          return;
+        // PWA Install Button
+        const installButton = document.getElementById('install-button');
+        if (installButton) {
+          installButton.addEventListener('click', async () => {
+            try {
+              if (!deferredPrompt) {
+                return;
+              }
+              deferredPrompt.prompt();
+              const { outcome } = await deferredPrompt.userChoice;
+              if (outcome === 'accepted') {
+                console.log('PWA installed');
+              }
+              deferredPrompt = null;
+              installButton.classList.add('hidden');
+            } catch (error) {
+              console.error('PWA install error:', error);
+            }
+          });
         }
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-          console.log('PWA installed');
-        }
-        deferredPrompt = null;
-        installButton.classList.add('hidden');
-      });
+    } catch (error) {
+        console.error('Error in DOMContentLoaded handler:', error);
     }
 });
 
