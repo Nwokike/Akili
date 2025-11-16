@@ -6,34 +6,27 @@ from django.contrib import messages
 from .models import Course, Module, CachedLesson
 from .forms import CourseCreationForm
 from core.utils.ai_module_generator import generate_course_modules
-from admin_syllabus.models import JAMBSyllabus, SSCESyllabus, JSSSyllabus 
-
+from admin_syllabus.models import JAMBSyllabus, SSCESyllabus, JSSSyllabus
+from django.db import transaction  # <-- IMPORT ADDED HERE
 
 class CourseDashboardView(LoginRequiredMixin, View):
-    """
-    Developer 1 Task: Displays a list of all courses personalized for the logged-in user.
-    """
     def get(self, request):
         # Retrieve all courses belonging to the current user
         user_courses = Course.objects.filter(user=request.user).order_by('-created_at')
-        
+
         # Example of contextual data you might need:
         # has_credits = check_tutor_credits(request.user) # Check utility for credit system
-        
+
         context = {
             'courses': user_courses,
             'title': 'My Akili Courses',
             # 'has_credits': has_credits, 
         }
-        
+
         return render(request, 'courses/dashboard.html', context)
 
 
 class CourseCreationView(LoginRequiredMixin, View):
-    """
-    Developer 1 Task: Handles the form submission to create a new personalized course.
-    This involves selecting exam_type and subject, then using AI to generate modules.
-    """
     def get(self, request):
         # Display the form to select exam type and subject
         form = CourseCreationForm()
@@ -42,40 +35,56 @@ class CourseCreationView(LoginRequiredMixin, View):
             'title': 'Create New Course',
         }
         return render(request, 'courses/course_creation.html', context)
-        
+
     def post(self, request):
         form = CourseCreationForm(request.POST)
-        
+
         if form.is_valid():
             exam_type = form.cleaned_data['exam_type']
             subject = form.cleaned_data['subject']
-            
+
             # 1. Check if the user already has this exact course
             if Course.objects.filter(user=request.user, exam_type=exam_type, subject=subject).exists():
                 messages.info(request, "You already have this course.")
                 return redirect('dashboard') 
-            
-            # 2. Check Credits (5 credits per course creation)
-            if not request.user.deduct_credits(5):
-                messages.error(request, 'Insufficient credits. You need 5 credits to create a course.')
-                return render(request, 'courses/course_creation.html', {'form': form, 'title': 'Create New Course'})
-            
-            # 3. Create the Course instance
-            new_course = Course.objects.create(
-                user=request.user,
-                exam_type=exam_type,
-                subject=subject,
-            )
-            
-            # 4. Generate modules using AI
-            success = generate_course_modules(new_course)
-            if not success:
-                messages.warning(request, 'Course created but AI module generation is still processing. Please refresh in a moment.')
-            else:
-                messages.success(request, f'Course created successfully with 15 modules!')
-            
-            return redirect('dashboard')
-            
+
+            try:
+                # --- MODIFICATION START ---
+                # Use a transaction to make this "all or nothing"
+                with transaction.atomic():
+                    # 2. Check Credits (5 credits per course creation)
+                    # This will be rolled back if the AI fails
+                    if not request.user.deduct_credits(5):
+                        messages.error(request, 'Insufficient credits. You need 5 credits to create a course.')
+                        # No need to render, just return out of the 'try' block
+                        return render(request, 'courses/course_creation.html', {'form': form, 'title': 'Create New Course'})
+
+                    # 3. Create the Course instance
+                    new_course = Course.objects.create(
+                        user=request.user,
+                        exam_type=exam_type,
+                        subject=subject,
+                    )
+
+                    # 4. Generate modules using AI
+                    success = generate_course_modules(new_course)
+
+                    if not success:
+                        # This is the key: raise an error to trigger the rollback
+                        raise Exception("AI module generation failed.")
+
+                # --- MODIFICATION END ---
+
+                # If we are here, the transaction was successful
+                messages.success(request, f'Course "{subject}" created successfully with 15 modules!')
+                return redirect('dashboard')
+
+            except Exception as e:
+                # The transaction was rolled back
+                print(f"Course creation failed and rolled back: {e}")
+                messages.error(request, 'Failed to create course. The AI tutor might be busy. Your credits were not deducted. Please try again.')
+
+        # If form is invalid or an error occurred, render the page again
         context = {
             'form': form,
             'title': 'Create New Course',
@@ -89,14 +98,14 @@ class ModuleListingView(LoginRequiredMixin, View):
     def get(self, request, course_id):
         course = get_object_or_404(Course, id=course_id, user=request.user)
         modules = course.modules.all().order_by('order')
-        
+
         # Add lock status to each module
         modules_with_status = []
         for module in modules:
             # Check if user has passed the previous module's quiz
             is_locked = False
             lock_reason = ""
-            
+
             if module.order > 1:
                 # Get the previous module
                 previous_module = course.modules.filter(order=module.order - 1).first()
@@ -108,11 +117,11 @@ class ModuleListingView(LoginRequiredMixin, View):
                         module=previous_module,
                         passed=True
                     ).exists()
-                    
+
                     if not passed_previous:
                         is_locked = True
                         lock_reason = f"Complete Module {previous_module.order} quiz with 60% or higher to unlock"
-            
+
             # Get best quiz attempt for this module
             from quizzes.models import QuizAttempt
             best_attempt = QuizAttempt.objects.filter(
@@ -120,14 +129,14 @@ class ModuleListingView(LoginRequiredMixin, View):
                 module=module,
                 completed_at__isnull=False
             ).order_by('-score').first()
-            
+
             # Check for incomplete quiz
             incomplete_quiz = QuizAttempt.objects.filter(
                 user=request.user,
                 module=module,
                 completed_at__isnull=True
             ).first()
-            
+
             modules_with_status.append({
                 'module': module,
                 'is_locked': is_locked,
@@ -135,7 +144,7 @@ class ModuleListingView(LoginRequiredMixin, View):
                 'best_attempt': best_attempt,
                 'incomplete_quiz': incomplete_quiz,
             })
-        
+
         context = {
             'course': course,
             'modules_with_status': modules_with_status,
@@ -150,7 +159,7 @@ class LessonDetailView(LoginRequiredMixin, View):
     """
     def get(self, request, module_id):
         module = get_object_or_404(Module, id=module_id, course__user=request.user)
-        
+
         # Generate or retrieve cached lesson
         if not module.lesson_content:
             lesson = self._generate_lesson(module)
@@ -160,7 +169,7 @@ class LessonDetailView(LoginRequiredMixin, View):
             if lesson.report_count > 3:
                 lesson.delete()
                 lesson = self._generate_lesson(module)
-        
+
         # Check for incomplete quiz
         from quizzes.models import QuizAttempt
         incomplete_quiz = QuizAttempt.objects.filter(
@@ -168,14 +177,14 @@ class LessonDetailView(LoginRequiredMixin, View):
             module=module,
             completed_at__isnull=True
         ).first()
-        
+
         # Get best quiz attempt
         best_attempt = QuizAttempt.objects.filter(
             user=request.user,
             module=module,
             completed_at__isnull=False
         ).order_by('-score').first()
-        
+
         context = {
             'module': module,
             'lesson': lesson,
@@ -185,12 +194,12 @@ class LessonDetailView(LoginRequiredMixin, View):
             'best_attempt': best_attempt,
         }
         return render(request, 'courses/lesson_detail.html', context)
-    
+
     def _generate_lesson(self, module):
         """Generate lesson content with two-pass validation"""
         from core.utils.ai_fallback import call_ai_with_fallback, validate_ai_content
         import markdown
-        
+
         # Pass 1: Generate lesson content
         prompt = f"""Create a comprehensive lesson on the following topic for {module.course.exam_type} {module.course.subject}:
 
@@ -207,7 +216,7 @@ IMPORTANT INSTRUCTIONS:
 7. Focus on explaining concepts clearly for exam preparation
 
 Provide a detailed, well-structured lesson covering all key concepts."""
-        
+
         result = call_ai_with_fallback(prompt, max_tokens=2000)
         if not result['success']:
             content_markdown = "AI tutors are at full capacity. Please try again in 2-3 minutes."
@@ -225,7 +234,7 @@ Provide a detailed, well-structured lesson covering all key concepts."""
             is_validated = validation_result.strip().upper() == 'OK'
             if not is_validated:
                 content_html = f"{content_html}<div class='mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg text-sm text-yellow-800 dark:text-yellow-200'><strong>Note:</strong> This content is under review.</div>"
-        
+
         # Create CachedLesson (store HTML version for display)
         lesson = CachedLesson.objects.create(
             topic=module.syllabus_topic,
@@ -234,11 +243,11 @@ Provide a detailed, well-structured lesson covering all key concepts."""
             is_validated=is_validated,
             requested_by=module.course.user
         )
-        
+
         # Link to module
         module.lesson_content = lesson
         module.save()
-        
+
         return lesson
 
 
@@ -249,16 +258,16 @@ class AskTutorView(LoginRequiredMixin, View):
     def post(self, request, module_id):
         module = get_object_or_404(Module, id=module_id, course__user=request.user)
         question = request.POST.get('question', '').strip()
-        
+
         if not question:
             messages.error(request, 'Please enter a question.')
             return redirect('courses:lesson_detail', module_id=module_id)
-        
+
         # Deduct 1 credit
         if not request.user.deduct_credits(1):
             messages.error(request, 'Insufficient credits. You need 1 credit to ask a question.')
             return redirect('courses:lesson_detail', module_id=module_id)
-        
+
         # Get AI response
         from core.utils.ai_fallback import call_ai_with_fallback
         prompt = f"""You are a tutor for {module.course.exam_type} {module.course.subject}.
@@ -267,13 +276,13 @@ Topic: {module.syllabus_topic}
 Student Question: {question}
 
 Provide a clear, helpful answer."""
-        
+
         result = call_ai_with_fallback(prompt, max_tokens=1000)
         if result['success']:
             messages.success(request, f"AI Tutor: {result['content']}")
         else:
             messages.error(request, 'AI tutors are at capacity. Please try again later.')
-        
+
         return redirect('courses:lesson_detail', module_id=module_id)
 
 
@@ -283,12 +292,12 @@ class ReportErrorView(LoginRequiredMixin, View):
     """
     def post(self, request, module_id):
         module = get_object_or_404(Module, id=module_id, course__user=request.user)
-        
+
         if module.lesson_content:
             module.lesson_content.report_count += 1
             module.lesson_content.save()
             messages.success(request, 'Error reported. Thank you for helping us improve!')
-        
+
         return redirect('courses:lesson_detail', module_id=module_id)
 
 
@@ -299,17 +308,17 @@ class DeleteCourseView(LoginRequiredMixin, View):
     def post(self, request, course_id):
         course = get_object_or_404(Course, id=course_id, user=request.user)
         course_name = f"{course.exam_type} {course.subject}"
-        
+
         # Validate password confirmation
         password = request.POST.get('password', '')
         if not password:
             messages.error(request, "Please enter your password to confirm course deletion.")
             return redirect('dashboard')
-        
+
         if not request.user.check_password(password):
             messages.error(request, "Incorrect password. Course deletion cancelled.")
             return redirect('dashboard')
-        
+
         course.delete()
         messages.success(request, f'Course "{course_name}" deleted successfully.')
         return redirect('dashboard')
@@ -324,12 +333,12 @@ class GetAvailableSubjectsView(View):
     def get(self, request):
         exam_type = request.GET.get('exam_type', '')
         subjects = []
-        
+
         if exam_type == 'JAMB':
             subjects = list(JAMBSyllabus.objects.all().values_list('subject', flat=True))
         elif exam_type == 'SSCE':
             subjects = list(SSCESyllabus.objects.all().values_list('subject', flat=True))
         elif exam_type == 'JSS':
             subjects = list(JSSSyllabus.objects.all().values_list('subject', flat=True))
-        
+
         return JsonResponse({'subjects': subjects})
