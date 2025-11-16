@@ -4,7 +4,6 @@ from . import views
 app_name = 'payments'
 
 urlpatterns = [
-    # Developer 2: Add payment URLs here
-    # Example: path('buy/', views.BuyCreditsView.as_view(), name='buy_credits'),
-    # Example: path('callback/', views.PaystackCallbackView.as_view(), name='paystack_callback'),
+    path('initialize/', views.initialize_payment, name='initialize_payment'),
+    path('verify/', views.verify_payment, name='verify_payment'),
 ]

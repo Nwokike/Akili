@@ -223,3 +223,23 @@ class DeleteCourseView(LoginRequiredMixin, View):
         course.delete()
         messages.success(request, f'Course "{course_name}" deleted successfully.')
         return redirect('dashboard')
+
+
+from django.http import JsonResponse
+
+class GetAvailableSubjectsView(View):
+    """
+    AJAX endpoint to fetch available subjects for a given exam type
+    """
+    def get(self, request):
+        exam_type = request.GET.get('exam_type', '')
+        subjects = []
+        
+        if exam_type == 'JAMB':
+            subjects = list(JAMBSyllabus.objects.all().values_list('subject', flat=True))
+        elif exam_type == 'SSCE':
+            subjects = list(SSCESyllabus.objects.all().values_list('subject', flat=True))
+        elif exam_type == 'JSS':
+            subjects = list(JSSSyllabus.objects.all().values_list('subject', flat=True))
+        
+        return JsonResponse({'subjects': subjects})

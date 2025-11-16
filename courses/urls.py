@@ -11,6 +11,9 @@ urlpatterns = [
     # URL for creating a new course
     path('new/', views.CourseCreationView.as_view(), name='create_course'),
     
+    # AJAX endpoint to get available subjects for an exam type
+    path('api/subjects/', views.GetAvailableSubjectsView.as_view(), name='get_subjects'),
+    
     # URL for module listing (all modules in a course)
     path('<int:course_id>/modules/', views.ModuleListingView.as_view(), name='module_listing'),
     

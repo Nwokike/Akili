@@ -37,11 +37,22 @@ ALLOWED_HOSTS = ['*']  # Accept all hosts - configure this properly in productio
 CSRF_TRUSTED_ORIGINS_ENV = os.getenv('CSRF_TRUSTED_ORIGINS', '')
 CSRF_TRUSTED_ORIGINS = [origin for origin in CSRF_TRUSTED_ORIGINS_ENV.split(',') if origin]
 
-# Cookie settings for production
+# Add Replit domains for development (use exact domain from REPLIT_DOMAINS)
+REPLIT_DOMAINS = os.getenv('REPLIT_DOMAINS', '')
+if REPLIT_DOMAINS:
+    # Split multiple domains if present and add https:// prefix
+    for domain in REPLIT_DOMAINS.split(','):
+        domain = domain.strip()
+        if domain:
+            CSRF_TRUSTED_ORIGINS.append(f'https://{domain}')
+
+# Cookie settings - permissive for development, secure for production
 CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'  # 'None' for cross-origin requests in Replit
+SESSION_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'
+CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript access for debugging
+SESSION_COOKIE_HTTPONLY = True  # Keep session cookie secure
 
 
 # Application definition
