@@ -93,4 +93,39 @@
   </div>
   
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const examTypeSelect = document.getElementById('{{ form.exam_type.id_for_label }}');
+  const subjectSelect = document.getElementById('{{ form.subject.id_for_label }}');
+  
+  examTypeSelect.addEventListener('change', function() {
+    const examType = this.value;
+    
+    if (!examType) {
+      subjectSelect.innerHTML = '<option value="">Select an exam type first</option>';
+      return;
+    }
+    
+    subjectSelect.innerHTML = '<option value="">Loading...</option>';
+    
+    fetch(`{% url 'courses:get_subjects' %}?exam_type=${examType}`)
+      .then(response => response.json())
+      .then(data => {
+        subjectSelect.innerHTML = '<option value="">Select a subject</option>';
+        
+        data.subjects.forEach(subject => {
+          const option = document.createElement('option');
+          option.value = subject;
+          option.textContent = subject;
+          subjectSelect.appendChild(option);
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching subjects:', error);
+        subjectSelect.innerHTML = '<option value="">Error loading subjects</option>';
+      });
+  });
+});
+</script>
 {% endblock content %}

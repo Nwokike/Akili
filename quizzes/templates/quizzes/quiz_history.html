@@ -81,7 +81,7 @@
                   {{ quiz.score }}/{{ quiz.total_questions }}
                 </div>
                 <div class="text-sm text-gray-600 dark:text-gray-400">
-                  {{ quiz.score|mul:100|div:quiz.total_questions|floatformat:0 }}%
+                  {% widthratio quiz.score quiz.total_questions 100 %}%
                 </div>
               </div>
             </div>
@@ -92,7 +92,7 @@
                 {% if quiz.score >= 4 %}bg-green-500
                 {% elif quiz.score >= 3 %}bg-yellow-500
                 {% else %}bg-red-500{% endif %}"
-                style="width: {{ quiz.score|mul:100|div:quiz.total_questions }}%">
+                style="width: {% widthratio quiz.score quiz.total_questions 100 %}%">
               </div>
             </div>
 

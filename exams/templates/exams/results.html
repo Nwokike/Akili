@@ -8,9 +8,13 @@
 {% block content %}
 <div class="max-w-4xl mx-auto py-8 px-4">
   
+  <!-- Calculate score thresholds -->
+  {% widthratio exam.total_questions 10 7 as passing_score %}
+  {% widthratio exam.total_questions 10 5 as average_score %}
+  
   <!-- Results Card -->
   <div class="card text-center mb-6">
-    {% if exam.score >= exam.total_questions|mul:0.7 %}
+    {% if exam.score >= passing_score %}
       <!-- Pass -->
       <div class="mb-4">
         <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 dark:bg-green-900 rounded-full mb-4">
@@ -21,7 +25,7 @@
         <h1 class="text-3xl font-bold text-green-700 dark:text-green-400 mb-2">Excellent Work!</h1>
         <p class="text-gray-600 dark:text-gray-400">You passed this practice exam</p>
       </div>
-    {% elif exam.score >= exam.total_questions|mul:0.5 %}
+    {% elif exam.score >= average_score %}
       <!-- Average -->
       <div class="mb-4">
         <div class="inline-flex items-center justify-center w-20 h-20 bg-yellow-100 dark:bg-yellow-900 rounded-full mb-4">
@@ -61,17 +65,17 @@
     <!-- Percentage -->
     <div class="mb-6">
       <p class="text-2xl font-bold text-gray-700 dark:text-gray-300">
-        {{ exam.score|mul:100|div:exam.total_questions|floatformat:0 }}% Correct
+        {% widthratio exam.score exam.total_questions 100 %}% Correct
       </p>
     </div>
 
     <!-- Progress Bar -->
     <div class="w-full max-w-md mx-auto bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-6">
       <div class="h-4 rounded-full transition-all duration-500
-        {% if exam.score >= exam.total_questions|mul:0.7 %}bg-green-500
-        {% elif exam.score >= exam.total_questions|mul:0.5 %}bg-yellow-500
+        {% if exam.score >= passing_score %}bg-green-500
+        {% elif exam.score >= average_score %}bg-yellow-500
         {% else %}bg-red-500{% endif %}"
-        style="width: {{ exam.score|mul:100|div:exam.total_questions }}%">
+        style="width: {% widthratio exam.score exam.total_questions 100 %}%">
       </div>
     </div>
 
