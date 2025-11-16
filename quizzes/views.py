@@ -18,11 +18,8 @@ def start_quiz_view(request, module_id):
     if request.method != 'POST':
         messages.error(request, "Quiz generation requires a valid request.")
         return redirect(reverse('courses:course_list'))
-        
-    if request.user.tutor_credits < 5: 
-        messages.error(request, "Insufficient credits to generate a new quiz.")
-        return redirect(reverse('courses:course_list')) 
-
+    
+    # Quizzes are now FREE - no credit check needed
     success, result_id_or_error = generate_quiz_and_save(module, request.user, num_questions=5)
     
     if success:

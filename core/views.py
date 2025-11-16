@@ -24,7 +24,7 @@ def exam_center_view(request):
     from courses.models import Course
     
     # Get user's recent exams
-    recent_exams = Exam.objects.filter(user=request.user).select_related('module__course').order_by('-created_at')[:10]
+    recent_exams = Exam.objects.filter(user=request.user).select_related('module__course').order_by('-started_at')[:10]
     
     # Get user's courses with modules
     user_courses = Course.objects.filter(user=request.user).prefetch_related('modules').order_by('-created_at')
