@@ -1,8 +1,8 @@
 {% load static %}
 
 <!-- Top Header - Visible on all pages -->
-<header class="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 dark:border-gray-700 z-40 transition-colors duration-200">
-  <div class="flex items-center justify-center px-4 py-3 relative">
+<header id="main-header" class="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 dark:border-gray-700 z-40 transition-all duration-300">
+  <div class="flex items-center justify-center px-4 py-2 relative">
     
     <!-- Dark Mode Toggle (Top Left) -->
     <button id="darkModeToggle" class="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-700 transition-colors duration-200" aria-label="Toggle dark mode">
@@ -17,7 +17,7 @@
     {% if user.is_authenticated %}
       <!-- Centered Logo for Logged In Users -->
       <a href="{% url 'dashboard' %}" class="flex items-center">
-        <img src="{% static 'images/logo.png' %}" alt="Akili" class="h-20 w-auto">
+        <img id="header-logo" src="{% static 'images/logo.png' %}" alt="Akili" class="h-12 w-auto transition-all duration-300">
       </a>
       
       <!-- Profile Dropdown (Right Side) -->
@@ -63,7 +63,7 @@
     {% else %}
       <!-- Centered Logo for Logged Out Users -->
       <a href="{% url 'home' %}" class="flex items-center">
-        <img src="{% static 'images/logo.png' %}" alt="Akili" class="h-20 w-auto">
+        <img id="header-logo" src="{% static 'images/logo.png' %}" alt="Akili" class="h-12 w-auto transition-all duration-300">
       </a>
       
       <!-- Login Button (Absolute Right) -->
@@ -76,7 +76,7 @@
 </header>
 
 <!-- Spacer to prevent content from going under fixed header -->
-<div class="h-20"></div>
+<div id="header-spacer" class="h-16 transition-all duration-300"></div>
 
 <script>
 // Profile dropdown toggle

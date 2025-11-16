@@ -1,5 +1,19 @@
 /* Custom Akili Styles - Extremely Beautiful & Clean Design */
 
+/* Header Shrink on Scroll */
+#main-header {
+  transition: all 0.3s ease;
+}
+
+#main-header.scrolled {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+#header-logo {
+  transition: all 0.3s ease;
+}
+
 /* Gradient Text Effect */
 .gradient-text {
   background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);

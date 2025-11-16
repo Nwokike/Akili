@@ -1,16 +1,203 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Practice Exam Center{% endblock %}
+
+{% block page_title %}Practice Exam Center{% endblock %}
+
 {% block content %}
-<h2>{{ exam.title }}</h2>
-<form method="post">
-  {% csrf_token %}
-  {% for q in questions %}
-    <div class="question">
-      <p><strong>Q{{ forloop.counter }}:</strong> {{ q.question_text }}</p>
-      {% for key, value in q.options.items %}
-        <label><input type="radio" name="{{ q.id }}" value="{{ key }}"> {{ value }}</label><br>
+<div class="max-w-6xl mx-auto py-8 px-4">
+
+  <!-- Hero Section with Clear Instructions -->
+  <div class="card mb-8 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 border-primary-200 dark:border-primary-800">
+    <div class="text-center">
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-primary-100 dark:bg-primary-900/40 rounded-full mb-4">
+        <svg class="w-10 h-10 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+      </div>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+        AI-Generated Practice Exams
+      </h1>
+      <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+        Test your knowledge with unlimited AI-powered practice exams based on official syllabuses. 
+        Each exam costs <strong>10 credits</strong> and contains 20 questions.
+      </p>
+    </div>
+  </div>
+
+  <!-- How It Works Section -->
+  <div class="card mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+      <svg class="w-6 h-6 mr-2 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      How to Generate Practice Exams
+    </h2>
+    
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Step 1 -->
+      <div class="text-center">
+        <div class="inline-flex items-center justify-center w-12 h-12 bg-primary-100 dark:bg-primary-900/40 rounded-full mb-4 text-xl font-bold text-primary-600 dark:text-primary-400">
+          1
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          Go to Your Courses
+        </h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">
+          Navigate to your dashboard and select a course you've created (e.g., JAMB Mathematics).
+        </p>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="text-center">
+        <div class="inline-flex items-center justify-center w-12 h-12 bg-primary-100 dark:bg-primary-900/40 rounded-full mb-4 text-xl font-bold text-primary-600 dark:text-primary-400">
+          2
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          Choose a Module
+        </h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">
+          Select any study module from your course to generate a practice exam based on that topic.
+        </p>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="text-center">
+        <div class="inline-flex items-center justify-center w-12 h-12 bg-primary-100 dark:bg-primary-900/40 rounded-full mb-4 text-xl font-bold text-primary-600 dark:text-primary-400">
+          3
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          Generate & Take Exam
+        </h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">
+          Click "Practice Exam (10 Credits)" to generate 20 AI-powered questions and start testing yourself!
+        </p>
+      </div>
+    </div>
+
+    {% if not has_courses %}
+    <!-- No Courses Warning -->
+    <div class="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+      <div class="flex items-start">
+        <svg class="w-6 h-6 text-amber-600 dark:text-amber-400 mt-0.5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        <div>
+          <h4 class="text-lg font-semibold text-amber-900 dark:text-amber-100 mb-1">
+            No Courses Yet
+          </h4>
+          <p class="text-amber-800 dark:text-amber-300 mb-3">
+            You need to create a course first before you can generate practice exams.
+          </p>
+          <a href="{% url 'courses:create_course' %}" class="btn-primary inline-block">
+            Create Your First Course
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if has_courses %}
+  <!-- Quick Access to Courses -->
+  <div class="card mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+      <svg class="w-6 h-6 mr-2 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+      </svg>
+      Your Courses
+    </h2>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for course in user_courses %}
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-3">
+          <span class="px-3 py-1 bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 rounded-full text-xs font-semibold">
+            {{ course.exam_type }}
+          </span>
+        </div>
+        
+        <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+          {{ course.subject }}
+        </h3>
+        
+        <div class="flex items-center text-gray-600 dark:text-gray-400 text-sm mb-4">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <span>{{ course.modules.count }} Module{{ course.modules.count|pluralize }}</span>
+        </div>
+        
+        <a href="{% url 'courses:module_listing' course.id %}" 
+           class="block w-full text-center py-2 px-4 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors">
+          View Modules & Generate Exam
+        </a>
+      </div>
       {% endfor %}
     </div>
-  {% endfor %}
-  <button type="submit">Submit</button>
-</form>
-{% endblock %}
+  </div>
+  {% endif %}
+
+  {% if recent_exams %}
+  <!-- Recent Exams -->
+  <div class="card">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+      <svg class="w-6 h-6 mr-2 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      Recent Practice Exams
+    </h2>
+
+    <div class="space-y-4">
+      {% for exam in recent_exams %}
+      <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+        <div class="flex-1">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+            {{ exam.title }}
+          </h3>
+          <div class="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
+            <span class="flex items-center">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              {{ exam.created_at|date:"M d, Y" }}
+            </span>
+            <span class="flex items-center">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              </svg>
+              {{ exam.total_questions }} Questions
+            </span>
+            {% if exam.completed %}
+            <span class="flex items-center text-green-600 dark:text-green-400 font-medium">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Completed
+            </span>
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="flex items-center space-x-3">
+          {% if exam.completed %}
+          <a href="{% url 'exams:results' exam.id %}" 
+             class="px-4 py-2 bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 rounded-lg font-semibold hover:bg-green-200 dark:hover:bg-green-900/60 transition-colors">
+            View Results
+          </a>
+          {% else %}
+          <a href="{% url 'exams:take_exam' exam.id %}" 
+             class="px-4 py-2 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors">
+            Continue Exam
+          </a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock content %}

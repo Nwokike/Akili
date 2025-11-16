@@ -11,16 +11,16 @@ import json
 def start_exam(request, module_id):
     """
     Generate a mock exam using AI for a specific module.
-    Cost: 5 credits
+    Cost: 10 credits
     """
     from courses.models import Module
     from admin_syllabus.models import JAMBSyllabus, SSCESyllabus, JSSSyllabus
     
     module = get_object_or_404(Module, id=module_id, course__user=request.user)
     
-    # Deduct 5 credits
-    if not request.user.deduct_credits(5):
-        messages.error(request, 'Insufficient credits. You need 5 credits to generate a mock exam.')
+    # Deduct 10 credits
+    if not request.user.deduct_credits(10):
+        messages.error(request, 'Insufficient credits. You need 10 credits to generate a mock exam.')
         return redirect('courses:module_listing', course_id=module.course.id)
     
     # Get syllabus based on exam type

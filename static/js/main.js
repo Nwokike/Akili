@@ -22,6 +22,33 @@ document.addEventListener('DOMContentLoaded', () => {
   if (darkModeToggle) {
     darkModeToggle.addEventListener('click', toggleDarkMode);
   }
+  
+  // Header shrink on scroll
+  const header = document.getElementById('main-header');
+  const headerLogo = document.getElementById('header-logo');
+  const headerSpacer = document.getElementById('header-spacer');
+  
+  if (header && headerLogo) {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+        headerLogo.classList.remove('h-12');
+        headerLogo.classList.add('h-8');
+        if (headerSpacer) {
+          headerSpacer.classList.remove('h-16');
+          headerSpacer.classList.add('h-12');
+        }
+      } else {
+        header.classList.remove('scrolled');
+        headerLogo.classList.remove('h-8');
+        headerLogo.classList.add('h-12');
+        if (headerSpacer) {
+          headerSpacer.classList.remove('h-12');
+          headerSpacer.classList.add('h-16');
+        }
+      }
+    });
+  }
 });
 
 // PWA Install Prompt

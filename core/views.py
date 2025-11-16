@@ -19,8 +19,23 @@ def dashboard_view(request):
 
 @login_required
 def exam_center_view(request):
-    """Mock exam center - Developer 2 will implement"""
-    return render(request, 'exams/exam_center.html')
+    """Practice exam center with clear user guidance"""
+    from exams.models import Exam
+    from courses.models import Course
+    
+    # Get user's recent exams
+    recent_exams = Exam.objects.filter(user=request.user).select_related('module__course').order_by('-created_at')[:10]
+    
+    # Get user's courses with modules
+    user_courses = Course.objects.filter(user=request.user).prefetch_related('modules').order_by('-created_at')
+    
+    context = {
+        'recent_exams': recent_exams,
+        'user_courses': user_courses,
+        'has_courses': user_courses.exists(),
+    }
+    
+    return render(request, 'exams/exam_center.html', context)
 
 
 @login_required
