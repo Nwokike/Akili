@@ -8,53 +8,60 @@ import json
 
 
 @login_required
-def start_exam(request, module_id):
+def start_exam(request, course_id):
     """
-    Generate a temporary mock exam using AI for a specific module.
+    Generate a course-wide mock exam using AI covering all course modules.
     Cost: 5 credits
     Exams are temporary - old completed exams are deleted when creating new ones.
     """
-    from courses.models import Module
+    from courses.models import Course
     from admin_syllabus.models import JAMBSyllabus, SSCESyllabus, JSSSyllabus
     
-    module = get_object_or_404(Module, id=module_id, course__user=request.user)
+    course = get_object_or_404(Course, id=course_id, user=request.user)
     
-    # CRITICAL FIX: Delete all completed exams for this user and module (temporary exams)
+    # Delete all completed exams for this user and course (temporary exams)
     Exam.objects.filter(
         user=request.user,
-        module=module,
+        course=course,
         completed_at__isnull=False
     ).delete()
     
     # Deduct 5 credits
     if not request.user.deduct_credits(5):
         messages.error(request, 'Insufficient credits. You need 5 credits to generate a mock exam.')
-        return redirect('courses:module_listing', course_id=module.course.id)
+        return redirect('courses:module_listing', course_id=course.id)
     
     # Get syllabus based on exam type
     syllabus_model = {
         'JAMB': JAMBSyllabus,
         'SSCE': SSCESyllabus,
         'JSS': JSSSyllabus
-    }.get(module.course.exam_type)
+    }.get(course.exam_type)
     
     try:
-        syllabus = syllabus_model.objects.get(subject=module.course.subject)
+        syllabus = syllabus_model.objects.get(subject=course.subject)
     except:
         messages.error(request, 'Syllabus not available for this subject.')
         # Refund credits since we failed before generating
         request.user.add_credits(5)
-        return redirect('courses:module_listing', course_id=module.course.id)
+        return redirect('courses:module_listing', course_id=course.id)
 
     # Create exam
     exam = Exam.objects.create(
         user=request.user,
-        module=module,
-        title=f"{module.course.exam_type} {module.course.subject} Mock Exam"
+        course=course,
+        title=f"{course.exam_type} {course.subject} - Course-Wide Mock Exam"
     )
 
+    # Get all modules for comprehensive topic coverage
+    modules = course.modules.all()
+    module_titles = [m.title for m in modules[:10]]
+    topics_text = ", ".join(module_titles) if module_titles else course.subject
+
     # Generate questions using AI with STRICT JSON requirements
-    prompt = f"""You are an expert Nigerian exam creator. Generate EXACTLY 20 multiple-choice questions for {module.course.exam_type} {module.course.subject} based on this topic: "{module.title}".
+    prompt = f"""You are an expert Nigerian exam creator. Generate EXACTLY 20 multiple-choice questions for {course.exam_type} {course.subject}.
+
+Cover these course topics comprehensively: {topics_text}
 
 STRICT REQUIREMENTS:
 1. Return ONLY a valid JSON object with this EXACT structure:
@@ -73,13 +80,17 @@ STRICT REQUIREMENTS:
 4. CRITICAL: For ALL LaTeX math, use DOUBLE-ESCAPED backslashes.
    - Write "\\\\frac{{a}}{{b}}" NOT "\\frac{{a}}{{b}}"
    - Write "$a \\\\times b$" NOT "$a \\times b$"
+   - Write "$$\\\\int_a^b f(x)dx$$" NOT "$$\\int_a^b f(x)dx$$"
+   - Write "\\\\sqrt{{x}}" NOT "\\sqrt{{x}}"
 
 5. NO markdown formatting, NO code blocks, NO extra text - ONLY the JSON object.
+6. Questions should cover a range of topics from the course syllabus.
+7. Mix difficulty levels (easy, medium, hard).
 
 Syllabus reference:
 {syllabus.syllabus_content[:500]}
 
-Generate 20 questions now:"""
+Generate 20 comprehensive questions now:"""
 
     try:
         result = call_ai_with_fallback(prompt, max_tokens=4000, is_json=True)
@@ -138,13 +149,13 @@ Generate 20 questions now:"""
         messages.error(request, 'Sorry, the AI tutor is busy. Please try again.')
         exam.delete()
         request.user.add_credits(5)  # Refund credits
-        return redirect('courses:module_listing', course_id=module.course.id)
+        return redirect('courses:module_listing', course_id=course.id)
     except Exception as e:
         print(f"Unexpected exam error: {e}")
         messages.error(request, 'Sorry, the AI tutor is busy. Please try again.')
         exam.delete()
         request.user.add_credits(5)  # Refund credits
-        return redirect('courses:module_listing', course_id=module.course.id)
+        return redirect('courses:module_listing', course_id=course.id)
 
     return redirect("exams:take_exam", exam_id=exam.id)
 

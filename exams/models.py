@@ -4,15 +4,15 @@ from django.conf import settings
 
 class Exam(models.Model):
     """
-    Represents a full mock exam attempt by a user.
+    Represents a full mock exam attempt by a user for an entire course.
     """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="exam_attempts"
     )
-    module = models.ForeignKey(
-        "courses.Module",
+    course = models.ForeignKey(
+        "courses.Course",
         on_delete=models.CASCADE,
         related_name="exam_attempts"
     )
