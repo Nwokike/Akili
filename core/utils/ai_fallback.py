@@ -23,7 +23,9 @@ def call_ai_with_fallback(prompt, system_prompt=None, max_tokens=None, is_json=F
 
     latex_instruction = (
         "\nYou are an expert tutor. Format all mathematical equations, formulas, "
-        "and scientific notation using LaTeX (e.g., $E=mc^2$ or $$\\int_a^b f(x)dx$$)."
+        "and scientific notation using LaTeX with DOUBLE-ESCAPED backslashes. "
+        "CRITICAL: Use \\\\frac, \\\\times, \\\\int, etc. in JSON strings. "
+        "Example: $E=mc^2$ or $$\\\\int_a^b f(x)dx$$."
     )
 
     # Add JSON instruction to the system prompt if required
@@ -69,7 +71,6 @@ def call_ai_with_fallback(prompt, system_prompt=None, max_tokens=None, is_json=F
 def _try_gemini_flash(prompt, api_key, max_tokens, is_json):
     """Try Gemini 2.5 Flash (Tier 1)"""
     try:
-        # --- FIX: Updated model name from gemini-2.0-flash-exp ---
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
         headers = {"Content-Type": "application/json"}
 
@@ -77,20 +78,25 @@ def _try_gemini_flash(prompt, api_key, max_tokens, is_json):
         if max_tokens:
             config['maxOutputTokens'] = max_tokens
         if is_json:
-            config['responseMimeType'] = 'application/json' # Correct setting for JSON output
+            config['responseMimeType'] = 'application/json'
 
         data = {
             "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": config  # Corrected from 'config' to 'generationConfig'
+            "generationConfig": config
         }
 
         response = requests.post(url, json=data, headers=headers, timeout=40)
 
         if response.status_code == 200:
             result = response.json()
+            # CRITICAL FIX: Safely check for candidates, content, and parts
             if 'candidates' in result and len(result['candidates']) > 0:
-                content = result['candidates'][0]['content']['parts'][0]['text']
-                return {'success': True, 'content': content, 'tier': 'Gemini Flash'}
+                candidate = result['candidates'][0]
+                if 'content' in candidate and 'parts' in candidate['content']:
+                    parts = candidate['content']['parts']
+                    if len(parts) > 0 and 'text' in parts[0]:
+                        content = parts[0]['text']
+                        return {'success': True, 'content': content, 'tier': 'Gemini Flash'}
     except Exception as e:
         print(f"Gemini Flash failed: {e}")
 
@@ -142,20 +148,25 @@ def _try_gemini_paid(prompt, api_key, max_tokens, is_json):
         if max_tokens:
             config['maxOutputTokens'] = max_tokens
         if is_json:
-            config['responseMimeType'] = 'application/json' # Correct setting for JSON output
+            config['responseMimeType'] = 'application/json'
 
         data = {
             "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": config # Corrected from 'config' to 'generationConfig'
+            "generationConfig": config
         }
 
         response = requests.post(url, json=data, headers=headers, timeout=60)
 
         if response.status_code == 200:
             result = response.json()
+            # CRITICAL FIX: Safely check for candidates, content, and parts
             if 'candidates' in result and len(result['candidates']) > 0:
-                content = result['candidates'][0]['content']['parts'][0]['text']
-                return {'success': True, 'content': content, 'tier': 'Gemini Paid'}
+                candidate = result['candidates'][0]
+                if 'content' in candidate and 'parts' in candidate['content']:
+                    parts = candidate['content']['parts']
+                    if len(parts) > 0 and 'text' in parts[0]:
+                        content = parts[0]['text']
+                        return {'success': True, 'content': content, 'tier': 'Gemini Paid'}
     except Exception as e:
         print(f"Gemini Paid failed: {e}")
 

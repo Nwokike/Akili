@@ -75,13 +75,13 @@
 
               <div class="text-right">
                 <div class="text-2xl font-bold
-                  {% if quiz.score >= 4 %}text-green-600 dark:text-green-400
-                  {% elif quiz.score >= 3 %}text-yellow-600 dark:text-yellow-400
+                  {% if quiz.percentage >= 60 %}text-green-600 dark:text-green-400
+                  {% elif quiz.percentage >= 40 %}text-yellow-600 dark:text-yellow-400
                   {% else %}text-red-600 dark:text-red-400{% endif %}">
                   {{ quiz.score }}/{{ quiz.total_questions }}
                 </div>
                 <div class="text-sm text-gray-600 dark:text-gray-400">
-                  {% widthratio quiz.score quiz.total_questions 100 %}%
+                  {{ quiz.percentage|floatformat:0 }}%
                 </div>
               </div>
             </div>
@@ -89,10 +89,10 @@
             <!-- Progress Bar -->
             <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
               <div class="h-2 rounded-full 
-                {% if quiz.score >= 4 %}bg-green-500
-                {% elif quiz.score >= 3 %}bg-yellow-500
+                {% if quiz.percentage >= 60 %}bg-green-500
+                {% elif quiz.percentage >= 40 %}bg-yellow-500
                 {% else %}bg-red-500{% endif %}"
-                style="width: {% widthratio quiz.score quiz.total_questions 100 %}%">
+                style="width: {{ quiz.percentage|floatformat:0 }}%">
               </div>
             </div>
 

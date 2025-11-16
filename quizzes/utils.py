@@ -19,35 +19,39 @@ def generate_quiz_and_save(module: Module, user: CustomUser, num_questions=5) ->
     course_subject = module.course.subject
     course_exam_type = module.course.exam_type
 
-    # 1. Construct the Prompt
-    # --- FIX: Updated prompt to be explicit about LaTeX escaping for Gemini ---
-    prompt = f"""
-    You are an expert Nigerian education assessor. Generate a quiz consisting 
-    of EXACTLY {num_questions} multiple-choice questions (MCQs) for the subject 
-    "{course_subject}", focusing on the topic: "{module.title}" (from the {course_exam_type} curriculum).
+    # 1. Construct the Prompt with STRICT JSON requirements
+    prompt = f"""You are an expert Nigerian education assessor. Generate a quiz of EXACTLY {num_questions} multiple-choice questions for "{course_subject}" ({course_exam_type} curriculum), topic: "{module.title}".
 
-    Each question MUST have 4 choices. The output MUST be a single JSON object.
-    The JSON object must have a single key "questions" which contains a list of {num_questions} objects.
-
-    JSON Output Format Requirements:
-    - Use only the keys: "question_text", "choices" (list of 4 strings), "correct_index" (integer 0-3), and "explanation".
-
-    - CRITICAL: Format all mathematical or scientific content using LaTeX.
-    - CRITICAL: You MUST use double-escaped backslashes for all LaTeX commands.
-    - Example: For a fraction, you must write "\\\\frac{{a}}{{b}}" in the JSON string.
-    - Example: For a times symbol, write "$a \\\\times b$".
-
-    Example Structure:
+STRICT REQUIREMENTS:
+1. Return ONLY a valid JSON object with this EXACT structure:
+{{
+  "questions": [
     {{
-      "questions": [
-        {{"question_text": "Calculate the velocity of a car accelerating at $2 \\\\, m/s^2$ for $5 \\\\, s$.",
-         "choices": ["10 m/s", "2.5 m/s", "15 m/s", "20 m/s"],
-         "correct_index": 0,
-         "explanation": "Velocity = acceleration $\\\\times$ time (2 $\\\\times$ 5 = 10 m/s)."}},
-        // ... ({num_questions - 1} more question objects)
-      ]
+      "question_text": "...",
+      "choices": ["...", "...", "...", "..."],
+      "correct_index": 0,
+      "explanation": "..."
     }}
-    """
+  ]
+}}
+
+2. Each question MUST have EXACTLY 4 choices in the "choices" array.
+3. "correct_index" MUST be an integer 0-3 (NOT a letter).
+4. CRITICAL: For ALL LaTeX math, use DOUBLE-ESCAPED backslashes.
+   - Write "\\\\frac{{a}}{{b}}" NOT "\\frac{{a}}{{b}}"
+   - Write "$a \\\\times b$" NOT "$a \\times b$"
+   - Write "$$\\\\int_a^b f(x)dx$$" NOT "$$\\int_a^b f(x)dx$$"
+
+5. NO markdown formatting, NO code blocks, NO extra text - ONLY the JSON object.
+
+Example:
+{{
+  "questions": [
+    {{"question_text": "Calculate $5 \\\\times 3$", "choices": ["15", "8", "10", "20"], "correct_index": 0, "explanation": "Multiplication: $5 \\\\times 3 = 15$"}}
+  ]
+}}
+
+Generate {num_questions} questions now:"""
 
     # 2. Call the AI with Fallback
     result = call_ai_with_fallback(prompt, max_tokens=3000, is_json=True) 
@@ -61,40 +65,62 @@ def generate_quiz_and_save(module: Module, user: CustomUser, num_questions=5) ->
     # DEBUG LINE: Print the raw AI response to terminal
     print(f"\n--- RAW AI RESPONSE START (Tier: {result.get('tier')}) ---\n{response_text[:500]}...\n--- RAW AI RESPONSE END ---\n")
 
-    # 3. Robust JSON Parsing
+    # 3. ROBUST JSON Parsing with extensive error handling
     try:
         # Clean the response text thoroughly
         cleaned_text = response_text.strip()
 
-        # Remove markdown code blocks if present
+        # Remove markdown code blocks if present (```json or ```)
         if cleaned_text.startswith('```'):
-            # Remove ```json or ``` at the start
-            cleaned_text = cleaned_text.split('\n', 1)[1] if '\n' in cleaned_text else cleaned_text[3:]
-            # Remove ``` at the end
+            lines = cleaned_text.split('\n')
+            # Remove first line (```json or ```)
+            if len(lines) > 1:
+                cleaned_text = '\n'.join(lines[1:])
+            else:
+                cleaned_text = cleaned_text[3:]
+            
+            # Remove closing ```
             if cleaned_text.endswith('```'):
                 cleaned_text = cleaned_text.rsplit('```', 1)[0]
+            
             cleaned_text = cleaned_text.strip()
 
         # Try to parse JSON
         parsed_data = json.loads(cleaned_text)
 
-        # Validate it's a dictionary
+        # Validate structure: must be a dictionary
         if not isinstance(parsed_data, dict):
-            raise ValueError(f"AI response is not a dictionary. Got: {type(parsed_data)}")
+            # If it's a list, wrap it in {"questions": [...]}
+            if isinstance(parsed_data, list):
+                parsed_data = {"questions": parsed_data}
+            else:
+                raise ValueError(f"AI response is not a dictionary or list. Got: {type(parsed_data)}")
 
-        # Extract the list from the dictionary
+        # Extract questions list
         if 'questions' not in parsed_data:
-            raise ValueError("AI response dictionary does not have a 'questions' key.")
+            raise ValueError("AI response missing 'questions' key.")
 
         question_list = parsed_data['questions']
 
+        # Validate questions list
         if not isinstance(question_list, list) or len(question_list) == 0:
-             raise ValueError("AI response was empty or malformed.")
+            raise ValueError("AI response 'questions' is empty or not a list.")
+
+        # Validate each question has required fields
+        for i, q in enumerate(question_list):
+            if not isinstance(q, dict):
+                raise ValueError(f"Question {i} is not a dictionary.")
+            if 'question_text' not in q or 'choices' not in q or 'correct_index' not in q:
+                raise ValueError(f"Question {i} missing required fields.")
 
     except json.JSONDecodeError as e:
-        print(f"JSON Parsing FAILED for Quiz generation: Error: {e}")
-        print(f"Response text that failed parsing: {response_text[:500]}")
-        return False, f"Failed to decode AI response. Error: {e}"
+        print(f"JSON Parsing FAILED for Quiz generation: {e}")
+        print(f"Raw response (first 500 chars): {response_text[:500]}")
+        return False, "AI generated invalid JSON. Please try again."
+    except ValueError as e:
+        print(f"JSON Validation FAILED: {e}")
+        print(f"Raw response (first 500 chars): {response_text[:500]}")
+        return False, "AI response format is invalid. Please try again."
 
     # 4. Save the Quiz Attempt Record
     with transaction.atomic():

@@ -116,7 +116,7 @@
         View Quiz
       </a>
     {% else %}
-      <form method="post" action="{% url 'quizzes:start_quiz' module_id=module.id %}" class="flex-1">
+      <form method="post" action="{% url 'quizzes:start_quiz' module_id=module.id %}" class="flex-1" onsubmit="showSpinner()">
         {% csrf_token %}
         <button type="submit" class="btn-primary w-full flex items-center justify-center">
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

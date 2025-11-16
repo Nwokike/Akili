@@ -75,8 +75,7 @@ class CourseCreationView(LoginRequiredMixin, View):
             except Exception as e:
                 # The transaction was rolled back
                 print(f"Course creation failed and rolled back: {e}")
-                # --- FIX: Show user-friendly message ---
-                messages.error(request, 'Sorry, the AI tutor is busy or ran into an error. Your credits were not deducted. Please try again.')
+                messages.error(request, 'Sorry, the AI tutor is busy. Please try again.')
 
         # If form is invalid or an error occurred, render the page again
         context = {
