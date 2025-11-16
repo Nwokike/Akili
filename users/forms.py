@@ -7,10 +7,15 @@ class SignupForm(UserCreationForm):
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'placeholder': 'your.email@example.com'}))
     first_name = forms.CharField(max_length=150, required=True, widget=forms.TextInput(attrs={'placeholder': 'John'}))
     last_name = forms.CharField(max_length=150, required=True, widget=forms.TextInput(attrs={'placeholder': 'Doe'}))
+    agree_to_terms = forms.BooleanField(
+        required=True,
+        label='I agree to the Terms of Service and Privacy Policy',
+        error_messages={'required': 'You must agree to the Terms of Service and Privacy Policy to sign up.'}
+    )
     
     class Meta:
         model = CustomUser
-        fields = ('first_name', 'last_name', 'email', 'password1', 'password2')
+        fields = ('first_name', 'last_name', 'email', 'password1', 'password2', 'agree_to_terms')
 
 
 class LoginForm(forms.Form):

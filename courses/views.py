@@ -117,14 +117,23 @@ class ModuleListingView(LoginRequiredMixin, View):
             from quizzes.models import QuizAttempt
             best_attempt = QuizAttempt.objects.filter(
                 user=request.user,
-                module=module
+                module=module,
+                completed_at__isnull=False
             ).order_by('-score').first()
+            
+            # Check for incomplete quiz
+            incomplete_quiz = QuizAttempt.objects.filter(
+                user=request.user,
+                module=module,
+                completed_at__isnull=True
+            ).first()
             
             modules_with_status.append({
                 'module': module,
                 'is_locked': is_locked,
                 'lock_reason': lock_reason,
                 'best_attempt': best_attempt,
+                'incomplete_quiz': incomplete_quiz,
             })
         
         context = {

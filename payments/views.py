@@ -44,13 +44,35 @@ def verify_payment(request):
 
     try:
         payment = Payment.objects.get(reference=reference)
-        if data["data"]["status"] == "success":
+        if data["data"]["status"] == "success" and not payment.verified:
             payment.verified = True
             payment.save()
-            messages.success(request, "Payment verified successfully!")
+            
+            # Allocate credits based on amount paid
+            amount = payment.amount
+            credits_to_add = 0
+            
+            # Map payment amounts to credits
+            if amount >= 2000:
+                credits_to_add = 300  # Premium package
+            elif amount >= 1000:
+                credits_to_add = 120  # Standard package
+            elif amount >= 500:
+                credits_to_add = 50   # Starter package
+            else:
+                credits_to_add = int(amount / 10)  # 10 Naira per credit as fallback
+            
+            # Add credits to user account
+            user = payment.user
+            user.tutor_credits += credits_to_add
+            user.save()
+            
+            messages.success(request, f"Payment verified successfully! {credits_to_add} credits added to your account.")
+        elif payment.verified:
+            messages.info(request, "This payment has already been processed.")
         else:
             messages.error(request, "Payment verification failed.")
     except Payment.DoesNotExist:
         messages.error(request, "Payment not found.")
 
-    return redirect("payments:initialize_payment")
+    return redirect("dashboard")

@@ -12,12 +12,34 @@ from .models import QuizAttempt
 
 @login_required
 def start_quiz_view(request, module_id):
-    """View to trigger AI generation of a new quiz based on a module."""
+    """View to trigger AI generation of a new quiz or view existing quiz."""
     module = get_object_or_404(Module, pk=module_id)
     
     if request.method != 'POST':
         messages.error(request, "Quiz generation requires a valid request.")
         return redirect(reverse('courses:course_list'))
+    
+    # Check if user already has an incomplete quiz for this module
+    existing_quiz = QuizAttempt.objects.filter(
+        user=request.user,
+        module=module,
+        completed_at__isnull=True
+    ).first()
+    
+    if existing_quiz:
+        messages.info(request, f"Continuing your existing quiz for {module.title}")
+        return redirect('quizzes:quiz_detail', quiz_id=existing_quiz.id)
+    
+    # Check if user wants to retake (has completed quiz)
+    completed_quiz = QuizAttempt.objects.filter(
+        user=request.user,
+        module=module,
+        completed_at__isnull=False
+    ).order_by('-completed_at').first()
+    
+    if completed_quiz:
+        # Allow retaking - generate new quiz
+        messages.info(request, f"Generating a new quiz attempt for {module.title}")
     
     # Quizzes are now FREE - no credit check needed
     success, result_id_or_error = generate_quiz_and_save(module, request.user, num_questions=5)
@@ -28,7 +50,7 @@ def start_quiz_view(request, module_id):
     else:
         error_message = result_id_or_error 
         messages.error(request, f"Failed to generate quiz: {error_message}")
-        return redirect(reverse('courses:course_list'))
+        return redirect(reverse('courses:module_listing', kwargs={'course_id': module.course.id}))
 
 
 @login_required

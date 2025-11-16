@@ -21,13 +21,15 @@ class QuizAttempt(models.Model):
     score = models.IntegerField(default=0)
     total_questions = models.IntegerField(default=10)
     questions_data = models.JSONField(default=list)
-    completed_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
     is_retake = models.BooleanField(default=False)
     passed = models.BooleanField(default=False)
+    user_answers = models.JSONField(default=dict)
     
     class Meta:
         db_table = 'quiz_attempts'
-        ordering = ['-completed_at']
+        ordering = ['-created_at']
     
     def __str__(self):
         return f"{self.user.username} - {self.module.title} ({self.score}/{self.total_questions})"
