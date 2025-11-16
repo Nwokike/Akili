@@ -77,11 +77,18 @@ def quiz_detail_view(request, quiz_id):
         quiz_attempt.score = total_correct
         quiz_attempt.total_questions = len(quiz_attempt.questions_data)
         quiz_attempt.completed_at = timezone.now() # Record completion time
-        quiz_attempt.user_answers = user_answers 
+        quiz_attempt.user_answers = user_answers
+        
+        # Set passed status based on 60% threshold
+        quiz_attempt.passed = quiz_attempt.is_passing
         
         quiz_attempt.save()
         
-        messages.success(request, f"Quiz submitted! You scored {total_correct} out of {quiz_attempt.total_questions}.")
+        # Provide feedback on pass/fail status
+        if quiz_attempt.passed:
+            messages.success(request, f"Quiz submitted! You scored {total_correct} out of {quiz_attempt.total_questions} ({quiz_attempt.percentage}%) - PASSED! Next module unlocked.")
+        else:
+            messages.warning(request, f"Quiz submitted! You scored {total_correct} out of {quiz_attempt.total_questions} ({quiz_attempt.percentage}%). You need 60% to pass and unlock the next module.")
         return redirect('quizzes:quiz_detail', quiz_id=quiz_attempt.id)
         
     

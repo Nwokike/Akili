@@ -84,15 +84,52 @@ class CourseCreationView(LoginRequiredMixin, View):
 
 class ModuleListingView(LoginRequiredMixin, View):
     """
-    Displays all modules for a specific course
+    Displays all modules for a specific course with locking system
     """
     def get(self, request, course_id):
         course = get_object_or_404(Course, id=course_id, user=request.user)
         modules = course.modules.all().order_by('order')
         
+        # Add lock status to each module
+        modules_with_status = []
+        for module in modules:
+            # Check if user has passed the previous module's quiz
+            is_locked = False
+            lock_reason = ""
+            
+            if module.order > 1:
+                # Get the previous module
+                previous_module = course.modules.filter(order=module.order - 1).first()
+                if previous_module:
+                    # Check if user has passed the previous module's quiz
+                    from quizzes.models import QuizAttempt
+                    passed_previous = QuizAttempt.objects.filter(
+                        user=request.user,
+                        module=previous_module,
+                        passed=True
+                    ).exists()
+                    
+                    if not passed_previous:
+                        is_locked = True
+                        lock_reason = f"Complete Module {previous_module.order} quiz with 60% or higher to unlock"
+            
+            # Get best quiz attempt for this module
+            from quizzes.models import QuizAttempt
+            best_attempt = QuizAttempt.objects.filter(
+                user=request.user,
+                module=module
+            ).order_by('-score').first()
+            
+            modules_with_status.append({
+                'module': module,
+                'is_locked': is_locked,
+                'lock_reason': lock_reason,
+                'best_attempt': best_attempt,
+            })
+        
         context = {
             'course': course,
-            'modules': modules,
+            'modules_with_status': modules_with_status,
             'title': f'{course.exam_type} {course.subject} - Modules',
         }
         return render(request, 'courses/module_listing.html', context)

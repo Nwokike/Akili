@@ -23,6 +23,7 @@ class QuizAttempt(models.Model):
     questions_data = models.JSONField(default=list)
     completed_at = models.DateTimeField(auto_now_add=True)
     is_retake = models.BooleanField(default=False)
+    passed = models.BooleanField(default=False)
     
     class Meta:
         db_table = 'quiz_attempts'
@@ -34,3 +35,8 @@ class QuizAttempt(models.Model):
     @property
     def percentage(self):
         return round((self.score / self.total_questions) * 100, 2) if self.total_questions else 0
+    
+    @property
+    def is_passing(self):
+        """Check if the score meets the 60% passing threshold"""
+        return self.percentage >= 60
