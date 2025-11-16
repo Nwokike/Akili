@@ -127,9 +127,9 @@
         <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
           Password
         </label>
-        <a href="{% url 'password_reset' %}" class="btn-secondary inline-block">
-          Change Password
-        </a>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Contact support to reset your password
+        </p>
       </div>
       
     </div>
@@ -147,7 +147,7 @@
         </p>
       </div>
       <button 
-        onclick="return confirmDelete('Are you sure you want to delete your account? This cannot be undone!')"
+        onclick="openDeleteModal()"
         class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg transition duration-200"
       >
         Delete Account
@@ -156,4 +156,93 @@
   </div>
   
 </div>
+
+<!-- Account Deletion Modal -->
+<div id="deleteAccountModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
+    <div class="p-6">
+      <div class="flex items-center mb-4">
+        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+          <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        </div>
+        <h3 class="ml-4 text-xl font-bold text-gray-900 dark:text-gray-100">Delete Account</h3>
+      </div>
+      
+      <p class="text-gray-700 dark:text-gray-300 mb-4">
+        This action cannot be undone. This will permanently delete your account and all associated data.
+      </p>
+      
+      <form method="post" action="{% url 'profiles:delete_account' %}" id="deleteAccountForm">
+        {% csrf_token %}
+        
+        <div class="mb-4">
+          <label for="delete-password" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            Enter your password to confirm
+          </label>
+          <input 
+            type="password" 
+            id="delete-password" 
+            name="password" 
+            required
+            class="input-field w-full"
+            placeholder="Your password"
+          >
+        </div>
+        
+        <div class="mb-6">
+          <label class="flex items-start">
+            <input 
+              type="checkbox" 
+              name="confirm_delete" 
+              value="true" 
+              required
+              class="mt-1 mr-2 h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+            >
+            <span class="text-sm text-gray-700 dark:text-gray-300">
+              I understand that this action is permanent and cannot be reversed
+            </span>
+          </label>
+        </div>
+        
+        <div class="flex space-x-3">
+          <button 
+            type="button" 
+            onclick="closeDeleteModal()"
+            class="flex-1 btn-secondary"
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit"
+            class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg transition duration-200"
+          >
+            Delete Account
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function openDeleteModal() {
+  document.getElementById('deleteAccountModal').classList.remove('hidden');
+  document.getElementById('deleteAccountModal').classList.add('flex');
+}
+
+function closeDeleteModal() {
+  document.getElementById('deleteAccountModal').classList.add('hidden');
+  document.getElementById('deleteAccountModal').classList.remove('flex');
+  document.getElementById('deleteAccountForm').reset();
+}
+
+document.getElementById('deleteAccountModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeDeleteModal();
+  }
+});
+</script>
+
 {% endblock %}

@@ -161,11 +161,28 @@ class LessonDetailView(LoginRequiredMixin, View):
                 lesson.delete()
                 lesson = self._generate_lesson(module)
         
+        # Check for incomplete quiz
+        from quizzes.models import QuizAttempt
+        incomplete_quiz = QuizAttempt.objects.filter(
+            user=request.user,
+            module=module,
+            completed_at__isnull=True
+        ).first()
+        
+        # Get best quiz attempt
+        best_attempt = QuizAttempt.objects.filter(
+            user=request.user,
+            module=module,
+            completed_at__isnull=False
+        ).order_by('-score').first()
+        
         context = {
             'module': module,
             'lesson': lesson,
             'course': module.course,
             'title': module.title,
+            'incomplete_quiz': incomplete_quiz,
+            'best_attempt': best_attempt,
         }
         return render(request, 'courses/lesson_detail.html', context)
     

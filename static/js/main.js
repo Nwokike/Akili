@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const header = document.getElementById('main-header');
   const headerLogo = document.getElementById('header-logo');
   const headerSpacer = document.getElementById('header-spacer');
+  const profileAvatar = document.getElementById('profile-avatar');
+  const headerContainer = header?.querySelector('div');
   
   if (header && headerLogo) {
     window.addEventListener('scroll', () => {
@@ -34,17 +36,33 @@ document.addEventListener('DOMContentLoaded', () => {
         header.classList.add('scrolled');
         headerLogo.classList.remove('h-12');
         headerLogo.classList.add('h-8');
+        if (profileAvatar) {
+          profileAvatar.classList.remove('w-10', 'h-10');
+          profileAvatar.classList.add('w-8', 'h-8');
+        }
         if (headerSpacer) {
           headerSpacer.classList.remove('h-16');
-          headerSpacer.classList.add('h-12');
+          headerSpacer.classList.add('h-14');
+        }
+        if (headerContainer) {
+          headerContainer.classList.remove('py-3');
+          headerContainer.classList.add('py-2');
         }
       } else {
         header.classList.remove('scrolled');
         headerLogo.classList.remove('h-8');
         headerLogo.classList.add('h-12');
+        if (profileAvatar) {
+          profileAvatar.classList.remove('w-8', 'h-8');
+          profileAvatar.classList.add('w-10', 'h-10');
+        }
         if (headerSpacer) {
-          headerSpacer.classList.remove('h-12');
+          headerSpacer.classList.remove('h-14');
           headerSpacer.classList.add('h-16');
+        }
+        if (headerContainer) {
+          headerContainer.classList.remove('py-2');
+          headerContainer.classList.add('py-3');
         }
       }
     });

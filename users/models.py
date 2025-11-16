@@ -90,12 +90,19 @@ class CustomUser(AbstractUser):
         return f"akili.ng/join/{self.username}"
     
     def reset_daily_credits(self):
-        """Reset daily credits if needed"""
+        """
+        Add daily free credits if a new day has started.
+        CRITICAL: Does NOT reset purchased credits - only adds the daily allowance.
+        This ensures users don't lose credits they paid for.
+        """
         from datetime import date
         today = date.today()
         
         if self.last_daily_reset < today:
-            self.tutor_credits = self.daily_credit_limit
+            # Only add the daily allowance if user has fewer credits than the limit
+            # This way purchased credits are preserved
+            if self.tutor_credits < self.daily_credit_limit:
+                self.tutor_credits = self.daily_credit_limit
             self.last_daily_reset = today
             self.save()
     
