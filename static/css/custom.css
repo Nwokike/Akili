@@ -277,3 +277,126 @@
   outline: 2px solid #3b82f6;
   outline-offset: 2px;
 }
+
+/* Lesson Content Styling */
+.lesson-content h1,
+.lesson-content h2,
+.lesson-content h3,
+.lesson-content h4 {
+  font-weight: bold;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #111827;
+}
+
+.dark .lesson-content h1,
+.dark .lesson-content h2,
+.dark .lesson-content h3,
+.dark .lesson-content h4 {
+  color: #f9fafb;
+}
+
+.lesson-content h1 { font-size: 1.875rem; }
+.lesson-content h2 { font-size: 1.5rem; }
+.lesson-content h3 { font-size: 1.25rem; }
+.lesson-content h4 { font-size: 1.125rem; }
+
+.lesson-content p {
+  margin-bottom: 1rem;
+  line-height: 1.75;
+}
+
+.lesson-content strong {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.dark .lesson-content strong {
+  color: #e5e7eb;
+}
+
+.lesson-content em {
+  font-style: italic;
+}
+
+.lesson-content ul,
+.lesson-content ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.lesson-content ul {
+  list-style-type: disc;
+}
+
+.lesson-content ol {
+  list-style-type: decimal;
+}
+
+.lesson-content li {
+  margin-bottom: 0.5rem;
+}
+
+.lesson-content code {
+  background: #f3f4f6;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+}
+
+.dark .lesson-content code {
+  background: #374151;
+}
+
+.lesson-content pre {
+  background: #f3f4f6;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.dark .lesson-content pre {
+  background: #1f2937;
+}
+
+.lesson-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.lesson-content th,
+.lesson-content td {
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.dark .lesson-content th,
+.dark .lesson-content td {
+  border-color: #374151;
+}
+
+.lesson-content th {
+  background: #f9fafb;
+  font-weight: 600;
+}
+
+.dark .lesson-content th {
+  background: #1f2937;
+}
+
+.lesson-content blockquote {
+  border-left: 4px solid #3b82f6;
+  padding-left: 1rem;
+  margin-left: 0;
+  margin-bottom: 1rem;
+  font-style: italic;
+  color: #6b7280;
+}
+
+.dark .lesson-content blockquote {
+  color: #9ca3af;
+}

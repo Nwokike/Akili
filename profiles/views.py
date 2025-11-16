@@ -36,6 +36,16 @@ class DeleteAccountView(LoginRequiredMixin, View):
             messages.error(request, "You must check the confirmation box to delete your account.")
             return redirect(reverse('profiles:my_profile'))
 
+        # Validate password confirmation
+        password = request.POST.get('password', '')
+        if not password:
+            messages.error(request, "Please enter your password to confirm account deletion.")
+            return redirect(reverse('profiles:my_profile'))
+        
+        if not request.user.check_password(password):
+            messages.error(request, "Incorrect password. Account deletion cancelled.")
+            return redirect(reverse('profiles:my_profile'))
+
         user = request.user
         
         with transaction.atomic():

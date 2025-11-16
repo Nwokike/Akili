@@ -11,9 +11,27 @@ def home_view(request):
 
 @login_required
 def dashboard_view(request):
-    """Main dashboard view"""
+    """Main dashboard view with actual user statistics"""
+    from courses.models import Course
+    from quizzes.models import QuizAttempt
+    from exams.models import Exam
+    
+    # Get user's courses
+    user_courses = Course.objects.filter(user=request.user)
+    
+    # Get statistics
+    courses_count = user_courses.count()
+    quizzes_count = QuizAttempt.objects.filter(user=request.user, completed_at__isnull=False).count()
+    exams_count = Exam.objects.filter(user=request.user, completed_at__isnull=False).count()
+    
     return render(request, 'core/dashboard.html', {
-        'referral_url': f"{request.scheme}://{request.get_host()}/join/{request.user.username}"
+        'referral_url': f"{request.scheme}://{request.get_host()}/join/{request.user.username}",
+        'user_credits': request.user.tutor_credits,
+        'user_daily_limit': request.user.daily_credit_limit,
+        'courses_count': courses_count,
+        'quizzes_count': quizzes_count,
+        'exams_count': exams_count,
+        'user_courses': user_courses[:3],  # Show first 3 courses on dashboard
     })
 
 

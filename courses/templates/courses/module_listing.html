@@ -37,29 +37,50 @@
   </div>
 
   <!-- Modules Grid -->
-  {% if modules %}
+  {% if modules_with_status %}
     <div class="grid grid-cols-1 gap-6">
-      {% for module in modules %}
-        <div class="card hover:shadow-lg transition-shadow">
+      {% for item in modules_with_status %}
+        <div class="card hover:shadow-lg transition-shadow {% if item.is_locked %}opacity-75{% endif %}">
           <!-- Module Header -->
           <div class="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
             <div class="flex items-start justify-between">
               <div class="flex-1">
                 <div class="flex items-center mb-2">
-                  <span class="inline-flex items-center justify-center w-8 h-8 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full font-bold text-sm mr-3">
-                    {{ module.order }}
+                  <span class="inline-flex items-center justify-center w-8 h-8 {% if item.is_locked %}bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400{% else %}bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300{% endif %} rounded-full font-bold text-sm mr-3">
+                    {% if item.is_locked %}
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                      </svg>
+                    {% else %}
+                      {{ item.module.order }}
+                    {% endif %}
                   </span>
-                  <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100">{{ module.title }}</h3>
+                  <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100">{{ item.module.title }}</h3>
                 </div>
-                <p class="text-gray-600 dark:text-gray-400 ml-11">{{ module.syllabus_topic }}</p>
+                <p class="text-gray-600 dark:text-gray-400 ml-11">{{ item.module.syllabus_topic }}</p>
+                {% if item.is_locked %}
+                  <p class="text-sm text-amber-600 dark:text-amber-400 ml-11 mt-2 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                    {{ item.lock_reason }}
+                  </p>
+                {% elif item.best_attempt %}
+                  <p class="text-sm text-green-600 dark:text-green-400 ml-11 mt-2 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Best score: {{ item.best_attempt.score }}%{% if item.best_attempt.passed %} - Passed!{% endif %}
+                  </p>
+                {% endif %}
               </div>
             </div>
           </div>
 
           <!-- Action Buttons -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <!-- Study Lesson Button -->
-            <a href="{% url 'courses:lesson_detail' module_id=module.id %}" class="btn-secondary flex items-center justify-center">
+            <a href="{% url 'courses:lesson_detail' module_id=item.module.id %}" class="btn-secondary flex items-center justify-center">
               <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
               </svg>
@@ -67,27 +88,28 @@
             </a>
 
             <!-- Take Quiz Button -->
-            <form method="post" action="{% url 'quizzes:start_quiz' module_id=module.id %}" class="w-full">
-              {% csrf_token %}
-              <button type="submit" class="btn-primary w-full flex items-center justify-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                Take Quiz (FREE)
-              </button>
-            </form>
-
-            <!-- Generate Exam Button -->
-            <form method="post" action="{% url 'exams:start_exam' module_id=module.id %}" class="w-full">
-              {% csrf_token %}
-              <button type="submit" class="btn-accent w-full flex items-center justify-center">
+            {% if item.is_locked %}
+              <button disabled class="btn-primary w-full flex items-center justify-center opacity-50 cursor-not-allowed" title="{{ item.lock_reason }}">
                 <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                  <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
                 </svg>
-                Practice Exam (5 Credits)
+                Quiz Locked
               </button>
-            </form>
+            {% else %}
+              <form method="post" action="{% url 'quizzes:start_quiz' module_id=item.module.id %}" class="w-full">
+                {% csrf_token %}
+                <button type="submit" class="btn-primary w-full flex items-center justify-center">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  {% if item.best_attempt and item.best_attempt.passed %}
+                    Retake Quiz (FREE)
+                  {% else %}
+                    Take Quiz (FREE)
+                  {% endif %}
+                </button>
+              </form>
+            {% endif %}
           </div>
         </div>
       {% endfor %}

@@ -163,6 +163,7 @@ class LessonDetailView(LoginRequiredMixin, View):
     def _generate_lesson(self, module):
         """Generate lesson content with two-pass validation"""
         from core.utils.ai_fallback import call_ai_with_fallback, validate_ai_content
+        import markdown
         
         # Pass 1: Generate lesson content
         prompt = f"""Create a comprehensive lesson on the following topic for {module.course.exam_type} {module.course.subject}:
@@ -170,24 +171,39 @@ class LessonDetailView(LoginRequiredMixin, View):
 Topic: {module.syllabus_topic}
 Module Title: {module.title}
 
-Provide a detailed explanation with examples, covering all key concepts."""
+IMPORTANT INSTRUCTIONS:
+1. Format your response in Markdown for better readability
+2. Use **bold** for key terms, *italics* for emphasis
+3. Use numbered lists for steps and bullet points for key points
+4. Include practical examples to illustrate concepts
+5. DO NOT include solutions to practice problems or exercises
+6. If you include practice questions, only provide the questions without answers
+7. Focus on explaining concepts clearly for exam preparation
+
+Provide a detailed, well-structured lesson covering all key concepts."""
         
         result = call_ai_with_fallback(prompt, max_tokens=2000)
         if not result['success']:
-            content = "AI tutors are at full capacity. Please try again in 2-3 minutes."
+            content_markdown = "AI tutors are at full capacity. Please try again in 2-3 minutes."
+            content_html = content_markdown
             is_validated = False
         else:
-            content = result['content']
+            content_markdown = result['content']
+            # Convert markdown to HTML for better display
+            content_html = markdown.markdown(
+                content_markdown,
+                extensions=['extra', 'codehilite', 'tables', 'fenced_code']
+            )
             # Pass 2: Validate the content
-            validation_result = validate_ai_content(content)
+            validation_result = validate_ai_content(content_markdown)
             is_validated = validation_result.strip().upper() == 'OK'
             if not is_validated:
-                content = f"{content}\n\n**Note:** This content is under review."
+                content_html = f"{content_html}<div class='mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg text-sm text-yellow-800 dark:text-yellow-200'><strong>Note:</strong> This content is under review.</div>"
         
-        # Create CachedLesson
+        # Create CachedLesson (store HTML version for display)
         lesson = CachedLesson.objects.create(
             topic=module.syllabus_topic,
-            content=content,
+            content=content_html,
             syllabus_version="2025",
             is_validated=is_validated,
             requested_by=module.course.user
@@ -252,11 +268,22 @@ class ReportErrorView(LoginRequiredMixin, View):
 
 class DeleteCourseView(LoginRequiredMixin, View):
     """
-    Delete a course with confirmation
+    Delete a course with password confirmation
     """
     def post(self, request, course_id):
         course = get_object_or_404(Course, id=course_id, user=request.user)
         course_name = f"{course.exam_type} {course.subject}"
+        
+        # Validate password confirmation
+        password = request.POST.get('password', '')
+        if not password:
+            messages.error(request, "Please enter your password to confirm course deletion.")
+            return redirect('dashboard')
+        
+        if not request.user.check_password(password):
+            messages.error(request, "Incorrect password. Course deletion cancelled.")
+            return redirect('dashboard')
+        
         course.delete()
         messages.success(request, f'Course "{course_name}" deleted successfully.')
         return redirect('dashboard')
