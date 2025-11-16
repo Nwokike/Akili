@@ -22,7 +22,8 @@ def generate_quiz_and_save(module: Module, user: CustomUser, num_questions=5) ->
     # 1. Construct the Prompt with STRICT JSON requirements
     prompt = f"""You are an expert Nigerian education assessor. Generate a quiz of EXACTLY {num_questions} multiple-choice questions for "{course_subject}" ({course_exam_type} curriculum), topic: "{module.title}".
 
-STRICT REQUIREMENTS:
+CRITICAL REQUIREMENTS - FOLLOW EXACTLY:
+
 1. Return ONLY a valid JSON object with this EXACT structure:
 {{
   "questions": [
@@ -36,22 +37,29 @@ STRICT REQUIREMENTS:
 }}
 
 2. Each question MUST have EXACTLY 4 choices in the "choices" array.
-3. "correct_index" MUST be an integer 0-3 (NOT a letter).
-4. CRITICAL: For ALL LaTeX math, use DOUBLE-ESCAPED backslashes.
+
+3. "correct_index" MUST be an integer 0-3 (NOT a letter like "A" or "B").
+
+4. CRITICAL LATEX FORMATTING - Use DOUBLE-ESCAPED backslashes in ALL math expressions:
    - Write "\\\\frac{{a}}{{b}}" NOT "\\frac{{a}}{{b}}"
    - Write "$a \\\\times b$" NOT "$a \\times b$"
    - Write "$$\\\\int_a^b f(x)dx$$" NOT "$$\\int_a^b f(x)dx$$"
+   - Write "\\\\sqrt{{x}}" NOT "\\sqrt{{x}}"
+   - Write "\\\\sum_{{i=1}}^{{n}}" NOT "\\sum_{{i=1}}^{{n}}"
+   - This applies to question_text, choices, AND explanation
 
-5. NO markdown formatting, NO code blocks, NO extra text - ONLY the JSON object.
+5. NO markdown code blocks (```json), NO extra text before or after the JSON object.
+
+6. Test your JSON is valid before responding.
 
 Example:
 {{
   "questions": [
-    {{"question_text": "Calculate $5 \\\\times 3$", "choices": ["15", "8", "10", "20"], "correct_index": 0, "explanation": "Multiplication: $5 \\\\times 3 = 15$"}}
+    {{"question_text": "Calculate $5 \\\\times 3$", "choices": ["$15$", "$8$", "$10$", "$20$"], "correct_index": 0, "explanation": "Multiplication: $5 \\\\times 3 = 15$"}}
   ]
 }}
 
-Generate {num_questions} questions now:"""
+Generate {num_questions} questions now with perfect JSON and double-escaped LaTeX:"""
 
     # 2. Call the AI with Fallback
     result = call_ai_with_fallback(prompt, max_tokens=3000, is_json=True) 

@@ -83,15 +83,15 @@
     <div class="text-left max-w-md mx-auto space-y-2 text-sm">
       <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
         <span class="text-gray-600 dark:text-gray-400">Exam Type:</span>
-        <span class="font-semibold text-gray-900 dark:text-gray-100">{{ exam.module.course.exam_type }}</span>
+        <span class="font-semibold text-gray-900 dark:text-gray-100">{{ exam.course.exam_type }}</span>
       </div>
       <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
         <span class="text-gray-600 dark:text-gray-400">Subject:</span>
-        <span class="font-semibold text-gray-900 dark:text-gray-100">{{ exam.module.course.subject }}</span>
+        <span class="font-semibold text-gray-900 dark:text-gray-100">{{ exam.course.subject }}</span>
       </div>
       <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-        <span class="text-gray-600 dark:text-gray-400">Module:</span>
-        <span class="font-semibold text-gray-900 dark:text-gray-100">{{ exam.module.title }}</span>
+        <span class="text-gray-600 dark:text-gray-400">Exam Scope:</span>
+        <span class="font-semibold text-gray-900 dark:text-gray-100">Course-Wide (All Topics)</span>
       </div>
       <div class="flex justify-between py-2">
         <span class="text-gray-600 dark:text-gray-400">Completed:</span>
@@ -102,7 +102,7 @@
 
   <!-- Action Buttons -->
   <div class="flex flex-col sm:flex-row gap-4">
-    <a href="{% url 'courses:module_listing' course_id=exam.module.course.id %}" class="btn-secondary flex-1 text-center">
+    <a href="{% url 'courses:module_listing' course_id=exam.course.id %}" class="btn-secondary flex-1 text-center">
       <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
       </svg>
