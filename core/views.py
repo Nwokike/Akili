@@ -15,15 +15,15 @@ def dashboard_view(request):
     from courses.models import Course
     from quizzes.models import QuizAttempt
     from exams.models import Exam
-    
+
     # Get user's courses
     user_courses = Course.objects.filter(user=request.user)
-    
+
     # Get statistics
     courses_count = user_courses.count()
     quizzes_count = QuizAttempt.objects.filter(user=request.user, completed_at__isnull=False).count()
     exams_count = Exam.objects.filter(user=request.user, completed_at__isnull=False).count()
-    
+
     return render(request, 'core/dashboard.html', {
         'referral_url': f"{request.scheme}://{request.get_host()}/join/{request.user.username}",
         'user_credits': request.user.tutor_credits,
@@ -40,19 +40,20 @@ def exam_center_view(request):
     """Practice exam center with clear user guidance"""
     from exams.models import Exam
     from courses.models import Course
-    
+
     # Get user's recent exams
-    recent_exams = Exam.objects.filter(user=request.user).select_related('module__course').order_by('-started_at')[:10]
-    
+    # --- THIS IS THE FIXED LINE ---
+    recent_exams = Exam.objects.filter(user=request.user).select_related('course').order_by('-started_at')[:10]
+
     # Get user's courses with modules
     user_courses = Course.objects.filter(user=request.user).prefetch_related('modules').order_by('-created_at')
-    
+
     context = {
         'recent_exams': recent_exams,
         'user_courses': user_courses,
         'has_courses': user_courses.exists(),
     }
-    
+
     return render(request, 'exams/exam_center.html', context)
 
 
