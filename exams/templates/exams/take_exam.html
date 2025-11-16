@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Practice Exam - Akili{% endblock %}
+
+{% block page_title %}Practice Exam{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8 px-4">
+  
+  <!-- Exam Header -->
+  <div class="card mb-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ exam.module.course.exam_type }} Practice Exam</h1>
+        <p class="text-gray-600 dark:text-gray-400 mt-1">{{ exam.module.title }}</p>
+      </div>
+      <div class="text-right">
+        <p class="text-sm text-gray-600 dark:text-gray-400">Total Questions</p>
+        <p class="text-3xl font-bold text-primary-600">{{ exam.total_questions }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exam Form -->
+  <form method="post" id="examForm">
+    {% csrf_token %}
+    
+    <!-- Questions -->
+    {% for question in questions %}
+      <div class="card mb-4">
+        <div class="mb-4">
+          <p class="font-semibold text-gray-900 dark:text-gray-100 mb-3">
+            <span class="inline-block w-8 h-8 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full text-center leading-8 mr-2">{{ forloop.counter }}</span>
+            {{ question.question_text }}
+          </p>
+        </div>
+        
+        <!-- Options -->
+        <div class="space-y-2">
+          {% for key, value in question.options.items %}
+            <label class="flex items-start p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors">
+              <input 
+                type="radio" 
+                name="{{ question.id }}" 
+                value="{{ key }}" 
+                class="mt-1 text-primary-600 focus:ring-primary-500"
+                required
+              >
+              <span class="ml-3 text-gray-800 dark:text-gray-200">
+                <span class="font-semibold">{{ key }}.</span> {{ value }}
+              </span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+    {% empty %}
+      <div class="card text-center py-12">
+        <p class="text-gray-600 dark:text-gray-400">No questions available for this exam.</p>
+      </div>
+    {% endfor %}
+
+    <!-- Submit Button -->
+    {% if questions %}
+      <div class="card bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 border-primary-200 dark:border-primary-800">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-semibold text-gray-900 dark:text-gray-100">Ready to submit?</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Make sure you've answered all questions</p>
+          </div>
+          <button type="submit" class="btn-primary">
+            Submit Exam
+            <svg class="w-5 h-5 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    {% endif %}
+    
+  </form>
+  
+</div>
+
+<script>
+document.getElementById('examForm')?.addEventListener('submit', function(e) {
+  const questions = {{ exam.total_questions }};
+  let answered = 0;
+  
+  for(let i = 1; i <= questions; i++) {
+    const inputs = document.querySelectorAll(`input[type="radio"]:checked`);
+    answered = inputs.length;
+  }
+  
+  if(answered < questions) {
+    if(!confirm(`You've only answered ${answered} out of ${questions} questions. Submit anyway?`)) {
+      e.preventDefault();
+    }
+  }
+});
+</script>
+{% endblock %}

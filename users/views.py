@@ -2,12 +2,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db import transaction # ADDED FOR TRANSACTION SAFETY
-from django.urls import reverse # ADDED FOR REVERSE LOOKUP
+from django.db import transaction
+from django.urls import reverse
+from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import CustomUser
 from .forms import SignupForm, LoginForm
 
 
+@ensure_csrf_cookie
 def signup_view(request):
     """Handle user signup with optional referral"""
     if request.user.is_authenticated:
@@ -43,6 +45,7 @@ def signup_view(request):
     })
 
 
+@ensure_csrf_cookie
 def login_view(request):
     """Handle user login with email"""
     if request.user.is_authenticated:

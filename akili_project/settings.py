@@ -46,13 +46,17 @@ if REPLIT_DOMAINS:
         if domain:
             CSRF_TRUSTED_ORIGINS.append(f'https://{domain}')
 
-# Cookie settings - permissive for development, secure for production
-CSRF_COOKIE_SECURE = not DEBUG
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'  # 'None' for cross-origin requests in Replit
-SESSION_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'
-CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript access for debugging
-SESSION_COOKIE_HTTPONLY = True  # Keep session cookie secure
+# Cookie settings - configured for Replit's iframe environment
+# In Replit, even dev is served over HTTPS in an iframe, so we need SameSite=None
+CSRF_COOKIE_SECURE = True  # Always True since Replit uses HTTPS
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'  # Required for iframe/cross-site in Replit
+SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript access if needed
+SESSION_COOKIE_HTTPONLY = True
+
+# X-Frame-Options - allow Replit to iframe the app
+X_FRAME_OPTIONS = 'ALLOWALL' if DEBUG else 'DENY'
 
 
 # Application definition

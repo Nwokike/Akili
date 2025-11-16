@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ module.title }} - Akili{% endblock %}
+
+{% block page_title %}{{ module.title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8 px-4">
+  
+  <!-- Breadcrumb -->
+  <nav class="mb-6">
+    <ol class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+      <li><a href="{% url 'dashboard' %}" class="hover:text-primary-600">Dashboard</a></li>
+      <li><span>/</span></li>
+      <li><a href="{% url 'courses:module_listing' course_id=course.id %}" class="hover:text-primary-600">{{ course.exam_type }} {{ course.subject }}</a></li>
+      <li><span>/</span></li>
+      <li class="text-gray-900 dark:text-gray-100 font-medium">{{ module.title }}</li>
+    </ol>
+  </nav>
+
+  <!-- Lesson Content Card -->
+  <div class="card">
+    <!-- Lesson Header -->
+    <div class="mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{{ module.title }}</h1>
+      <p class="text-sm text-gray-600 dark:text-gray-400">
+        <span class="font-semibold">Topic:</span> {{ module.syllabus_topic }}
+      </p>
+      {% if lesson.is_validated %}
+        <div class="mt-2 inline-flex items-center px-3 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full text-xs">
+          <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          AI Validated
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Lesson Content -->
+    <div class="prose dark:prose-invert max-w-none mb-6">
+      <div class="whitespace-pre-wrap text-gray-800 dark:text-gray-200 leading-relaxed">{{ lesson.content }}</div>
+    </div>
+
+    <!-- Report Issue Button -->
+    <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+      <form method="post" action="{% url 'courses:report_lesson' lesson_id=lesson.id %}">
+        {% csrf_token %}
+        <button type="submit" class="text-sm text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 flex items-center">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          Report Issue with This Lesson
+        </button>
+      </form>
+      <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">Lessons reported 3+ times are automatically regenerated</p>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="mt-6 flex gap-4">
+    <a href="{% url 'courses:module_listing' course_id=course.id %}" class="btn-secondary">
+      <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      </svg>
+      Back to Modules
+    </a>
+    
+    <form method="post" action="{% url 'quizzes:start_quiz' module_id=module.id %}" class="flex-1">
+      {% csrf_token %}
+      <button type="submit" class="btn-primary w-full">
+        <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        Take Quiz (5 Credits)
+      </button>
+    </form>
+
+    <form method="post" action="{% url 'exams:start_exam' module_id=module.id %}" class="flex-1">
+      {% csrf_token %}
+      <button type="submit" class="btn-accent w-full">
+        <svg class="w-5 h-5 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+          <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+        </svg>
+        Generate Practice Exam (10 Credits)
+      </button>
+    </form>
+  </div>
+  
+</div>
+{% endblock %}
