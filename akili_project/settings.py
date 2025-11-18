@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import dj_database_url
 
 # Load .env file if it exists (for local development)
 load_dotenv()
@@ -30,8 +31,8 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
 if not SECRET_KEY:
-    # Only use fallback in development
-    if DEBUG or os.getenv('REPLIT_DOMAINS'):
+    # Only use fallback in local development
+    if DEBUG:
         SECRET_KEY = 'django-insecure-dev-key-for-local-testing-only'
         print("WARNING: Using default SECRET_KEY for development. Set SECRET_KEY environment variable for production!")
     else:
@@ -39,47 +40,23 @@ if not SECRET_KEY:
 
 # ALLOWED_HOSTS configuration
 ALLOWED_HOSTS_ENV = os.getenv('ALLOWED_HOSTS', '')
-REPLIT_DOMAINS = os.getenv('REPLIT_DOMAINS', '')
 
 if ALLOWED_HOSTS_ENV:
     ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_ENV.split(',')]
-elif REPLIT_DOMAINS:
-    # Replit environment - add Replit domains
-    ALLOWED_HOSTS = [domain.strip() for domain in REPLIT_DOMAINS.split(',') if domain.strip()]
-    ALLOWED_HOSTS.append('localhost')
-    ALLOWED_HOSTS.append('127.0.0.1')
 elif DEBUG:
     ALLOWED_HOSTS = ['*']  # Allow all in local development
 else:
     # Production - require explicit configuration
     ALLOWED_HOSTS = []
 
+
 # CSRF Settings
 CSRF_TRUSTED_ORIGINS_ENV = os.getenv('CSRF_TRUSTED_ORIGINS', '')
 CSRF_TRUSTED_ORIGINS = [origin for origin in CSRF_TRUSTED_ORIGINS_ENV.split(',') if origin]
 
-# Add Replit domains for development (use exact domain from REPLIT_DOMAINS)
-REPLIT_DOMAINS = os.getenv('REPLIT_DOMAINS', '')
-if REPLIT_DOMAINS:
-    # Split multiple domains if present and add https:// prefix
-    for domain in REPLIT_DOMAINS.split(','):
-        domain = domain.strip()
-        if domain:
-            CSRF_TRUSTED_ORIGINS.append(f'https://{domain}')
 
-# Cookie settings - configured for Replit's iframe environment
-# In Replit, even dev is served over HTTPS in an iframe, so we need SameSite=None
-REPLIT_ENV = os.getenv('REPLIT_DOMAINS')
-if REPLIT_ENV:
-    # Replit development environment
-    CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SAMESITE = 'None'
-    SESSION_COOKIE_SAMESITE = 'None'
-    CSRF_COOKIE_HTTPONLY = False
-    SESSION_COOKIE_HTTPONLY = True
-    X_FRAME_OPTIONS = 'ALLOWALL'
-elif DEBUG:
+# Cookie & Security settings
+if DEBUG:
     # Local development
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
@@ -89,7 +66,7 @@ elif DEBUG:
     SESSION_COOKIE_HTTPONLY = True
     X_FRAME_OPTIONS = 'DENY'
 else:
-    # Production (Render)
+    # Production
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SAMESITE = 'Lax'
@@ -138,8 +115,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # NOTE: RateLimitMiddleware disabled - requires Redis for production
-    # 'core.middleware.RateLimitMiddleware',
     'core.middleware.ErrorLoggingMiddleware',
 ]
 
@@ -167,12 +142,7 @@ WSGI_APPLICATION = 'akili_project.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-#
 # Use environment variables for database configuration
-# For Replit dev: Uses SQLite (DATABASE_URL not set)
-# For Render production: Uses PostgreSQL (DATABASE_URL from environment)
-
-import dj_database_url
 
 if os.getenv('DATABASE_URL'):
     # Production: Use PostgreSQL from DATABASE_URL
@@ -315,23 +285,11 @@ LOGGING = {
 }
 
 # Create logs directory if it doesn't exist
-import os
 os.makedirs(BASE_DIR / 'logs', exist_ok=True)
 
 
 # Cache Configuration
-# NOTE: For production rate limiting, configure Redis:
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django_redis.cache.RedisCache',
-#         'LOCATION': os.getenv('REDIS_URL', 'redis://127.0.0.1:6379/1'),
-#         'OPTIONS': {
-#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-#         }
-#     }
-# }
-# Then uncomment RateLimitMiddleware in MIDDLEWARE above
-
+# Local Memory Cache
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
