@@ -47,7 +47,7 @@
             <label class="flex items-start p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors">
               <input 
                 type="radio" 
-                name="{{ question.id }}" 
+                name="question_{{ question.id }}" 
                 value="{{ key }}" 
                 class="mt-1 text-primary-600 focus:ring-primary-500"
                 required
@@ -87,6 +87,26 @@
   
 </div>
 
+<style>
+#sticky-timer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: rgba(220, 38, 38, 0.95);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: none;
+}
+</style>
+
+<!-- Sticky Timer (shows when scrolling) -->
+<div id="sticky-timer"></div>
+
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     // Render LaTeX math
@@ -99,26 +119,58 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // 20-minute countdown timer with auto-submit
+    // Exam configuration
     const EXAM_DURATION = 20 * 60; // 20 minutes in seconds
-    let timeRemaining = EXAM_DURATION;
+    const EXAM_ID = '{{ exam.id }}';
+    const STORAGE_KEY = `exam_${EXAM_ID}_time`;
+    const STARTED_AT_KEY = `exam_${EXAM_ID}_started`;
+    
     const timerDisplay = document.getElementById('timer');
+    const stickyTimer = document.getElementById('sticky-timer');
     const examForm = document.getElementById('examForm');
     let timerInterval;
+    let timeRemaining;
+
+    // Initialize timer from localStorage or start fresh
+    function initializeTimer() {
+        const savedTime = localStorage.getItem(STORAGE_KEY);
+        const startedAt = localStorage.getItem(STARTED_AT_KEY);
+        
+        if (savedTime && startedAt) {
+            // Calculate time elapsed since start
+            const elapsed = Math.floor((Date.now() - parseInt(startedAt)) / 1000);
+            timeRemaining = Math.max(0, EXAM_DURATION - elapsed);
+        } else {
+            // First time - start fresh
+            timeRemaining = EXAM_DURATION;
+            localStorage.setItem(STARTED_AT_KEY, Date.now().toString());
+        }
+        
+        // Save to localStorage
+        localStorage.setItem(STORAGE_KEY, timeRemaining.toString());
+    }
 
     function updateTimerDisplay() {
         const minutes = Math.floor(timeRemaining / 60);
         const seconds = timeRemaining % 60;
-        timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        const timeText = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        timerDisplay.textContent = timeText;
+        stickyTimer.textContent = `⏱ ${timeText}`;
         
         // Change color based on time remaining
+        let colorClass;
         if (timeRemaining <= 60) {
-            timerDisplay.className = 'text-4xl font-bold text-red-700 dark:text-red-300 animate-pulse';
+            colorClass = 'text-4xl font-bold text-red-700 dark:text-red-300 animate-pulse';
         } else if (timeRemaining <= 300) {
-            timerDisplay.className = 'text-4xl font-bold text-orange-600 dark:text-orange-400';
+            colorClass = 'text-4xl font-bold text-orange-600 dark:text-orange-400';
         } else {
-            timerDisplay.className = 'text-4xl font-bold text-red-600 dark:text-red-400';
+            colorClass = 'text-4xl font-bold text-red-600 dark:text-red-400';
         }
+        timerDisplay.className = colorClass;
+        
+        // Save to localStorage
+        localStorage.setItem(STORAGE_KEY, timeRemaining.toString());
     }
 
     function startTimer() {
@@ -130,41 +182,83 @@ document.addEventListener("DOMContentLoaded", function() {
             
             if (timeRemaining <= 0) {
                 clearInterval(timerInterval);
-                // Auto-submit the form when time runs out
+                localStorage.removeItem(STORAGE_KEY);
+                localStorage.removeItem(STARTED_AT_KEY);
                 alert('Time is up! Your exam will be submitted automatically.');
                 examForm.submit();
             }
         }, 1000);
     }
 
-    // Start the timer
+    // Show sticky timer when scrolling past main timer
+    let timerObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                stickyTimer.style.display = 'none';
+            } else {
+                stickyTimer.style.display = 'block';
+            }
+        });
+    }, { threshold: 0 });
+    
+    timerObserver.observe(timerDisplay);
+
+    // Initialize and start timer
+    initializeTimer();
     startTimer();
 
-    // Prevent leaving the page accidentally
+    // Prevent browser back button
+    history.pushState(null, '', location.href);
+    window.onpopstate = function() {
+        if (confirm('Navigating away will submit your exam. Continue?')) {
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(STARTED_AT_KEY);
+            examForm.submit();
+        } else {
+            history.pushState(null, '', location.href);
+        }
+    };
+
+    // Warn before leaving
     window.addEventListener('beforeunload', function(e) {
         if (timeRemaining > 0) {
             e.preventDefault();
-            e.returnValue = 'Your exam is in progress. Are you sure you want to leave?';
+            e.returnValue = 'Your exam is in progress. Leaving will submit your answers.';
             return e.returnValue;
         }
     });
-});
-
-// Form submission validation
-document.getElementById('examForm')?.addEventListener('submit', function(e) {
-  const questions = {{ exam.total_questions }};
-  let answered = 0;
-  
-  for(let i = 1; i <= questions; i++) {
-    const inputs = document.querySelectorAll(`input[type="radio"]:checked`);
-    answered = inputs.length;
-  }
-  
-  if(answered < questions) {
-    if(!confirm(`You've only answered ${answered} out of ${questions} questions. Submit anyway?`)) {
-      e.preventDefault();
-    }
-  }
+    
+    // Form submission guard to prevent duplicates
+    let isSubmitting = false;
+    
+    examForm.addEventListener('submit', function(e) {
+        // Prevent duplicate submissions
+        if (isSubmitting) {
+            e.preventDefault();
+            return false;
+        }
+        
+        // Validation
+        const questions = {{ exam.total_questions }};
+        const inputs = document.querySelectorAll(`input[type="radio"]:checked`);
+        const answered = inputs.length;
+        
+        if(answered < questions) {
+            if(!confirm(`You've only answered ${answered} out of ${questions} questions. Submit anyway?`)) {
+                e.preventDefault();
+                return false;
+            }
+        }
+        
+        // Mark as submitting and clean up
+        isSubmitting = true;
+        clearInterval(timerInterval);
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(STARTED_AT_KEY);
+        
+        // Allow form to submit
+        return true;
+    });
 });
 </script>
 {% endblock %}

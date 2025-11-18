@@ -5,7 +5,7 @@ import json # Added for safe JSON parsing
 
 # --- Core Fallback Logic ---
 
-def call_ai_with_fallback(prompt, system_prompt=None, max_tokens=None, is_json=False):
+def call_ai_with_fallback(prompt, system_prompt=None, max_tokens=None, is_json=False, subject=None):
     """
     4-tier AI Smart Fallback system
     UPDATED TIER ORDER: Prioritize all Gemini models first.
@@ -19,22 +19,33 @@ def call_ai_with_fallback(prompt, system_prompt=None, max_tokens=None, is_json=F
         system_prompt (str, optional): Instructions for the AI's persona.
         max_tokens (int, optional): Maximum tokens for the response.
         is_json (bool): If True, instructs the AI to return a JSON object.
+        subject (str, optional): Subject name to determine if LaTeX guidance is needed.
     """
 
-    latex_instruction = (
-        "\nYou are an expert tutor. Format all mathematical equations, formulas, "
-        "and scientific notation using LaTeX with DOUBLE-ESCAPED backslashes. "
-        "CRITICAL: Use \\\\frac, \\\\times, \\\\int, etc. in JSON strings. "
-        "Example: $E=mc^2$ or $$\\\\int_a^b f(x)dx$$."
-    )
+    # STEM subjects that commonly use formulas
+    STEM_SUBJECTS = [
+        'Mathematics', 'Physics', 'Chemistry', 'Further Mathematics',
+        'Biology', 'Agricultural Science', 'Technical Drawing', 'Economics'
+    ]
+    
+    # Only add LaTeX instruction for STEM subjects
+    needs_latex = subject and any(stem in subject for stem in STEM_SUBJECTS)
+    
+    latex_instruction = ""
+    if needs_latex:
+        latex_instruction = (
+            "\nIMPORTANT: For mathematical expressions, use LaTeX with single backslashes. "
+            "Example: $E=mc^2$ or $$\\int_a^b f(x)dx$$ or $\\frac{a}{b}$. "
+            "When outputting JSON, the backslashes will be automatically escaped."
+        )
 
     # Add JSON instruction to the system prompt if required
     json_instruction = "\nYour output MUST be a single, raw JSON object/list." if is_json else ""
 
     if system_prompt:
-        full_prompt = f"{system_prompt}{json_instruction}\n{latex_instruction}\n\n{prompt}"
+        full_prompt = f"{system_prompt}{json_instruction}{latex_instruction}\n\n{prompt}"
     else:
-        full_prompt = f"{json_instruction}\n{latex_instruction}\n\n{prompt}"
+        full_prompt = f"{json_instruction}{latex_instruction}\n\n{prompt}"
 
     # --- UPDATED TIER ORDER ---
     gemini_key = settings.GEMINI_API_KEY

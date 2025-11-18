@@ -208,11 +208,10 @@ IMPORTANT INSTRUCTIONS:
 5. DO NOT include solutions to practice problems or exercises
 6. If you include practice questions, only provide the questions without answers
 7. Focus on explaining concepts clearly for exam preparation
-8. CRITICAL: For all LaTeX, use double-escaped backslashes (e.g., $\\\\frac{{1}}{{2}}$).
 
 Provide a detailed, well-structured lesson covering all key concepts."""
 
-        result = call_ai_with_fallback(prompt, max_tokens=2000)
+        result = call_ai_with_fallback(prompt, max_tokens=2000, subject=module.course.subject)
         if not result['success']:
             content_markdown = "AI tutors are at full capacity. Please try again in 2-3 minutes."
             content_html = content_markdown
@@ -271,11 +270,9 @@ class AskTutorView(LoginRequiredMixin, View):
 Topic: {module.syllabus_topic}
 Student Question: {question}
 
-Provide a clear, helpful answer.
-CRITICAL: For all LaTeX, use double-escaped backslashes (e.g., $\\\\frac{{1}}{{2}}$).
-"""
+Provide a clear, helpful answer."""
 
-        result = call_ai_with_fallback(prompt, max_tokens=1000)
+        result = call_ai_with_fallback(prompt, max_tokens=1000, subject=module.course.subject)
         if result['success']:
             messages.success(request, f"AI Tutor: {result['content']}")
         else:

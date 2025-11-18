@@ -24,14 +24,35 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-key-replace-in-production')
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('SECRET_KEY')
+if not SECRET_KEY:
+    # Only use fallback in development
+    if DEBUG or os.getenv('REPLIT_DOMAINS'):
+        SECRET_KEY = 'django-insecure-dev-key-for-local-testing-only'
+        print("WARNING: Using default SECRET_KEY for development. Set SECRET_KEY environment variable for production!")
+    else:
+        raise ValueError("SECRET_KEY environment variable must be set in production!")
 
 # ALLOWED_HOSTS configuration
-ALLOWED_HOSTS = ['*']  # Accept all hosts - configure this properly in production
+ALLOWED_HOSTS_ENV = os.getenv('ALLOWED_HOSTS', '')
+REPLIT_DOMAINS = os.getenv('REPLIT_DOMAINS', '')
+
+if ALLOWED_HOSTS_ENV:
+    ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_ENV.split(',')]
+elif REPLIT_DOMAINS:
+    # Replit environment - add Replit domains
+    ALLOWED_HOSTS = [domain.strip() for domain in REPLIT_DOMAINS.split(',') if domain.strip()]
+    ALLOWED_HOSTS.append('localhost')
+    ALLOWED_HOSTS.append('127.0.0.1')
+elif DEBUG:
+    ALLOWED_HOSTS = ['*']  # Allow all in local development
+else:
+    # Production - require explicit configuration
+    ALLOWED_HOSTS = []
 
 # CSRF Settings
 CSRF_TRUSTED_ORIGINS_ENV = os.getenv('CSRF_TRUSTED_ORIGINS', '')
@@ -48,15 +69,43 @@ if REPLIT_DOMAINS:
 
 # Cookie settings - configured for Replit's iframe environment
 # In Replit, even dev is served over HTTPS in an iframe, so we need SameSite=None
-CSRF_COOKIE_SECURE = True  # Always True since Replit uses HTTPS
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'None'  # Required for iframe/cross-site in Replit
-SESSION_COOKIE_SAMESITE = 'None'
-CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript access if needed
-SESSION_COOKIE_HTTPONLY = True
-
-# X-Frame-Options - allow Replit to iframe the app
-X_FRAME_OPTIONS = 'ALLOWALL' if DEBUG else 'DENY'
+REPLIT_ENV = os.getenv('REPLIT_DOMAINS')
+if REPLIT_ENV:
+    # Replit development environment
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SAMESITE = 'None'
+    SESSION_COOKIE_SAMESITE = 'None'
+    CSRF_COOKIE_HTTPONLY = False
+    SESSION_COOKIE_HTTPONLY = True
+    X_FRAME_OPTIONS = 'ALLOWALL'
+elif DEBUG:
+    # Local development
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SAMESITE = 'Lax'
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    CSRF_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_HTTPONLY = True
+    X_FRAME_OPTIONS = 'DENY'
+else:
+    # Production (Render)
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SAMESITE = 'Lax'
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    CSRF_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_HTTPONLY = True
+    X_FRAME_OPTIONS = 'DENY'
+    
+    # Additional security headers for production
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
 
 
 # Application definition
@@ -89,6 +138,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # NOTE: RateLimitMiddleware disabled - requires Redis for production
+    # 'core.middleware.RateLimitMiddleware',
+    'core.middleware.ErrorLoggingMiddleware',
 ]
 
 ROOT_URLCONF = 'akili_project.urls'
@@ -217,3 +269,72 @@ GROQ_API_KEY = os.getenv('GROQ_API_KEY', '')
 
 # Paystack Settings (for payments)
 PAYSTACK_SECRET_KEY = os.getenv('PAYSTACK_SECRET_KEY', '')
+
+
+# Logging Configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'akili.log',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'] if DEBUG else ['console', 'file'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'] if DEBUG else ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'core': {
+            'handlers': ['console'] if DEBUG else ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
+# Create logs directory if it doesn't exist
+import os
+os.makedirs(BASE_DIR / 'logs', exist_ok=True)
+
+
+# Cache Configuration
+# NOTE: For production rate limiting, configure Redis:
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django_redis.cache.RedisCache',
+#         'LOCATION': os.getenv('REDIS_URL', 'redis://127.0.0.1:6379/1'),
+#         'OPTIONS': {
+#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+#         }
+#     }
+# }
+# Then uncomment RateLimitMiddleware in MIDDLEWARE above
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'akili-cache',
+    }
+}

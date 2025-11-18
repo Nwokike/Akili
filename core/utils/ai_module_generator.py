@@ -50,8 +50,8 @@ Example format:
   ]
 }}"""
 
-    # 3. Call AI with fallback system
-    result = call_ai_with_fallback(prompt, max_tokens=2000, is_json=True)
+    # 3. Call AI with fallback system (with subject-aware prompting)
+    result = call_ai_with_fallback(prompt, max_tokens=2000, is_json=True, subject=course.subject)
 
     if not result['success']:
         print(f"AI Module Generation Failed for Course {course.id}. Tier: {result.get('tier')}")

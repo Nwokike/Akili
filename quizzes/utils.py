@@ -40,29 +40,21 @@ CRITICAL REQUIREMENTS - FOLLOW EXACTLY:
 
 3. "correct_index" MUST be an integer 0-3 (NOT a letter like "A" or "B").
 
-4. CRITICAL LATEX FORMATTING - Use DOUBLE-ESCAPED backslashes in ALL math expressions:
-   - Write "\\\\frac{{a}}{{b}}" NOT "\\frac{{a}}{{b}}"
-   - Write "$a \\\\times b$" NOT "$a \\times b$"
-   - Write "$$\\\\int_a^b f(x)dx$$" NOT "$$\\int_a^b f(x)dx$$"
-   - Write "\\\\sqrt{{x}}" NOT "\\sqrt{{x}}"
-   - Write "\\\\sum_{{i=1}}^{{n}}" NOT "\\sum_{{i=1}}^{{n}}"
-   - This applies to question_text, choices, AND explanation
+4. NO markdown code blocks (```json), NO extra text before or after the JSON object.
 
-5. NO markdown code blocks (```json), NO extra text before or after the JSON object.
-
-6. Test your JSON is valid before responding.
+5. Test your JSON is valid before responding.
 
 Example:
 {{
   "questions": [
-    {{"question_text": "Calculate $5 \\\\times 3$", "choices": ["$15$", "$8$", "$10$", "$20$"], "correct_index": 0, "explanation": "Multiplication: $5 \\\\times 3 = 15$"}}
+    {{"question_text": "What is the capital of Nigeria?", "choices": ["Lagos", "Abuja", "Kano", "Port Harcourt"], "correct_index": 1, "explanation": "Abuja has been the capital of Nigeria since 1991."}}
   ]
 }}
 
-Generate {num_questions} questions now with perfect JSON and double-escaped LaTeX:"""
+Generate {num_questions} questions now with perfect JSON:"""
 
-    # 2. Call the AI with Fallback
-    result = call_ai_with_fallback(prompt, max_tokens=3000, is_json=True) 
+    # 2. Call the AI with Fallback (with subject-aware prompting)
+    result = call_ai_with_fallback(prompt, max_tokens=3000, is_json=True, subject=course_subject) 
 
     if not result['success']:
         print(f"AI Quiz Generation FAILED. Tier: {result.get('tier')}. Error: {result.get('content')[:100]}...")
