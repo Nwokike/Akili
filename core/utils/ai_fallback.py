@@ -8,20 +8,19 @@ import json
 def call_ai_with_fallback(prompt, system_prompt=None, max_tokens=None, is_json=False, subject=None):
     """
     4-tier AI Smart Fallback system
-    Tier 1: Gemini 2.5 Flash (Your primary model)
+    Tier 1: Gemini 2.5 Flash (Primary)
     Tier 2: Gemini Paid (Paid)
     Tier 3: Groq API (Free)
     Tier 4: Circuit Breaker (Graceful error)
     """
 
     # 1. IDENTIFY IF LATEX IS NEEDED
-    # We convert subject to lowercase to ensure we match 'Mathematics' and 'mathematics'
     subject_lower = str(subject).lower() if subject else ""
     
     # Subjects that usually require math rendering
     stem_keywords = [
         'math', 'physics', 'chemistry', 'biology', 'science', 
-        'drawing', 'economics', 'account', 'calculat'
+        'drawing', 'economics', 'account', 'calculat', 'sets'
     ]
     
     needs_latex = any(keyword in subject_lower for keyword in stem_keywords)
@@ -29,16 +28,17 @@ def call_ai_with_fallback(prompt, system_prompt=None, max_tokens=None, is_json=F
     # 2. CONSTRUCT INSTRUCTIONS
     latex_instruction = ""
     if needs_latex:
-        # CRITICAL FIX: We use a raw string (r"...") and explicitly request DOUBLE BACKSLASHES.
-        # This prevents the JSON parser from eating the backslash (e.g., turning \f into FormFeed).
+        # CRITICAL FIX: Raw string (r"...") with specific rules for Sets/Further Math
         latex_instruction = (
             r" \n\nIMPORTANT FORMATTING RULE FOR MATH/SCIENCE:"
-            r" \n1. You must use LaTeX for all mathematical expressions, units, and formulas."
-            r" \n2. CRITICAL: Because this is a JSON response, you must ESCAPE your backslashes."
-            r" \n   - YOU MUST WRITE: '\\frac{1}{2}' (double backslash) to produce a fraction."
-            r" \n   - YOU MUST WRITE: '\\text{km}' (double backslash) for text inside math."
-            r" \n   - DO NOT write '\frac' or '\text' with a single slash, or the JSON will break."
-            r" \n   - Example Output: $24\\frac{1}{4}\\text{km/hr}$"
+            r" \n1. You must use LaTeX for all mathematical expressions."
+            r" \n2. JSON ESCAPING RULES (Follow Strictly):"
+            r" \n   - USE DOUBLE BACKSLASHES for commands: Write '\\frac{1}{2}' (not \frac)."
+            r" \n   - FOR SETS (Further Math): You must escape curly braces."
+            r" \n     Write: '$\\{ 1, 2, 3 \\}$' to display {1, 2, 3}."
+            r" \n     Write: '$\\{ x | x > 5 \\}$' for set builder notation."
+            r" \n   - FOR TEXT INSIDE MATH: Write '\\text{...}' (exactly two backslashes)."
+            r" \n   - DO NOT write '\\\\text' (four backslashes) or it will break."
         )
 
     # Add JSON instruction to the system prompt if required
@@ -91,7 +91,7 @@ def _try_gemini_flash(prompt, api_key, max_tokens, is_json):
         config = {}
         
         # FIX FOR CUT-OFF CONTENT:
-        # If max_tokens is provided, use it. If not, default to 5000.
+        # Using 5000 tokens as requested
         if max_tokens:
             config['maxOutputTokens'] = max_tokens
         else:
@@ -165,7 +165,6 @@ def _try_groq(prompt, api_key, max_tokens, is_json):
             "Content-Type": "application/json"
         }
 
-        # Using a high-capacity model for fallback
         data = {
             "model": "llama-3.3-70b-versatile", 
             "messages": [
