@@ -28,8 +28,7 @@ def generate_course_modules(course):
         print(f"Syllabus not found for {course.exam_type} {course.subject}: {e}")
         syllabus_content = ""
 
-    # --- PROMPT MODIFICATION ---
-    # We will now ask for a JSON object with a "modules" key. This is more reliable.
+    # 2. Build Prompt
     prompt = f"""Based on the following official {course.exam_type} syllabus for {course.subject}, generate a structured study plan consisting of EXACTLY 15 modules.
 
 Syllabus Content:
@@ -50,8 +49,9 @@ Example format:
   ]
 }}"""
 
-    # 3. Call AI with fallback system (with subject-aware prompting)
-    result = call_ai_with_fallback(prompt, max_tokens=2000, is_json=True, subject=course.subject)
+    # 3. Call AI with fallback system 
+    # UPDATED: max_tokens increased to 5000 as requested
+    result = call_ai_with_fallback(prompt, max_tokens=5000, is_json=True, subject=course.subject)
 
     if not result['success']:
         print(f"AI Module Generation Failed for Course {course.id}. Tier: {result.get('tier')}")
@@ -76,24 +76,21 @@ Example format:
         # Try to parse JSON
         parsed_data = json.loads(cleaned_text)
 
-        # --- PARSING MODIFICATION ---
-        # Instead of expecting a list, we now expect a dictionary.
+        # Check if response is a dictionary
         if not isinstance(parsed_data, dict):
             print(f"AI Module Generation Error for Course {course.id}: Response is not a dictionary. Got: {type(parsed_data)}")
-            print(f"Response preview: {str(parsed_data)[:200]}")
             return False
 
-        # Now, extract the list from the dictionary
+        # Extract list from dictionary
         if 'modules' not in parsed_data:
             print(f"AI Module Generation Error for Course {course.id}: Response dictionary does not have a 'modules' key.")
-            print(f"Response preview: {str(parsed_data)[:200]}")
             return False
 
         module_list = parsed_data['modules']
 
-        # Your original validation from here on is perfect
+        # Validation
         if not isinstance(module_list, list):
-            print(f"AI Module Generation Error for Course {course.id}: 'modules' key did not contain a list. Got: {type(module_list)}")
+            print(f"AI Module Generation Error for Course {course.id}: 'modules' key did not contain a list.")
             return False
 
         # Validate we have modules
@@ -120,14 +117,12 @@ Example format:
 
     except json.JSONDecodeError as e:
         print(f"JSON Parsing Failed for Course {course.id}: {e}")
-        print(f"Response text was: {response_text[:500]}")
         return False
     except Exception as e:
         print(f"Unexpected error parsing modules for Course {course.id}: {e}")
         return False
 
     # 5. Save modules to database
-    from courses.models import Module
     with transaction.atomic():
         for index, item in enumerate(module_list):
             Module.objects.create(
