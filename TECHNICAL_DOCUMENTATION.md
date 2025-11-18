@@ -14,41 +14,6 @@ Akili is an AI-powered educational platform designed to help Nigerian students p
 - Dark mode support with system preference detection
 - Progressive Web App (PWA) capabilities for mobile installation
 
-## User Preferences
-
-Preferred communication style: Simple, everyday language.
-
-## Recent Changes (November 18, 2025)
-
-**Critical Production Fixes:**
-1. **Exam System Overhaul**:
-   - Fixed form field name mismatch causing submissions to fail
-   - Implemented client-side timer persistence that survives page refresh
-   - Added automatic localStorage cleanup on successful submission
-   - Implemented submission guard to prevent duplicate POSTs
-   - Added sticky floating timer using IntersectionObserver
-   - Implemented back-button prevention with history manipulation
-
-2. **AI Generation Reliability**:
-   - Added subject-aware prompting (LaTeX only for STEM subjects)
-   - Removed confusing double-backslash instructions from all prompts
-   - Implemented guaranteed credit refunds in ALL error paths
-   - Wrapped all AI generation in comprehensive try-catch with cleanup
-   - Simplified JSON parsing logic for more reliable responses
-
-3. **Production Security Hardening**:
-   - Fixed SECRET_KEY with environment-aware fallback
-   - Configured proper ALLOWED_HOSTS for all environments
-   - Added secure cookie configuration (production vs development)
-   - Implemented HSTS, SSL redirect, and security headers
-   - Added comprehensive error logging middleware
-
-4. **Performance Optimization**:
-   - Added database indexes on all high-query-volume fields
-   - Implemented structured logging with file and console handlers
-   - Prepared rate limiting infrastructure (Redis-ready)
-
-**Deployment Status**: ✅ Production-ready with autoscale configuration
 
 ## System Architecture
 
