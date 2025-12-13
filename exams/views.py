@@ -22,12 +22,8 @@ def start_exam(request, course_id):
     # We get the course object once at the top
     course = get_object_or_404(Course, id=course_id, user=request.user)
 
-    # Delete all completed exams for this user and course (temporary exams)
-    Exam.objects.filter(
-        user=request.user,
-        course=course,
-        completed_at__isnull=False
-    ).delete()
+    # FIXED: Preserve exam history instead of deleting
+    # Old completed exams are now kept for progress tracking
 
     # Deduct 5 credits
     if not request.user.deduct_credits(5):

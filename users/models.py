@@ -86,23 +86,28 @@ class CustomUser(AbstractUser):
     
     @property
     def referral_url(self):
-        """Generate referral URL for this user"""
-        return f"akili.ng/join/{self.username}"
+        """Generate referral URL for this user - uses dynamic domain from settings"""
+        import os
+        # Try to get domain from environment or settings
+        base_url = os.getenv('REPLIT_DEV_DOMAIN', os.getenv('REPL_SLUG', 'akili.ng'))
+        if base_url and not base_url.startswith('http'):
+            base_url = f"https://{base_url}"
+        return f"{base_url}/join/{self.username}"
     
     def reset_daily_credits(self):
         """
         Add daily free credits if a new day has started.
-        CRITICAL: Does NOT reset purchased credits - only adds the daily allowance.
-        This ensures users don't lose credits they paid for.
+        FIXED: Uses max(existing, daily_limit) to ensure paid users keep their purchased credits
+        while free users still get their daily allowance topped up.
         """
         from datetime import date
         today = date.today()
         
         if self.last_daily_reset < today:
-            # Only add the daily allowance if user has fewer credits than the limit
-            # This way purchased credits are preserved
-            if self.tutor_credits < self.daily_credit_limit:
-                self.tutor_credits = self.daily_credit_limit
+            # FIXED: Use max() to preserve purchased credits while topping up free users
+            # If user has more than daily limit (purchased), keep their balance
+            # If user has less than daily limit, top up to daily limit
+            self.tutor_credits = max(self.tutor_credits, self.daily_credit_limit)
             self.last_daily_reset = today
             self.save()
     

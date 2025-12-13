@@ -4,7 +4,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
-from django.urls import reverse  # Required for generating the URL
+from django.urls import reverse
+from django.db import transaction
 from .models import Payment
 
 @login_required
@@ -108,26 +109,32 @@ def verify_payment(request):
         
         # 3. Check status and prevent double-crediting
         if data.get("data", {}).get("status") == "success" and not payment.verified:
-            payment.verified = True
-            payment.save()
-            
-            # 4. Calculate Credits
-            amount = payment.amount
-            credits_to_add = 0
-            
-            if amount >= 2000:
-                credits_to_add = 300
-            elif amount >= 1000:
-                credits_to_add = 120
-            elif amount >= 500:
-                credits_to_add = 50
-            else:
-                credits_to_add = int(amount / 10)
-            
-            # 5. Update User Balance
-            user = payment.user
-            user.tutor_credits += credits_to_add
-            user.save()
+            # FIXED: Use atomic transaction to ensure payment and credit update happen together
+            with transaction.atomic():
+                payment.verified = True
+                payment.save()
+                
+                # 4. Calculate Credits - FIXED: Use kobo (integer) for precision
+                # Payment.amount stores Naira as float, convert to kobo integer
+                amount_kobo = round(payment.amount * 100)
+                
+                # Credit tiers in KOBO to avoid float precision issues
+                CREDIT_TIERS_KOBO = {
+                    200000: 300,  # Premium: ₦2,000 (200000 kobo) = 300 credits
+                    100000: 120,  # Standard: ₦1,000 (100000 kobo) = 120 credits
+                    50000: 50,    # Starter: ₦500 (50000 kobo) = 50 credits
+                }
+                
+                # Find exact match first, then fallback to range-based
+                credits_to_add = CREDIT_TIERS_KOBO.get(amount_kobo)
+                if credits_to_add is None:
+                    # Fallback for custom amounts (1000 kobo = 1 credit)
+                    credits_to_add = amount_kobo // 1000
+                
+                # 5. Update User Balance
+                user = payment.user
+                user.tutor_credits += credits_to_add
+                user.save()
             
             messages.success(request, f"Payment verified successfully! {credits_to_add} credits added to your account.")
             

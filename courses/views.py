@@ -9,6 +9,7 @@ from core.utils.ai_module_generator import generate_course_modules
 from admin_syllabus.models import JAMBSyllabus, SSCESyllabus, JSSSyllabus
 from django.db import transaction
 from django.http import JsonResponse
+import bleach
 
 
 class CourseDashboardView(LoginRequiredMixin, View):
@@ -219,9 +220,34 @@ Provide a detailed, well-structured lesson covering all key concepts."""
         else:
             content_markdown = result['content']
             # Convert markdown to HTML for better display
-            content_html = markdown.markdown(
+            raw_html = markdown.markdown(
                 content_markdown,
                 extensions=['extra', 'codehilite', 'tables', 'fenced_code']
+            )
+            # SECURITY FIX: Sanitize HTML to prevent XSS attacks
+            allowed_tags = [
+                'p', 'br', 'strong', 'em', 'b', 'i', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                'ul', 'ol', 'li', 'pre', 'code', 'blockquote', 'table', 'thead', 'tbody',
+                'tr', 'th', 'td', 'a', 'div', 'span', 'hr', 'sub', 'sup'
+            ]
+            allowed_attrs = {
+                'a': ['href', 'title'],
+                'code': ['class'],
+                'pre': ['class'],
+                'div': ['class'],
+                'span': ['class'],
+                'table': ['class'],
+                'th': ['colspan', 'rowspan'],
+                'td': ['colspan', 'rowspan'],
+            }
+            # Only allow safe URL protocols (no javascript:)
+            allowed_protocols = ['http', 'https', 'mailto']
+            content_html = bleach.clean(
+                raw_html, 
+                tags=allowed_tags, 
+                attributes=allowed_attrs,
+                protocols=allowed_protocols,
+                strip=True
             )
             # Pass 2: Validate the content
             validation_result = validate_ai_content(content_markdown)
@@ -248,6 +274,7 @@ Provide a detailed, well-structured lesson covering all key concepts."""
 class AskTutorView(LoginRequiredMixin, View):
     """
     Handle follow-up questions (costs 1 credit)
+    FIXED: Only deduct credit after successful AI response
     """
     def post(self, request, module_id):
         module = get_object_or_404(Module, id=module_id, course__user=request.user)
@@ -257,14 +284,13 @@ class AskTutorView(LoginRequiredMixin, View):
             messages.error(request, 'Please enter a question.')
             return redirect('courses:lesson_detail', module_id=module_id)
 
-        # Deduct 1 credit
-        if not request.user.deduct_credits(1):
+        # Check if user has credits (but don't deduct yet)
+        if request.user.tutor_credits < 1:
             messages.error(request, 'Insufficient credits. You need 1 credit to ask a question.')
             return redirect('courses:lesson_detail', module_id=module_id)
 
-        # Get AI response
+        # Get AI response FIRST
         from core.utils.ai_fallback import call_ai_with_fallback
-        # --- FIX: Added strict LaTeX escaping rule ---
         prompt = f"""You are a tutor for {module.course.exam_type} {module.course.subject}.
 
 Topic: {module.syllabus_topic}
@@ -273,10 +299,16 @@ Student Question: {question}
 Provide a clear, helpful answer."""
 
         result = call_ai_with_fallback(prompt, max_tokens=1000, subject=module.course.subject)
+        
         if result['success']:
-            messages.success(request, f"AI Tutor: {result['content']}")
+            # Only deduct credit AFTER successful response
+            if request.user.deduct_credits(1):
+                messages.success(request, f"AI Tutor: {result['content']}")
+            else:
+                messages.error(request, 'Insufficient credits.')
         else:
-            messages.error(request, 'AI tutors are at capacity. Please try again later.')
+            # FIXED: No credit deducted on AI failure
+            messages.error(request, 'AI tutors are at capacity. Please try again later. No credits were deducted.')
 
         return redirect('courses:lesson_detail', module_id=module_id)
 
