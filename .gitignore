@@ -39,3 +39,8 @@ replit.nix
 .config/
 .pythonlibs/
 .upm/
+.local/
+.cache/
+
+# Logs
+logs/
