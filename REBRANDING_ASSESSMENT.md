@@ -470,25 +470,26 @@ Build on concepts from previous weeks. The difficulty should match {topic.diffic
 
 ---
 
-### Phase 2: Service Layer Refactor (Week 3-4)
+### Phase 2: Service Layer Refactor (Week 3-4) - COMPLETED
 **Focus: Backend Logic Adaptation**
 
-| Task | Description | Files Affected |
-|------|-------------|----------------|
-| 2.1 | Create CurriculumService abstraction layer | core/services/curriculum.py |
-| 2.2 | Update CourseCreationForm for class-level selection | courses/forms.py |
-| 2.3 | Refactor Course model to use new curriculum FK | courses/models.py |
-| 2.4 | Update course creation view to use CurriculumService | courses/views.py |
-| 2.5 | Refactor AI module generator prompts | core/utils/ai_module_generator.py |
-| 2.6 | Update quiz generation for class-based content | quizzes/utils.py |
-| 2.7 | Update exam generation for class-based content | exams/views.py |
-| 2.8 | Add API endpoint for fetching subjects by class level | courses/urls.py, courses/views.py |
+| Task | Description | Files Affected | Status |
+|------|-------------|----------------|--------|
+| 2.1 | Create CurriculumService abstraction layer | core/services/curriculum.py | DONE |
+| 2.2 | Update CourseCreationForm for class-level selection | courses/forms.py | DONE |
+| 2.3 | Refactor Course model to use new curriculum FK | courses/models.py | DONE |
+| 2.4 | Update course creation view to use CurriculumService | courses/views.py | DONE |
+| 2.5 | Refactor AI module generator prompts | core/utils/ai_module_generator.py | DONE |
+| 2.6 | Update quiz generation for class-based content | quizzes/utils.py | DONE |
+| 2.7 | Update exam generation for class-based content | exams/views.py | DONE |
+| 2.8 | Add API endpoint for fetching subjects by class level | courses/urls.py, courses/views.py | DONE |
 
 **Deliverables:**
-- CurriculumService class
-- Updated forms and views
-- Refactored AI prompts
-- API endpoints for new structure
+- CurriculumService class with 20+ methods for curriculum data access
+- Updated CourseCreationForm with school_level, term, subject fields
+- Refactored Course model with curriculum FKs while maintaining backwards compatibility
+- Updated AI prompts for class-level context
+- API endpoint for dynamic subject loading
 
 ---
 
