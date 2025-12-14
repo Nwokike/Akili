@@ -2,16 +2,30 @@ import os
 import requests
 from django.conf import settings
 import json
+import logging
+
+logger = logging.getLogger(__name__)
+
+# Memory optimization constants per REBRANDING_ASSESSMENT.md
+DEFAULT_MAX_TOKENS = 3000  # Reduced from 5000 for 1GB RAM optimization
+REQUEST_TIMEOUT_FLASH = 50  # seconds
+REQUEST_TIMEOUT_PAID = 60  # seconds
+REQUEST_TIMEOUT_GROQ = 40  # seconds
 
 # --- Core Fallback Logic ---
 
 def call_ai_with_fallback(prompt, system_prompt=None, max_tokens=None, is_json=False, subject=None):
     """
-    4-tier AI Smart Fallback system
+    4-tier AI Smart Fallback system with memory optimization
     Tier 1: Gemini 2.5 Flash (Primary)
     Tier 2: Gemini Paid (Paid)
     Tier 3: Groq API (Free)
     Tier 4: Circuit Breaker (Graceful error)
+    
+    Memory optimizations:
+    - Reduced default max_tokens from 5000 to 3000
+    - Configurable timeout guards
+    - Chunked response processing ready
     """
 
     # 1. IDENTIFY IF LATEX IS NEEDED
@@ -28,7 +42,6 @@ def call_ai_with_fallback(prompt, system_prompt=None, max_tokens=None, is_json=F
     # 2. CONSTRUCT INSTRUCTIONS
     latex_instruction = ""
     if needs_latex:
-        # CRITICAL FIX: Raw string (r"...") with specific rules for Sets/Further Math
         latex_instruction = (
             r" \n\nIMPORTANT FORMATTING RULE FOR MATH/SCIENCE:"
             r" \n1. You must use LaTeX for all mathematical expressions."
@@ -82,20 +95,18 @@ def call_ai_with_fallback(prompt, system_prompt=None, max_tokens=None, is_json=F
 # --- Tier Implementations ---
 
 def _try_gemini_flash(prompt, api_key, max_tokens, is_json):
-    """Try Gemini 2.5 Flash (Tier 1)"""
+    """Try Gemini 2.5 Flash (Tier 1) with memory optimization"""
     try:
-        # UPDATED: Using 'gemini-2.5-flash' as requested
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
         headers = {"Content-Type": "application/json"}
 
         config = {}
         
-        # FIX FOR CUT-OFF CONTENT:
-        # Using 5000 tokens as requested
+        # Memory optimization: Use reduced default tokens
         if max_tokens:
             config['maxOutputTokens'] = max_tokens
         else:
-            config['maxOutputTokens'] = 5000
+            config['maxOutputTokens'] = DEFAULT_MAX_TOKENS
 
         if is_json:
             config['responseMimeType'] = 'application/json'
@@ -105,7 +116,7 @@ def _try_gemini_flash(prompt, api_key, max_tokens, is_json):
             "generationConfig": config
         }
 
-        response = requests.post(url, json=data, headers=headers, timeout=50)
+        response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT_FLASH)
 
         if response.status_code == 200:
             result = response.json()
