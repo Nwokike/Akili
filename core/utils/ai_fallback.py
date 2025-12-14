@@ -1,4 +1,5 @@
 import os
+import gc
 import requests
 from django.conf import settings
 import json
@@ -7,10 +8,18 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Memory optimization constants per REBRANDING_ASSESSMENT.md
-DEFAULT_MAX_TOKENS = 3000  # Reduced from 5000 for 1GB RAM optimization
-REQUEST_TIMEOUT_FLASH = 50  # seconds
-REQUEST_TIMEOUT_PAID = 60  # seconds
-REQUEST_TIMEOUT_GROQ = 40  # seconds
+# Tier-specific token caps for 1GB RAM VM optimization
+TIER_MAX_TOKENS = {
+    'gemini_flash': 2500,  # Primary tier - slightly lower for fast responses
+    'gemini_paid': 3000,   # Paid tier - standard limit
+    'groq': 2000,          # Fallback - most conservative
+}
+DEFAULT_MAX_TOKENS = 2500  # Default fallback
+MAX_RESPONSE_SIZE_BYTES = 512 * 1024  # 512KB max response size
+
+REQUEST_TIMEOUT_FLASH = 45  # seconds - reduced for faster failover
+REQUEST_TIMEOUT_PAID = 55  # seconds
+REQUEST_TIMEOUT_GROQ = 35  # seconds
 
 # --- Core Fallback Logic ---
 
@@ -100,14 +109,10 @@ def _try_gemini_flash(prompt, api_key, max_tokens, is_json):
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
         headers = {"Content-Type": "application/json"}
 
-        config = {}
-        
-        # Memory optimization: Use reduced default tokens
-        if max_tokens:
-            config['maxOutputTokens'] = max_tokens
-        else:
-            config['maxOutputTokens'] = DEFAULT_MAX_TOKENS
+        tier_limit = TIER_MAX_TOKENS['gemini_flash']
+        effective_tokens = min(max_tokens, tier_limit) if max_tokens else tier_limit
 
+        config = {'maxOutputTokens': effective_tokens}
         if is_json:
             config['responseMimeType'] = 'application/json'
 
@@ -119,29 +124,48 @@ def _try_gemini_flash(prompt, api_key, max_tokens, is_json):
         response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT_FLASH)
 
         if response.status_code == 200:
+            if len(response.content) > MAX_RESPONSE_SIZE_BYTES:
+                logger.warning(f"Gemini Flash response too large: {len(response.content)} bytes")
+                return None
+            
             result = response.json()
-            if 'candidates' in result and len(result['candidates']) > 0:
-                candidate = result['candidates'][0]
-                if 'content' in candidate and 'parts' in candidate['content']:
-                    parts = candidate['content']['parts']
-                    if len(parts) > 0 and 'text' in parts[0]:
-                        content = parts[0]['text']
-                        return {'success': True, 'content': content, 'tier': 'Gemini Flash'}
+            content = _extract_gemini_content(result)
+            if content:
+                del result
+                gc.collect()
+                return {'success': True, 'content': content, 'tier': 'Gemini Flash'}
+    except requests.Timeout:
+        logger.warning("Gemini Flash timeout")
     except Exception as e:
-        print(f"Gemini Flash failed: {e}")
+        logger.warning(f"Gemini Flash failed: {e}")
 
     return None
 
 
+def _extract_gemini_content(result):
+    """Memory-efficient content extraction from Gemini response"""
+    try:
+        if 'candidates' in result and len(result['candidates']) > 0:
+            candidate = result['candidates'][0]
+            if 'content' in candidate and 'parts' in candidate['content']:
+                parts = candidate['content']['parts']
+                if len(parts) > 0 and 'text' in parts[0]:
+                    return parts[0]['text']
+    except (KeyError, IndexError):
+        pass
+    return None
+
+
 def _try_gemini_paid(prompt, api_key, max_tokens, is_json):
-    """Try Gemini Paid tier (Tier 2)"""
+    """Try Gemini Paid tier (Tier 2) with memory optimization"""
     try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={api_key}"
         headers = {"Content-Type": "application/json"}
 
-        config = {}
-        if max_tokens:
-            config['maxOutputTokens'] = max_tokens
+        tier_limit = TIER_MAX_TOKENS['gemini_paid']
+        effective_tokens = min(max_tokens, tier_limit) if max_tokens else tier_limit
+
+        config = {'maxOutputTokens': effective_tokens}
         if is_json:
             config['responseMimeType'] = 'application/json'
 
@@ -150,25 +174,29 @@ def _try_gemini_paid(prompt, api_key, max_tokens, is_json):
             "generationConfig": config
         }
 
-        response = requests.post(url, json=data, headers=headers, timeout=60)
+        response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT_PAID)
 
         if response.status_code == 200:
+            if len(response.content) > MAX_RESPONSE_SIZE_BYTES:
+                logger.warning(f"Gemini Paid response too large: {len(response.content)} bytes")
+                return None
+            
             result = response.json()
-            if 'candidates' in result and len(result['candidates']) > 0:
-                candidate = result['candidates'][0]
-                if 'content' in candidate and 'parts' in candidate['content']:
-                    parts = candidate['content']['parts']
-                    if len(parts) > 0 and 'text' in parts[0]:
-                        content = parts[0]['text']
-                        return {'success': True, 'content': content, 'tier': 'Gemini Paid'}
+            content = _extract_gemini_content(result)
+            if content:
+                del result
+                gc.collect()
+                return {'success': True, 'content': content, 'tier': 'Gemini Paid'}
+    except requests.Timeout:
+        logger.warning("Gemini Paid timeout")
     except Exception as e:
-        print(f"Gemini Paid failed: {e}")
+        logger.warning(f"Gemini Paid failed: {e}")
 
     return None
 
 
 def _try_groq(prompt, api_key, max_tokens, is_json):
-    """Try Groq API (Tier 3 Fallback)"""
+    """Try Groq API (Tier 3 Fallback) with memory optimization"""
     try:
         url = "https://api.groq.com/openai/v1/chat/completions"
         headers = {
@@ -176,27 +204,35 @@ def _try_groq(prompt, api_key, max_tokens, is_json):
             "Content-Type": "application/json"
         }
 
+        tier_limit = TIER_MAX_TOKENS['groq']
+        effective_tokens = min(max_tokens, tier_limit) if max_tokens else tier_limit
+
         data = {
             "model": "llama-3.3-70b-versatile", 
             "messages": [
                 {"role": "user", "content": prompt}
             ],
             "response_format": {"type": "json_object"} if is_json else {"type": "text"},
-            "max_tokens": max_tokens if max_tokens else None,
+            "max_tokens": effective_tokens,
         }
 
-        if not data['max_tokens']:
-            del data['max_tokens']
-
-        response = requests.post(url, json=data, headers=headers, timeout=40)
+        response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT_GROQ)
 
         if response.status_code == 200:
+            if len(response.content) > MAX_RESPONSE_SIZE_BYTES:
+                logger.warning(f"Groq response too large: {len(response.content)} bytes")
+                return None
+            
             result = response.json()
             if 'choices' in result and len(result['choices']) > 0:
                 content = result['choices'][0]['message']['content']
+                del result
+                gc.collect()
                 return {'success': True, 'content': content, 'tier': 'Groq'}
+    except requests.Timeout:
+        logger.warning("Groq timeout")
     except Exception as e:
-        print(f"Groq failed: {e}")
+        logger.warning(f"Groq failed: {e}")
 
     return None
 
