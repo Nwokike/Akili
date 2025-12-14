@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Parent Dashboard - Akili{% endblock %}
+{% block page_title %}Parent Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-8 px-4">
+  {% if notifications %}
+  <div class="mb-6">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Notifications</h2>
+      <a href="{% url 'assessments:mark_all_read' %}" class="text-sm text-primary-600 hover:underline">Mark all as read</a>
+    </div>
+    <div class="space-y-2">
+      {% for notification in notifications %}
+      <a href="{% url 'assessments:mark_notification_read' notification.pk %}" class="block card hover:shadow-md transition">
+        <div class="flex items-center gap-3">
+          <span class="w-2 h-2 bg-primary-500 rounded-full"></span>
+          <div>
+            <p class="font-medium text-gray-900 dark:text-white">{{ notification.title }}</p>
+            <p class="text-sm text-gray-500">{{ notification.message|truncatewords:20 }}</p>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">My Children</h2>
+  <div class="grid gap-6">
+    {% for data in children_data %}
+    <div class="card">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ data.child.get_full_name }}</h3>
+          <p class="text-sm text-gray-500">{{ data.child.email }}</p>
+        </div>
+        <a href="{% url 'assessments:child_progress' data.child.pk %}" class="btn-primary">View Progress</a>
+      </div>
+      
+      {% if data.latest_report %}
+      <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Latest Report: {{ data.latest_report.term.name }}</p>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Average Score: {{ data.latest_report.average_score }}%</p>
+      </div>
+      {% endif %}
+    </div>
+    {% empty %}
+    <div class="card text-center py-8">
+      <p class="text-gray-500">No children linked to your account yet.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

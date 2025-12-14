@@ -20,6 +20,7 @@ urlpatterns = [
     path('quizzes/', include('quizzes.urls')),
     path('exams/', include('exams.urls')),
     path('payments/', include('payments.urls')),
+    path('assessments/', include('assessments.urls')),
     
     # Legal pages
     path('privacy/', core_views.privacy_view, name='privacy'),

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Teacher Dashboard - Akili{% endblock %}
+{% block page_title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-8 px-4">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="card bg-blue-50 dark:bg-blue-900/20">
+      <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-200">My Classes</h3>
+      <p class="text-3xl font-bold text-blue-600 dark:text-blue-400">{{ classes.count }}</p>
+    </div>
+    <div class="card bg-yellow-50 dark:bg-yellow-900/20">
+      <h3 class="text-lg font-semibold text-yellow-800 dark:text-yellow-200">Pending Submissions</h3>
+      <p class="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{{ pending_submissions }}</p>
+    </div>
+    <div class="card bg-green-50 dark:bg-green-900/20">
+      <h3 class="text-lg font-semibold text-green-800 dark:text-green-200">Verified</h3>
+      <p class="text-3xl font-bold text-green-600 dark:text-green-400">{% if teacher.is_verified %}Yes{% else %}Pending{% endif %}</p>
+    </div>
+  </div>
+
+  <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">My Classes</h2>
+  <div class="grid gap-4">
+    {% for class in classes %}
+    <div class="card">
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="font-semibold text-gray-900 dark:text-white">{{ class.subject.name }}</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">{{ class.school_level.name }} - {{ class.academic_session.name }}</p>
+          <p class="text-sm text-gray-500">{{ class.students.count }} students</p>
+        </div>
+        <div class="flex gap-2">
+          <a href="{% url 'assessments:class_detail' class.pk %}" class="btn-secondary">View</a>
+          <a href="{% url 'assessments:class_analytics' class.pk %}" class="btn-primary">Analytics</a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="card text-center py-8">
+      <p class="text-gray-500">No classes assigned yet.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}{{ teacher_class.subject.name }} - {{ teacher_class.school_level.name }} - Akili{% endblock %}
+{% block page_title %}Class Details{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-8 px-4">
+  <div class="card mb-6">
+    <div class="flex justify-between items-start">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ teacher_class.subject.name }}</h2>
+        <p class="text-gray-600 dark:text-gray-400">{{ teacher_class.school_level.name }} - {{ teacher_class.academic_session.name }}</p>
+      </div>
+      <div class="flex space-x-2">
+        <a href="{% url 'assessments:class_analytics' teacher_class.pk %}" class="btn-secondary">View Analytics</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-6">
+    <div class="card">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        Students ({{ students.count }})
+      </h3>
+      <div class="space-y-3 max-h-96 overflow-y-auto">
+        {% for student in students %}
+        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div class="flex items-center">
+            <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-3">
+              <span class="text-primary-600 dark:text-primary-400 font-semibold">
+                {{ student.first_name|slice:":1" }}{{ student.last_name|slice:":1" }}
+              </span>
+            </div>
+            <div>
+              <p class="font-medium text-gray-900 dark:text-white">{{ student.get_full_name }}</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">{{ student.email }}</p>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-gray-500 dark:text-gray-400 py-4">No students enrolled yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Assignments</h3>
+      </div>
+      <div class="space-y-3 max-h-96 overflow-y-auto">
+        {% for assignment in assignments %}
+        <div class="p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+          <div class="flex justify-between items-start">
+            <div>
+              <h4 class="font-medium text-gray-900 dark:text-white">{{ assignment.title }}</h4>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Due: {{ assignment.due_date|date:"M d, Y H:i" }}
+              </p>
+            </div>
+            <span class="px-2 py-1 text-xs rounded
+              {% if assignment.status == 'PUBLISHED' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+              {% elif assignment.status == 'CLOSED' %}bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300
+              {% else %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200{% endif %}">
+              {{ assignment.get_status_display }}
+            </span>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">{{ assignment.description|truncatewords:20 }}</p>
+          <div class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            {{ assignment.submissions.count }} submissions | {{ assignment.total_marks }} marks
+          </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-gray-500 dark:text-gray-400 py-4">No assignments yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <a href="{% url 'assessments:teacher_dashboard' %}" class="btn-secondary">Back to Dashboard</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Class Analytics - {{ teacher_class.subject.name }} - Akili{% endblock %}
+{% block page_title %}Class Analytics{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-8 px-4">
+  <div class="card mb-6">
+    <div class="flex justify-between items-start">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ teacher_class.subject.name }} Analytics</h2>
+        <p class="text-gray-600 dark:text-gray-400">{{ teacher_class.school_level.name }} - {{ teacher_class.academic_session.name }}</p>
+      </div>
+      <a href="{% url 'assessments:class_detail' teacher_class.pk %}" class="btn-secondary">Back to Class</a>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="card text-center">
+      <p class="text-4xl font-bold text-primary-600 dark:text-primary-400">{{ average_score }}%</p>
+      <p class="text-gray-500 dark:text-gray-400">Class Average</p>
+    </div>
+    <div class="card text-center">
+      <p class="text-4xl font-bold text-blue-600 dark:text-blue-400">{{ total_submissions }}</p>
+      <p class="text-gray-500 dark:text-gray-400">Total Submissions</p>
+    </div>
+    <div class="card text-center">
+      <p class="text-4xl font-bold text-green-600 dark:text-green-400">{{ student_performance|length }}</p>
+      <p class="text-gray-500 dark:text-gray-400">Active Students</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Student Performance</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-gray-200 dark:border-gray-700">
+            <th class="text-left py-3 px-4 text-gray-600 dark:text-gray-400">Student</th>
+            <th class="text-center py-3 px-4 text-gray-600 dark:text-gray-400">Average Score</th>
+            <th class="text-center py-3 px-4 text-gray-600 dark:text-gray-400">Submissions</th>
+            <th class="text-center py-3 px-4 text-gray-600 dark:text-gray-400">Performance</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in student_performance %}
+          <tr class="border-b border-gray-100 dark:border-gray-700">
+            <td class="py-3 px-4">
+              <div class="flex items-center">
+                <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-3">
+                  <span class="text-primary-600 dark:text-primary-400 text-sm font-semibold">
+                    {{ item.student.first_name|slice:":1" }}{{ item.student.last_name|slice:":1" }}
+                  </span>
+                </div>
+                <span class="text-gray-900 dark:text-white">{{ item.student.get_full_name }}</span>
+              </div>
+            </td>
+            <td class="text-center py-3 px-4">
+              <span class="font-semibold text-gray-900 dark:text-white">{{ item.average_score }}%</span>
+            </td>
+            <td class="text-center py-3 px-4 text-gray-600 dark:text-gray-400">
+              {{ item.submissions }}
+            </td>
+            <td class="text-center py-3 px-4">
+              <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div class="h-2 rounded-full 
+                  {% if item.average_score >= 70 %}bg-green-500
+                  {% elif item.average_score >= 50 %}bg-yellow-500
+                  {% else %}bg-red-500{% endif %}" 
+                  style="width: {{ item.average_score }}%"></div>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="py-8 text-center text-gray-500 dark:text-gray-400">
+              No performance data available yet.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

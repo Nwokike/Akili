@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Progress Report - Akili{% endblock %}
+{% block page_title %}Progress Report{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <div class="card mb-6">
+    <div class="flex justify-between items-start">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ report.term.name }} Report</h2>
+        <p class="text-gray-600 dark:text-gray-400">{{ report.academic_session.name }} - {{ report.school_level.name }}</p>
+      </div>
+      <div class="text-right">
+        <p class="text-sm text-gray-500 dark:text-gray-400">Generated: {{ report.generated_at|date:"M d, Y" }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="card text-center">
+      <p class="text-3xl font-bold text-primary-600 dark:text-primary-400">{{ report.average_score|floatformat:1 }}%</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Average Score</p>
+    </div>
+    <div class="card text-center">
+      <p class="text-3xl font-bold text-blue-600 dark:text-blue-400">{{ report.average_grade_point|floatformat:2 }}</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400">GPA</p>
+    </div>
+    <div class="card text-center">
+      <p class="text-3xl font-bold text-green-600 dark:text-green-400">{{ report.subjects_passed }}/{{ report.total_subjects }}</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Subjects Passed</p>
+    </div>
+    <div class="card text-center">
+      {% if report.position %}
+      <p class="text-3xl font-bold text-purple-600 dark:text-purple-400">#{{ report.position }}</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Position (of {{ report.total_students }})</p>
+      {% else %}
+      <p class="text-3xl font-bold text-gray-400">-</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Position</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card mb-6">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Subject Grades</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-gray-200 dark:border-gray-700">
+            <th class="text-left py-3 px-2 text-gray-600 dark:text-gray-400">Subject</th>
+            <th class="text-center py-3 px-2 text-gray-600 dark:text-gray-400">CA Score</th>
+            <th class="text-center py-3 px-2 text-gray-600 dark:text-gray-400">Exam Score</th>
+            <th class="text-center py-3 px-2 text-gray-600 dark:text-gray-400">Total</th>
+            <th class="text-center py-3 px-2 text-gray-600 dark:text-gray-400">Grade</th>
+            <th class="text-left py-3 px-2 text-gray-600 dark:text-gray-400">Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for grade in grades %}
+          <tr class="border-b border-gray-100 dark:border-gray-700">
+            <td class="py-3 px-2 text-gray-900 dark:text-white">{{ grade.curriculum.subject.name }}</td>
+            <td class="text-center py-3 px-2 text-gray-700 dark:text-gray-300">{{ grade.continuous_assessment_score|floatformat:0 }}</td>
+            <td class="text-center py-3 px-2 text-gray-700 dark:text-gray-300">{{ grade.exam_score|floatformat:0 }}</td>
+            <td class="text-center py-3 px-2 font-semibold text-gray-900 dark:text-white">{{ grade.total_score|floatformat:0 }}</td>
+            <td class="text-center py-3 px-2">
+              <span class="px-2 py-1 rounded text-sm font-bold
+                {% if grade.grade_letter == 'A' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+                {% elif grade.grade_letter == 'B' %}bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
+                {% elif grade.grade_letter == 'C' %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
+                {% elif grade.grade_letter == 'D' %}bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200
+                {% elif grade.grade_letter == 'E' %}bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200
+                {% else %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200{% endif %}">
+                {{ grade.grade_letter }}
+              </span>
+            </td>
+            <td class="py-3 px-2 text-gray-600 dark:text-gray-400">{{ grade.remarks }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="py-8 text-center text-gray-500 dark:text-gray-400">No grades available.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% if report.teacher_remarks %}
+  <div class="card mb-4">
+    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Teacher's Remarks</h4>
+    <p class="text-gray-700 dark:text-gray-300">{{ report.teacher_remarks }}</p>
+  </div>
+  {% endif %}
+
+  {% if report.principal_remarks %}
+  <div class="card mb-4">
+    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Principal's Remarks</h4>
+    <p class="text-gray-700 dark:text-gray-300">{{ report.principal_remarks }}</p>
+  </div>
+  {% endif %}
+
+  <div class="mt-6 text-center">
+    <a href="{% url 'assessments:my_grades' %}" class="btn-secondary">Back to Grades</a>
+  </div>
+</div>
+{% endblock %}

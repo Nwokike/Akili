@@ -105,6 +105,7 @@ INSTALLED_APPS = [
     'exams',
     'payments',
     'curriculum',
+    'assessments',
 ]
 
 MIDDLEWARE = [

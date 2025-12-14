@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load assessment_tags %}
+{% block title %}Assessment Result - Akili{% endblock %}
+{% block page_title %}Assessment Result{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <div class="card mb-6">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ assessment.title }}</h2>
+    <p class="text-gray-600 dark:text-gray-400">
+      {{ assessment.curriculum.subject.name }} - {{ assessment.curriculum.school_level.name }}
+    </p>
+  </div>
+
+  <div class="card mb-6 {% if submission.is_passing %}bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700{% else %}bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700{% endif %}">
+    <div class="text-center py-4">
+      <h3 class="text-4xl font-bold {% if submission.is_passing %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %} mb-2">
+        {{ submission.score|floatformat:0 }}/{{ assessment.total_marks }}
+      </h3>
+      <p class="text-lg {% if submission.is_passing %}text-green-700 dark:text-green-300{% else %}text-red-700 dark:text-red-300{% endif %}">
+        {{ submission.percentage }}%
+      </p>
+      <p class="text-sm {% if submission.is_passing %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %} mt-2">
+        {% if submission.is_passing %}
+        Congratulations! You passed!
+        {% else %}
+        You need {{ assessment.passing_marks }} marks to pass. Keep practicing!
+        {% endif %}
+      </p>
+    </div>
+  </div>
+
+  <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Review Your Answers</h3>
+  
+  <div class="space-y-4">
+    {% for question in questions %}
+    <div class="card">
+      <div class="flex justify-between items-start mb-3">
+        <h4 class="font-semibold text-gray-900 dark:text-white">Question {{ forloop.counter }}</h4>
+        {% with user_answer=submission.answers|default_if_none:"{}"|dictsort %}
+        {% if submission.answers %}
+          {% with answer=submission.answers|get_item:question.id %}
+            {% if answer == question.correct_answer %}
+            <span class="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded text-sm">Correct</span>
+            {% else %}
+            <span class="px-2 py-1 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 rounded text-sm">Incorrect</span>
+            {% endif %}
+          {% endwith %}
+        {% endif %}
+        {% endwith %}
+      </div>
+      <p class="text-gray-700 dark:text-gray-300 mb-3">{{ question.question_text }}</p>
+      
+      <div class="text-sm space-y-1">
+        <p class="text-green-600 dark:text-green-400">
+          <strong>Correct Answer:</strong> {{ question.correct_answer }}
+        </p>
+        {% if question.explanation %}
+        <p class="text-gray-600 dark:text-gray-400 mt-2">
+          <strong>Explanation:</strong> {{ question.explanation }}
+        </p>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if submission.feedback %}
+  <div class="card mt-6">
+    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Teacher Feedback</h4>
+    <p class="text-gray-700 dark:text-gray-300">{{ submission.feedback }}</p>
+  </div>
+  {% endif %}
+
+  <div class="mt-6 text-center">
+    <a href="{% url 'assessments:assessments_list' %}" class="btn-primary">Back to Assessments</a>
+  </div>
+</div>
+{% endblock %}

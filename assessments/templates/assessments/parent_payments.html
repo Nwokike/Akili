@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Management - Akili{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Payment Management</h1>
+        <p class="text-gray-600 dark:text-gray-400">View your payment history and manage credits</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Your Credits</h3>
+            <p class="text-3xl font-bold text-green-600">{{ parent_credits }}</p>
+            <a href="{% url 'payments:initialize_payment' %}" 
+               class="mt-4 inline-block bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm">
+                Buy More Credits
+            </a>
+        </div>
+        
+        {% for data in children_credits %}
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                {{ data.child.get_full_name|default:data.child.email }}'s Credits
+            </h3>
+            <p class="text-3xl font-bold text-blue-600">{{ data.credits }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Your Payment History</h2>
+        
+        {% if payments %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Credits</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for payment in payments %}
+                    <tr>
+                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                            {{ payment.created_at|date:"M d, Y" }}
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                            ₦{{ payment.amount|floatformat:0 }}
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                            {{ payment.credits }}
+                        </td>
+                        <td class="px-4 py-3">
+                            {% if payment.status == 'success' %}
+                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                Success
+                            </span>
+                            {% elif payment.status == 'pending' %}
+                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">
+                                Pending
+                            </span>
+                            {% else %}
+                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">
+                                Failed
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-gray-500 dark:text-gray-400 text-center py-4">
+            No payment history available
+        </p>
+        {% endif %}
+    </div>
+
+    <div class="mt-6">
+        <a href="{% url 'assessments:parent_dashboard' %}" 
+           class="text-primary-600 hover:text-primary-700">
+            &larr; Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}
