@@ -443,8 +443,8 @@ For technical support or questions:
 
 ## Contributors
 
-- **Ogechi Obinwa** - Lead Developer ([@Ogetec-python](https://github.com/Ogetec-python))
-- **Stephen Ayankoso** - Developer ([@Steve-ayan](https://github.com/Steve-ayan))
+- **Ogechi Obinwa** - ([@Ogetec-python](https://github.com/Ogetec-python))
+- **Stephen Ayankoso** - ([@Steve-ayan](https://github.com/Steve-ayan))
 
 ---
 
