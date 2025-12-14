@@ -2,12 +2,12 @@ from django.db import transaction
 import json
 
 from core.utils.ai_fallback import call_ai_with_fallback
+from core.services.curriculum import CurriculumService
 
 
 def generate_course_modules(course):
     from courses.models import Module
     from admin_syllabus.models import JAMBSyllabus, SSCESyllabus, JSSSyllabus
-    from core.services.curriculum import CurriculumService
 
     if course.curriculum:
         return generate_curriculum_modules(course)
