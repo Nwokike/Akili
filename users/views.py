@@ -80,15 +80,6 @@ def logout_view(request):
     return redirect('login')
 
 
-# NOTE: This dashboard is usually in core/views.py, but we keep it here for now
-@login_required
-def dashboard_view(request):
-    """Main dashboard"""
-    return render(request, 'core/dashboard.html', {
-        'referral_url': f"{request.scheme}://{request.get_host()}/join/{request.user.username}"
-    })
-
-
 def referral_signup_view(request, username):
     """Handle referral signup via /join/username"""
     return redirect(f'{reverse("signup")}?ref={username}')
