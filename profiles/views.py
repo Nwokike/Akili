@@ -5,22 +5,34 @@ from django.conf import settings
 from django.db import transaction 
 from django.contrib import messages
 from django.urls import reverse
-from django.contrib.auth import logout as auth_logout # Renamed logout to avoid potential conflict
+from django.contrib.auth import logout as auth_logout
+from users.models import CustomUser
 
 
 class ProfileView(LoginRequiredMixin, View):
-    """
-    Developer 1 Task: Displays the user's profile details and referral information.
-    """
+    """Displays the user's profile details and referral information."""
     def get(self, request):
-        max_referral_credits = settings.AKILI_MAX_REFERRAL_CREDITS 
-        
+        max_referral_credits = settings.AKILI_MAX_REFERRAL_CREDITS
+
+        # Calculate actual referral stats (filter by exact username, handle null/blank safely)
+        username = request.user.username
+        if username:
+            referral_count = CustomUser.objects.filter(
+                referred_by__isnull=False,
+                referred_by=username
+            ).exclude(referred_by='').count()
+        else:
+            referral_count = 0
+        bonus_credits_earned = referral_count * 2  # 2 credits per referral
+
         context = {
             'user_profile': request.user,
             'title': 'My Profile & Settings',
             'max_referral_credits': max_referral_credits,
+            'referral_count': referral_count,
+            'bonus_credits_earned': bonus_credits_earned,
         }
-        
+
         return render(request, 'profiles/profile.html', context)
     
 class DeleteAccountView(LoginRequiredMixin, View):

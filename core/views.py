@@ -16,8 +16,8 @@ def dashboard_view(request):
     from quizzes.models import QuizAttempt
     from exams.models import Exam
 
-    # Get user's courses
-    user_courses = Course.objects.filter(user=request.user)
+    # Get user's courses with prefetch to avoid N+1 queries
+    user_courses = Course.objects.filter(user=request.user).prefetch_related('modules')
 
     # Get statistics
     courses_count = user_courses.count()
@@ -31,7 +31,7 @@ def dashboard_view(request):
         'courses_count': courses_count,
         'quizzes_count': quizzes_count,
         'exams_count': exams_count,
-        'user_courses': user_courses[:3],  # Show first 3 courses on dashboard
+        'user_courses': user_courses[:3],
     })
 
 
@@ -41,8 +41,6 @@ def exam_center_view(request):
     from exams.models import Exam
     from courses.models import Course
 
-    # Get user's recent exams
-    # --- THIS IS THE FIXED LINE ---
     recent_exams = Exam.objects.filter(user=request.user).select_related('course').order_by('-started_at')[:10]
 
     # Get user's courses with modules
@@ -59,7 +57,7 @@ def exam_center_view(request):
 
 @login_required
 def profile_view(request):
-    """User profile - Developer 1 will implement"""
+    """User profile page"""
     return render(request, 'profiles/profile.html')
 
 

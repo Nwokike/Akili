@@ -14,34 +14,54 @@ def signup_view(request):
     """Handle user signup with optional referral"""
     if request.user.is_authenticated:
         return redirect('dashboard')
-    
+
     referred_by = request.GET.get('ref', '')
-    
+    referrer_name = ''
+
+    # Get referrer's friendly name for display
+    if referred_by:
+        try:
+            referrer = CustomUser.objects.get(username=referred_by)
+            referrer_name = referrer.first_name or referrer.get_full_name() or referred_by
+        except CustomUser.DoesNotExist:
+            referred_by = ''  # Invalid referrer
+
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            
+            # Use commit=False to set referral before saving
+            user = form.save(commit=False)
+
             # Handle referral
             if referred_by:
                 try:
-                    # NOTE: This assumes CustomUser.increase_daily_limit is defined.
                     referrer = CustomUser.objects.get(username=referred_by)
                     user.referred_by = referrer.username
-                    referrer.increase_daily_limit(2) 
-                    user.save()
                 except CustomUser.DoesNotExist:
                     pass
-            
+
+            # Save user and any M2M relationships
+            user.save()
+            form.save_m2m()
+
+            # Award referral bonus after user is saved
+            if referred_by and user.referred_by:
+                try:
+                    referrer = CustomUser.objects.get(username=referred_by)
+                    referrer.increase_daily_limit(2)
+                except CustomUser.DoesNotExist:
+                    pass
+
             login(request, user)
             messages.success(request, 'Welcome to Akili!')
             return redirect('dashboard')
     else:
         form = SignupForm()
-    
+
     return render(request, 'users/signup.html', {
         'form': form,
-        'referred_by': referred_by
+        'referred_by': referred_by,
+        'referrer_name': referrer_name
     })
 
 

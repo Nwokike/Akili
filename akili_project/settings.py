@@ -266,7 +266,7 @@ LOGGING = {
         },
         'file': {
             'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'akili.log',
+            'filename': os.environ.get('LOG_FILE_PATH', BASE_DIR / 'logs' / 'akili.log'),
             'formatter': 'verbose',
         },
     },
@@ -289,11 +289,12 @@ LOGGING = {
 }
 
 # Create logs directory if it doesn't exist
-os.makedirs(BASE_DIR / 'logs', exist_ok=True)
+# Use LOG_DIR environment variable in production (e.g., /var/log/akili)
+log_dir = os.environ.get('LOG_DIR', BASE_DIR / 'logs')
+os.makedirs(log_dir, exist_ok=True)
 
 
 # Cache Configuration
-# Local Memory Cache
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
@@ -302,6 +303,14 @@ CACHES = {
         'OPTIONS': {
             'MAX_ENTRIES': 1000,
             'CULL_FREQUENCY': 3,
+        }
+    },
+    'ratelimit': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'ratelimit-cache',
+        'TIMEOUT': 60,
+        'OPTIONS': {
+            'MAX_ENTRIES': 5000,
         }
     }
 }

@@ -9,6 +9,16 @@ logger = logging.getLogger(__name__)
 
 # Memory optimization constants per REBRANDING_ASSESSMENT.md
 # Tier-specific token caps for 1GB RAM VM optimization
+#
+# TOKEN LIMIT DOCUMENTATION (WARNING-4):
+# These limits are intentionally conservative for 1GB RAM Google Cloud VM:
+# - Lower token limits reduce memory usage per request
+# - Prevents large response buffering that could cause OOM
+# - 2000-3000 tokens sufficient for most lesson content and quiz generation
+# - For exam generation (20 questions), max_tokens=4000 is passed explicitly
+# 
+# To adjust for higher-memory VMs, increase these values proportionally.
+# Consider making configurable via environment variables for production tuning.
 TIER_MAX_TOKENS = {
     'gemini_flash': 2500,  # Primary tier - slightly lower for fast responses
     'gemini_paid': 3000,   # Paid tier - standard limit

@@ -2,13 +2,15 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
+import json
+import logging
 from .models import Exam, ExamQuestion
 from core.utils.ai_fallback import call_ai_with_fallback
 from core.services.curriculum import CurriculumService
-import json
-
 from courses.models import Course
 from admin_syllabus.models import JAMBSyllabus, SSCESyllabus, JSSSyllabus
+
+logger = logging.getLogger(__name__)
 
 
 @login_required
@@ -124,7 +126,7 @@ Generate 20 comprehensive questions now:"""
         result = call_ai_with_fallback(prompt, max_tokens=4000, is_json=True, subject=course.subject)
 
         if not result['success']:
-            print(f"AI failure (success=False): {result.get('content')}")
+            logger.error(f"AI failure (success=False): {result.get('content')}")
             raise Exception("AI service unavailable")
 
         response_text = result['content'].strip()
@@ -170,7 +172,7 @@ Generate 20 comprehensive questions now:"""
         exam.save()
 
     except Exception as e:
-        print(f"Exam generation error: {e}")
+        logger.error(f"Exam generation error: {e}")
         exam.delete()
         request.user.add_credits(5)
         messages.error(request, 'Sorry, the AI failed to generate a valid exam. Your credits have been refunded. Please try again.')

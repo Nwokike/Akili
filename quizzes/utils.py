@@ -1,9 +1,12 @@
 from django.db import transaction
 import json
+import logging
 from core.utils.ai_fallback import call_ai_with_fallback 
 from users.models import CustomUser 
 from courses.models import Module, Course
 from .models import QuizAttempt
+
+logger = logging.getLogger(__name__)
 
 
 def generate_quiz_and_save(module: Module, user: CustomUser, num_questions=5) -> tuple[bool, str]:
@@ -55,12 +58,12 @@ Generate {num_questions} questions now with perfect JSON:"""
     result = call_ai_with_fallback(prompt, max_tokens=3000, is_json=True, subject=course_subject) 
 
     if not result['success']:
-        print(f"AI Quiz Generation FAILED. Tier: {result.get('tier')}. Error: {result.get('content')[:100]}...")
+        logger.error(f"AI Quiz Generation FAILED. Tier: {result.get('tier')}. Error: {result.get('content')[:100]}...")
         return False, "AI service is unavailable or returned an unrecoverable error."
 
     response_text = result['content']
 
-    print(f"\n--- RAW AI RESPONSE START (Tier: {result.get('tier')}) ---\n{response_text[:500]}...\n--- RAW AI RESPONSE END ---\n")
+    logger.debug(f"AI Quiz Response (Tier: {result.get('tier')}): {response_text[:500]}...")
 
     try:
         cleaned_text = response_text.strip()
@@ -100,12 +103,10 @@ Generate {num_questions} questions now with perfect JSON:"""
                 raise ValueError(f"Question {i} missing required fields.")
 
     except json.JSONDecodeError as e:
-        print(f"JSON Parsing FAILED for Quiz generation: {e}")
-        print(f"Raw response (first 500 chars): {response_text[:500]}")
+        logger.error(f"JSON Parsing FAILED for Quiz generation: {e}. Response: {response_text[:500]}")
         return False, "AI generated invalid JSON. Please try again."
     except ValueError as e:
-        print(f"JSON Validation FAILED: {e}")
-        print(f"Raw response (first 500 chars): {response_text[:500]}")
+        logger.error(f"JSON Validation FAILED: {e}. Response: {response_text[:500]}")
         return False, "AI response format is invalid. Please try again."
 
     with transaction.atomic():

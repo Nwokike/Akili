@@ -226,16 +226,34 @@ def parent_dashboard(request):
         return redirect('core:dashboard')
     
     children = parent.children.all()
+    child_ids = list(children.values_list('id', flat=True))
+    
+    all_grades = Grade.objects.filter(
+        student_id__in=child_ids
+    ).select_related('curriculum__subject', 'student').order_by('-id')
+    
+    all_reports = ProgressReport.objects.filter(
+        student_id__in=child_ids
+    ).select_related('student').order_by('-generated_at')
+    
+    grades_by_child = {}
+    for grade in all_grades:
+        if grade.student_id not in grades_by_child:
+            grades_by_child[grade.student_id] = []
+        if len(grades_by_child[grade.student_id]) < 5:
+            grades_by_child[grade.student_id].append(grade)
+    
+    reports_by_child = {}
+    for report in all_reports:
+        if report.student_id not in reports_by_child:
+            reports_by_child[report.student_id] = report
     
     children_data = []
     for child in children:
-        grades = Grade.objects.filter(student=child).select_related('curriculum__subject')
-        reports = ProgressReport.objects.filter(student=child).order_by('-generated_at')[:1]
-        
         children_data.append({
             'child': child,
-            'recent_grades': grades[:5],
-            'latest_report': reports.first() if reports else None,
+            'recent_grades': grades_by_child.get(child.id, []),
+            'latest_report': reports_by_child.get(child.id),
         })
     
     notifications = Notification.objects.filter(

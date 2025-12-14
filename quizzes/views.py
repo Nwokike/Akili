@@ -3,12 +3,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
 from django.utils import timezone
-import json
-from django.db.models import Avg, Sum # <-- IMPORTED FOR STATS
+import logging
+from django.db.models import Sum
 
 from courses.models import Module
 from .utils import generate_quiz_and_save
 from .models import QuizAttempt
+
+logger = logging.getLogger(__name__)
 
 
 @login_required
@@ -53,7 +55,7 @@ def start_quiz_view(request, module_id):
             messages.error(request, 'Sorry, the AI tutor is busy. Please try again.')
             return redirect(reverse('courses:module_listing', kwargs={'course_id': module.course.id}))
     except Exception as e:
-        print(f"Quiz generation error: {e}")
+        logger.error(f"Quiz generation error: {e}")
         messages.error(request, 'Sorry, the AI tutor is busy. Please try again.')
         return redirect(reverse('courses:module_listing', kwargs={'course_id': module.course.id}))
 

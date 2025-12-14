@@ -10,7 +10,11 @@ from core.services.curriculum import CurriculumService
 from admin_syllabus.models import JAMBSyllabus, SSCESyllabus, JSSSyllabus
 from django.db import transaction
 from django.http import JsonResponse
+from quizzes.models import QuizAttempt
 import bleach
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class CourseDashboardView(LoginRequiredMixin, View):
@@ -80,7 +84,7 @@ class CourseCreationView(LoginRequiredMixin, View):
                 return redirect('dashboard')
 
             except Exception as e:
-                print(f"Course creation failed and rolled back: {e}")
+                logger.error(f"Course creation failed and rolled back: {e}")
                 messages.error(request, 'Sorry, the AI tutor is busy. Please try again.')
 
         context = {
@@ -93,7 +97,33 @@ class CourseCreationView(LoginRequiredMixin, View):
 class ModuleListingView(LoginRequiredMixin, View):
     def get(self, request, course_id):
         course = get_object_or_404(Course, id=course_id, user=request.user)
-        modules = course.modules.all().order_by('order')
+        modules = list(course.modules.all().order_by('order'))
+
+        # Prefetch all quiz attempts for this user and course's modules in a single query
+        module_ids = [m.id for m in modules]
+        all_attempts = QuizAttempt.objects.filter(
+            user=request.user,
+            module_id__in=module_ids
+        ).select_related('module')
+
+        # Build lookup dictionaries for O(1) access
+        passed_modules = set()
+        best_attempts = {}
+        incomplete_quizzes = {}
+
+        for attempt in all_attempts:
+            mid = attempt.module_id
+            if attempt.passed:
+                passed_modules.add(mid)
+            if attempt.completed_at:
+                if mid not in best_attempts or attempt.score > best_attempts[mid].score:
+                    best_attempts[mid] = attempt
+            else:
+                if mid not in incomplete_quizzes:
+                    incomplete_quizzes[mid] = attempt
+
+        # Build module order lookup
+        module_by_order = {m.order: m for m in modules}
 
         modules_with_status = []
         for module in modules:
@@ -101,38 +131,17 @@ class ModuleListingView(LoginRequiredMixin, View):
             lock_reason = ""
 
             if module.order > 1:
-                previous_module = course.modules.filter(order=module.order - 1).first()
-                if previous_module:
-                    from quizzes.models import QuizAttempt
-                    passed_previous = QuizAttempt.objects.filter(
-                        user=request.user,
-                        module=previous_module,
-                        passed=True
-                    ).exists()
-
-                    if not passed_previous:
-                        is_locked = True
-                        lock_reason = f"Complete Module {previous_module.order} quiz with 60% or higher to unlock"
-
-            from quizzes.models import QuizAttempt
-            best_attempt = QuizAttempt.objects.filter(
-                user=request.user,
-                module=module,
-                completed_at__isnull=False
-            ).order_by('-score').first()
-
-            incomplete_quiz = QuizAttempt.objects.filter(
-                user=request.user,
-                module=module,
-                completed_at__isnull=True
-            ).first()
+                previous_module = module_by_order.get(module.order - 1)
+                if previous_module and previous_module.id not in passed_modules:
+                    is_locked = True
+                    lock_reason = f"Complete Module {previous_module.order} quiz with 60% or higher to unlock"
 
             modules_with_status.append({
                 'module': module,
                 'is_locked': is_locked,
                 'lock_reason': lock_reason,
-                'best_attempt': best_attempt,
-                'incomplete_quiz': incomplete_quiz,
+                'best_attempt': best_attempts.get(module.id),
+                'incomplete_quiz': incomplete_quizzes.get(module.id),
             })
 
         context = {
@@ -155,7 +164,6 @@ class LessonDetailView(LoginRequiredMixin, View):
                 lesson.delete()
                 lesson = self._generate_lesson(module)
 
-        from quizzes.models import QuizAttempt
         incomplete_quiz = QuizAttempt.objects.filter(
             user=request.user,
             module=module,
@@ -305,12 +313,12 @@ class AskTutorView(LoginRequiredMixin, View):
             messages.error(request, 'Please enter a question.')
             return redirect('courses:lesson_detail', module_id=module_id)
 
-        if request.user.tutor_credits < 1:
+        if not request.user.deduct_credits(1):
             messages.error(request, 'Insufficient credits. You need 1 credit to ask a question.')
             return redirect('courses:lesson_detail', module_id=module_id)
 
         from core.utils.ai_fallback import call_ai_with_fallback
-        
+
         course = module.course
         context_info = ""
         if course.school_level and course.term:
@@ -329,12 +337,10 @@ Provide a clear, helpful answer appropriate for the student's level."""
         result = call_ai_with_fallback(prompt, max_tokens=1000, subject=course.subject)
         
         if result['success']:
-            if request.user.deduct_credits(1):
-                messages.success(request, f"AI Tutor: {result['content']}")
-            else:
-                messages.error(request, 'Insufficient credits.')
+            messages.success(request, f"AI Tutor: {result['content']}")
         else:
-            messages.error(request, 'AI tutors are at capacity. Please try again later. No credits were deducted.')
+            request.user.add_credits(1)
+            messages.error(request, 'AI tutors are at capacity. Please try again later. Your credit has been refunded.')
 
         return redirect('courses:lesson_detail', module_id=module_id)
 
@@ -370,7 +376,7 @@ class DeleteCourseView(LoginRequiredMixin, View):
         return redirect('dashboard')
 
 
-class GetAvailableSubjectsView(View):
+class GetAvailableSubjectsView(LoginRequiredMixin, View):
     def get(self, request):
         school_level_id = request.GET.get('school_level')
         exam_type = request.GET.get('exam_type', '')

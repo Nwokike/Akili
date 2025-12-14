@@ -3,11 +3,13 @@ Custom middleware for Akili platform
 """
 import time
 import logging
-from django.core.cache import cache
+from django.core.cache import caches
 from django.http import HttpResponse
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
+
+ratelimit_cache = caches['ratelimit']
 
 
 def get_client_ip(request):
@@ -62,7 +64,7 @@ class RateLimitMiddleware:
                 limits = self.RATE_LIMITS['anonymous']
             
             current_time = time.time()
-            request_data = cache.get(cache_key)
+            request_data = ratelimit_cache.get(cache_key)
             
             if request_data is None:
                 request_data = {'count': 1, 'timestamp': current_time}
@@ -82,7 +84,7 @@ class RateLimitMiddleware:
                 response['Retry-After'] = str(limits['window'])
                 return True, response
             
-            cache.set(cache_key, request_data, limits['window'])
+            ratelimit_cache.set(cache_key, request_data, limits['window'])
             return False, None
             
         except Exception as e:
