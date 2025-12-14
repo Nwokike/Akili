@@ -1,129 +1,129 @@
 # Akili - AI-Powered Educational Platform
 
-Akili is a comprehensive AI-powered educational platform designed to help Nigerian students prepare for JAMB, SSCE, and JSS examinations. The platform leverages Google Gemini AI and Groq API to generate personalized learning content, interactive quizzes, and mock exams.
+Akili is a comprehensive AI-powered educational platform designed to help Nigerian secondary school students master their studies from JS1 to SS3. The platform leverages Google Gemini AI and Groq API to generate personalized learning content, interactive quizzes, and mock tests aligned with the Nigerian curriculum.
 
-## 🌟 Features
+## Features
 
-  * **Personalized Course Generation**: AI automatically creates 15-module courses tailored to a student's exam type and subject.
-  * **Interactive Lessons**: Comprehensive lesson content with mathematical formulas rendered using KaTeX.
-  * **Practice Quizzes**: FREE unlimited quizzes with instant feedback and explanations to reinforce learning.
-  * **Mock Exams**: Full-length practice exams (20 questions) to simulate real exam conditions.
-  * **Progress Tracking**: Students can track their quiz scores, completion rates, and learning journey.
-  * **Credit System**: All users receive 10 free credits daily, which reset every 24 hours.
-  * **Referral System**: Earn a +2 daily credit limit for each successful user referral.
-  * **Dark Mode**: Eye-friendly interface with automatic dark mode support based on system preference.
-  * **PWA Support**: Can be installed as a Progressive Web App (PWA) on mobile devices for an app-like experience.
+* **Class-Based Learning**: Organized curriculum covering JS1, JS2, JS3, SS1, SS2, and SS3 class levels
+* **Term Structure**: Content organized by First, Second, and Third Term following Nigerian academic calendar
+* **Personalized Course Generation**: AI automatically creates comprehensive courses tailored to student's class level and subject
+* **Interactive Lessons**: Comprehensive lesson content with mathematical formulas rendered using KaTeX
+* **Practice Quizzes**: FREE unlimited quizzes with instant feedback and explanations
+* **Mock Tests**: Full-length practice tests (20 questions) to assess understanding
+* **Progress Tracking**: Students can track quiz scores, completion rates, and learning journey
+* **Credit System**: All users receive 10 free credits daily, which reset every 24 hours
+* **Referral System**: Earn +2 daily credit limit for each successful user referral
+* **Dark Mode**: Eye-friendly interface with automatic dark mode support
+* **PWA Support**: Install as a Progressive Web App on mobile devices
 
------
+---
 
-## 💻 Technology Stack
+## Technology Stack
 
-  * **Backend**: Django 5.2.8
-  * **Database**: PostgreSQL
-  * **AI Integration**: Google Gemini AI (2.5 Flash, Pro) & Groq API
-  * **Frontend**: Tailwind CSS
-  * **Math Rendering**: KaTeX (for LaTeX)
-  * **Deployment**: Render (production) 
-  * **Payments**: Paystack
+* **Backend**: Django 5.2.8
+* **Database**: PostgreSQL
+* **AI Integration**: Google Gemini AI (2.5 Flash, Pro) & Groq API
+* **Frontend**: Tailwind CSS
+* **Math Rendering**: KaTeX (for LaTeX)
+* **Deployment**: Render (production)
+* **Payments**: Paystack
 
------
+---
 
-## 💳 Credit System
+## Credit System
 
 ### Free Credits
 
-  * **10 free credits daily** for all users.
-  * Credits reset automatically every 24 hours (unused credits do not carry over).
+* **10 free credits daily** for all users
+* Credits reset automatically every 24 hours
 
 ### Credit Costs
 
-  * **Course Creation**: 5 credits
-  * **Practice Quiz**: FREE
-  * **Mock Exam**: 5 credits
-  * **AI Tutor Question**: 1 credit
+* **Course Creation**: 5 credits
+* **Practice Quiz**: FREE
+* **Mock Test**: 5 credits
+* **AI Tutor Question**: 1 credit
 
 ### Purchase Packages
 
-  * **20 credits**: ₦500
-  * **50 credits**: ₦1,000
-  * **100 credits**: ₦1,800
+* **Starter**: ₦500 (50 credits)
+* **Standard**: ₦1,000 (120 credits)
+* **Premium**: ₦2,000 (300 credits)
 
------
+---
 
-## 🤖 AI Integration
+## AI Integration
 
 ### Multi-Tier Fallback System
 
-The platform uses a robust 4-tier AI fallback system to ensure high availability and reliability:
+The platform uses a robust 4-tier AI fallback system:
 
-1.  **Tier 1**: Gemini 2.5 Flash (Primary - Fast, Free)
-2.  **Tier 2**: Gemini Pro (First fallback - High Quality, Paid)
-3.  **Tier 3**: Groq API (Second fallback - Fast, Free)
-4.  **Tier 4**: Circuit Breaker (Graceful Error)
+1. **Tier 1**: Gemini 2.5 Flash (Primary - Fast, Free)
+2. **Tier 2**: Gemini Pro (First fallback - High Quality, Paid)
+3. **Tier 3**: Groq API (Second fallback - Fast, Free)
+4. **Tier 4**: Circuit Breaker (Graceful Error)
 
-### LaTeX Rendering
+### Memory Optimization
 
-  * All AI responses are prompted to use **double-escaped backslashes** for LaTeX (e.g., `\\frac{a}{b}`) to ensure correct JSON formatting.
-  * KaTeX renders the math formulas on the frontend using `$$...$$` (display) and `$...$` (inline) delimiters.
+* Tier-specific token caps (2000-3000 tokens per tier)
+* Streaming responses for large content
+* Connection pooling for database efficiency
 
------
+---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-  * Python 3.11+
-  * PostgreSQL (recommended for production)
-  * Git
+* Python 3.11+
+* PostgreSQL
+* Git
 
 ### Installation
 
-1.  **Clone the repository**
+1. **Clone the repository**
 
-    ```bash
-    git clone <repository-url>
-    cd akili-platform
-    ```
+   ```bash
+   git clone <repository-url>
+   cd akili-platform
+   ```
 
-2.  **Create a virtual environment**
+2. **Install dependencies**
 
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
-    ```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-3.  **Install dependencies**
+3. **Set up environment variables**
+   Create a `.env` file (see Environment Variables section)
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+4. **Run migrations**
 
-4.  **Set up environment variables**
-    Create a `.env` file in the project root (see `Environment Variables` section below).
+   ```bash
+   python manage.py migrate
+   ```
 
-5.  **Run migrations**
+5. **Seed curriculum data**
 
-    ```bash
-    python manage.py migrate
-    ```
+   ```bash
+   python manage.py seed_curriculum
+   ```
 
-6.  **Create a superuser**
+6. **Create a superuser**
 
-    ```bash
-    python manage.py createsuperuser
-    ```
+   ```bash
+   python manage.py createsuperuser
+   ```
 
-7.  **Run the development server**
+7. **Run the development server**
 
-    ```bash
-    python manage.py runserver 0.0.0.0:5000
-    ```
+   ```bash
+   python manage.py runserver 0.0.0.0:5000
+   ```
 
-    Access the application at `http://localhost:5000`.
+---
 
------
-
-## ⚙️ Environment Variables
+## Environment Variables
 
 ### Required for Development
 
@@ -132,7 +132,7 @@ SECRET_KEY=your-secret-key-here
 DEBUG=True
 GEMINI_API_KEY=your-gemini-api-key
 GROQ_API_KEY=your-groq-api-key
-DATABASE_URL=  # Leave empty to use SQLite by default
+DATABASE_URL=postgresql://user:pass@host/dbname
 ```
 
 ### Required for Production
@@ -148,98 +148,95 @@ GROQ_API_KEY=your-groq-api-key
 PAYSTACK_SECRET_KEY=your-paystack-secret-key
 ```
 
------
+---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 akili-platform/
 ├── akili_project/        # Main Django project settings
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-├── core/                 # Core app (dashboard, home, exam center)
-│   ├── utils/            # AI utilities and helpers
-│   │   ├── ai_fallback.py
-│   │   └── ai_module_generator.py
-│   ├── templates/
-│   └── views.py
+├── core/                 # Core app (dashboard, home, AI utilities)
+│   └── utils/            # AI fallback and module generator
+├── curriculum/           # New curriculum structure
+│   ├── models.py         # SchoolLevel, Subject, Term, Topic models
+│   ├── fixtures/         # Seed data for curriculum
+│   └── management/       # Data migration commands
 ├── users/                # Custom user authentication
-│   ├── models.py         # CustomUser model with credit system
-│   └── views.py
 ├── courses/              # Course and module management
-│   ├── models.py         # Course, Module, CachedLesson models
-│   └── views.py
 ├── quizzes/              # Quiz generation and attempts
-│   ├── models.py         # QuizAttempt model
-│   ├── utils.py          # Quiz generation logic
-│   └── views.py
-├── exams/                # Mock exam functionality
-│   ├── models.py         # Exam, ExamQuestion models
-│   └── views.py
+├── exams/                # Mock test functionality
 ├── payments/             # Credit purchase system (Paystack)
-│   ├── models.py         # Payment model
-│   └── views.py
 ├── profiles/             # User profile management
-├── admin_syllabus/       # Syllabus management (JAMB, SSCE, JSS)
-├── static/               # Static assets (CSS, JS, images)
-├── templates/            # Base templates and partials
-│   ├── base.html
-│   └── partials/
+├── admin_syllabus/       # Legacy syllabus storage
+├── static/               # Static assets
+├── templates/            # HTML templates
 └── requirements.txt
 ```
 
------
+---
 
-## 🗃️ Database Models
+## Database Models
 
-  * **Users App**
-      * `CustomUser`: Extends Django User. Manages `tutor_credits`, `daily_credit_limit`, and `referred_by`.
-  * **Courses App**
-      * `Course`: A user's personalized course (links user, exam\_type, subject).
-      * `Module`: The 15 modules generated for each course.
-      * `CachedLesson`: Stores the AI-generated lesson content.
-  * **Quizzes App**
-      * `QuizAttempt`: Stores user quiz results, including `questions_data` (JSON), `score`, and `passed` status.
-  * **Exams App**
-      * `Exam`: Stores mock exam attempts linked to a user and course.
-      * `ExamQuestion`: Stores individual questions for an exam.
-  * **Payments App**
-      * `Payment`: Records Paystack transactions and verification status.
+### Curriculum App (New)
+* `SchoolLevel`: JS1-SS3 class levels
+* `Subject`: All subjects with school level associations
+* `Term`: First, Second, Third Term structure
+* `Week`: 14 weeks per term (12 instructional + 2 exam)
+* `SubjectCurriculum`: Curriculum per subject/level/term
+* `Topic`: Individual topics per curriculum week
+* `StudentProgramme`: Student enrollment by academic session
+* `SubjectEnrolment`: Subject-specific enrollment tracking
 
------
+### Legacy Support
+* `LegacyExamMapping`: Maps old exam types (JAMB/SSCE/JSS) to new structure
 
-## 🌐 Deployment
+---
 
-The project includes a `render.yaml` file for easy deployment to Render.
+## Management Commands
 
-1.  Push your code to a GitHub repository.
-2.  Connect your repository to a new "Web Service" on Render.
-3.  Render will automatically detect `render.yaml` and configure the build and start commands.
-4.  Add your production environment variables (from the section above) in the Render dashboard.
-5.  Render will automatically run the `build.sh` script, which collects static files and runs database migrations.
-6.  Gunicorn starts the production server.
+```bash
+# Seed curriculum data (run after migrations)
+python manage.py seed_curriculum
 
------
+# Migrate legacy courses (if upgrading from old version)
+python manage.py migrate_legacy_courses
 
-## 🧪 Testing
+# Map legacy syllabuses to new curriculum
+python manage.py map_syllabuses
+```
 
-Run tests:
+---
+
+## Testing
+
+Run all tests:
 
 ```bash
 python manage.py test
 ```
 
-Check code quality and production readiness:
+Current test coverage: 119 tests across all apps
 
-```bash
-python manage.py check
-python manage.py check --deploy
-```
+---
 
------
+## Deployment
 
-## 🤝 Contributors
+The project includes a `render.yaml` for Render deployment:
 
-  * **Ogechi Obinwa** ([github.com/Ogetec-python/](https://www.google.com/search?q=https://github.com/Ogetec-python/))
-  * **Stephen Ayankoso** ([github.com/Steve-ayan](https://www.google.com/search?q=https://github.com/Steve-ayan))
+1. Push code to GitHub
+2. Connect repository to Render
+3. Add production environment variables
+4. Render runs `build.sh` automatically
+5. Gunicorn starts the production server
+
+Optimized for 1GB RAM VM with:
+* 2 workers, 2 threads
+* Connection pooling (conn_max_age=60)
+* Request rate limiting
+
+---
+
+## Contributors
+
+* **Ogechi Obinwa** (github.com/Ogetec-python)
+* **Stephen Ayankoso** (github.com/Steve-ayan)
