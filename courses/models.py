@@ -4,12 +4,9 @@ from django.db import models
 from django.conf import settings
 import uuid
 from users.models import CustomUser 
-# Assuming CustomUser and CustomUserManager definitions are present in users/models.py
+
 
 class Course(models.Model):
-    """
-    User's personalized course. Subject and Exam Type are stored here.
-    """
     EXAM_CHOICES = [
         ('JAMB', 'JAMB'),
         ('SSCE', 'SSCE'),
@@ -17,23 +14,60 @@ class Course(models.Model):
     ]
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='courses')
-    exam_type = models.CharField(max_length=10, choices=EXAM_CHOICES)
-    subject = models.CharField(max_length=200) # Subject field is here
+    exam_type = models.CharField(max_length=10, choices=EXAM_CHOICES, blank=True, null=True, help_text="Legacy field for backwards compatibility")
+    subject = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    school_level = models.ForeignKey(
+        'curriculum.SchoolLevel',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='courses',
+        help_text="New class-level field (JS1-SS3)"
+    )
+    term = models.ForeignKey(
+        'curriculum.Term',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='courses',
+        help_text="Academic term (First/Second/Third)"
+    )
+    curriculum = models.ForeignKey(
+        'curriculum.SubjectCurriculum',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='courses',
+        help_text="Link to structured curriculum"
+    )
     
     class Meta:
         db_table = 'courses'
-        unique_together = ['user', 'exam_type', 'subject']
     
     def __str__(self):
-        return f"{self.user.username} - {self.exam_type} {self.subject}"
+        if self.school_level and self.term:
+            return f"{self.user.username} - {self.school_level.name} {self.subject} ({self.term.name})"
+        return f"{self.user.username} - {self.exam_type or 'N/A'} {self.subject}"
+    
+    @property
+    def display_name(self):
+        if self.school_level and self.term:
+            return f"{self.school_level.name} {self.subject} - {self.term.name}"
+        return f"{self.exam_type} {self.subject}"
+    
+    @property
+    def level_type(self):
+        if self.school_level:
+            return self.school_level.level_type
+        if self.exam_type:
+            return 'SENIOR' if self.exam_type in ['JAMB', 'SSCE'] else 'JUNIOR'
+        return None
 
 
 class Module(models.Model):
-    """
-    Course modules (linked to the Course parent).
-    """
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='modules') # Links to parent Course
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='modules')
     title = models.CharField(max_length=300)
     order = models.IntegerField()
     syllabus_topic = models.CharField(max_length=500)
@@ -43,6 +77,14 @@ class Module(models.Model):
         null=True, 
         blank=True,
         related_name='modules_using_lesson'
+    )
+    topic = models.ForeignKey(
+        'curriculum.Topic',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='modules',
+        help_text="Link to curriculum topic"
     )
     
     class Meta:
@@ -55,10 +97,6 @@ class Module(models.Model):
 
 
 class CachedLesson(models.Model):
-    """
-    Cached AI-generated lessons with two-pass validation
-    Developer 1: Implement lesson viewing and validation logic
-    """
     topic = models.CharField(max_length=500)
     content = models.TextField()
     syllabus_version = models.CharField(max_length=50)

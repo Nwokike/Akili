@@ -1,26 +1,23 @@
 from django.db import transaction
 import json
-# Import utilities and models
 from core.utils.ai_fallback import call_ai_with_fallback 
 from users.models import CustomUser 
-from courses.models import Module, Course # Import Course to ensure correct structure
+from courses.models import Module, Course
 from .models import QuizAttempt
 
 
 def generate_quiz_and_save(module: Module, user: CustomUser, num_questions=5) -> tuple[bool, str]:
-    """
-    Calls the AI to generate a structured quiz based on a module, saves the structure 
-    to a new QuizAttempt record, and returns the result and the new quiz ID.
+    course = module.course
+    course_subject = course.subject
+    
+    if course.school_level and course.term:
+        context_info = f"{course.school_level.name} ({course.school_level.level_type})"
+        curriculum_ref = f"Nigerian {course.school_level.level_type.lower()} secondary curriculum"
+    else:
+        context_info = f"{course.exam_type} curriculum"
+        curriculum_ref = f"{course.exam_type} curriculum"
 
-    Returns (success: bool, quiz_id/error_message: str).
-    """
-
-    # CRITICAL FIX: Access subject and exam_type via the module's linked course
-    course_subject = module.course.subject
-    course_exam_type = module.course.exam_type
-
-    # 1. Construct the Prompt with STRICT JSON requirements
-    prompt = f"""You are an expert Nigerian education assessor. Generate a quiz of EXACTLY {num_questions} multiple-choice questions for "{course_subject}" ({course_exam_type} curriculum), topic: "{module.title}".
+    prompt = f"""You are an expert Nigerian education assessor. Generate a quiz of EXACTLY {num_questions} multiple-choice questions for "{course_subject}" ({context_info}), topic: "{module.title}".
 
 CRITICAL REQUIREMENTS - FOLLOW EXACTLY:
 
@@ -44,6 +41,8 @@ CRITICAL REQUIREMENTS - FOLLOW EXACTLY:
 
 5. Test your JSON is valid before responding.
 
+6. Questions should be appropriate for {context_info} students following the {curriculum_ref}.
+
 Example:
 {{
   "questions": [
@@ -53,7 +52,6 @@ Example:
 
 Generate {num_questions} questions now with perfect JSON:"""
 
-    # 2. Call the AI with Fallback (with subject-aware prompting)
     result = call_ai_with_fallback(prompt, max_tokens=3000, is_json=True, subject=course_subject) 
 
     if not result['success']:
@@ -62,51 +60,39 @@ Generate {num_questions} questions now with perfect JSON:"""
 
     response_text = result['content']
 
-    # DEBUG LINE: Print the raw AI response to terminal
     print(f"\n--- RAW AI RESPONSE START (Tier: {result.get('tier')}) ---\n{response_text[:500]}...\n--- RAW AI RESPONSE END ---\n")
 
-    # 3. ROBUST JSON Parsing with extensive error handling
     try:
-        # Clean the response text thoroughly
         cleaned_text = response_text.strip()
 
-        # Remove markdown code blocks if present (```json or ```)
         if cleaned_text.startswith('```'):
             lines = cleaned_text.split('\n')
-            # Remove first line (```json or ```)
             if len(lines) > 1:
                 cleaned_text = '\n'.join(lines[1:])
             else:
                 cleaned_text = cleaned_text[3:]
             
-            # Remove closing ```
             if cleaned_text.endswith('```'):
                 cleaned_text = cleaned_text.rsplit('```', 1)[0]
             
             cleaned_text = cleaned_text.strip()
 
-        # Try to parse JSON
         parsed_data = json.loads(cleaned_text)
 
-        # Validate structure: must be a dictionary
         if not isinstance(parsed_data, dict):
-            # If it's a list, wrap it in {"questions": [...]}
             if isinstance(parsed_data, list):
                 parsed_data = {"questions": parsed_data}
             else:
                 raise ValueError(f"AI response is not a dictionary or list. Got: {type(parsed_data)}")
 
-        # Extract questions list
         if 'questions' not in parsed_data:
             raise ValueError("AI response missing 'questions' key.")
 
         question_list = parsed_data['questions']
 
-        # Validate questions list
         if not isinstance(question_list, list) or len(question_list) == 0:
             raise ValueError("AI response 'questions' is empty or not a list.")
 
-        # Validate each question has required fields
         for i, q in enumerate(question_list):
             if not isinstance(q, dict):
                 raise ValueError(f"Question {i} is not a dictionary.")
@@ -122,7 +108,6 @@ Generate {num_questions} questions now with perfect JSON:"""
         print(f"Raw response (first 500 chars): {response_text[:500]}")
         return False, "AI response format is invalid. Please try again."
 
-    # 4. Save the Quiz Attempt Record
     with transaction.atomic():
 
         quiz_attempt = QuizAttempt.objects.create(

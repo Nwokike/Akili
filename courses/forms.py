@@ -1,14 +1,98 @@
 from django import forms
 from .models import Course
 from admin_syllabus.models import JAMBSyllabus, SSCESyllabus, JSSSyllabus
+from curriculum.models import SchoolLevel, Subject, Term, SubjectCurriculum
+from core.services.curriculum import CurriculumService
 
-class CourseCreationForm(forms.ModelForm):
-    """
-    Form for creating a new personalized Course.
-    The user selects the exam type and the subject.
-    """
+
+class CourseCreationForm(forms.Form):
+    school_level = forms.ChoiceField(
+        choices=[],
+        label="Class Level",
+        help_text="Select your class level",
+        widget=forms.Select(attrs={'class': 'form-control', 'id': 'id_school_level'})
+    )
     
-    # Define a custom subject field as ChoiceField
+    term = forms.ChoiceField(
+        choices=[],
+        label="Term",
+        help_text="Select the academic term",
+        widget=forms.Select(attrs={'class': 'form-control', 'id': 'id_term'})
+    )
+    
+    subject = forms.ChoiceField(
+        choices=[('', 'Select a class level first')],
+        label="Subject",
+        help_text="Available subjects for your class level",
+        widget=forms.Select(attrs={'class': 'form-control', 'id': 'id_subject'})
+    )
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        school_levels = CurriculumService.get_school_levels()
+        self.fields['school_level'].choices = [('', 'Select your class level')] + [
+            (str(level.id), level.name) for level in school_levels
+        ]
+        
+        terms = CurriculumService.get_terms()
+        self.fields['term'].choices = [('', 'Select a term')] + [
+            (str(term.id), term.name) for term in terms
+        ]
+        
+        if 'school_level' in self.data:
+            try:
+                level_id = int(self.data.get('school_level'))
+                subjects = CurriculumService.get_subjects_for_level_by_id(level_id)
+                self.fields['subject'].choices = [('', 'Select a subject')] + [
+                    (str(s.id), s.name) for s in subjects
+                ]
+            except (ValueError, TypeError):
+                pass
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        school_level_id = cleaned_data.get('school_level')
+        term_id = cleaned_data.get('term')
+        subject_id = cleaned_data.get('subject')
+        
+        if school_level_id and term_id and subject_id:
+            try:
+                school_level = CurriculumService.get_school_level_by_id(int(school_level_id))
+                term = CurriculumService.get_term_by_id(int(term_id))
+                subject = CurriculumService.get_subject_by_id(int(subject_id))
+                
+                if not school_level:
+                    raise forms.ValidationError("Invalid class level selected.")
+                if not term:
+                    raise forms.ValidationError("Invalid term selected.")
+                if not subject:
+                    raise forms.ValidationError("Invalid subject selected.")
+                
+                if not subject.school_levels.filter(id=school_level.id).exists():
+                    raise forms.ValidationError(
+                        f"{subject.name} is not available for {school_level.name}."
+                    )
+                
+                curriculum = CurriculumService.get_curriculum(school_level, subject, term)
+                if not curriculum:
+                    raise forms.ValidationError(
+                        f"No curriculum available for {subject.name} in {school_level.name} {term.name}. "
+                        "Please select a different combination."
+                    )
+                
+                cleaned_data['school_level_obj'] = school_level
+                cleaned_data['term_obj'] = term
+                cleaned_data['subject_obj'] = subject
+                cleaned_data['curriculum_obj'] = curriculum
+                
+            except ValueError:
+                raise forms.ValidationError("Invalid selection. Please try again.")
+        
+        return cleaned_data
+
+
+class LegacyCourseCreationForm(forms.ModelForm):
     subject = forms.ChoiceField(
         choices=[('', 'Select an exam type first')],
         label="Select Subject",
@@ -18,16 +102,10 @@ class CourseCreationForm(forms.ModelForm):
     
     class Meta:
         model = Course
-        # We only need the user to input exam_type and subject
         fields = ['exam_type', 'subject']
-        
-        # Define the widgets to make the form look cleaner
         widgets = {
-            # Use a Select widget for the exam_type choices defined in the Course model
             'exam_type': forms.Select(attrs={'class': 'form-control'}),
         }
-        
-        # Override the default label for exam_type
         labels = {
             'exam_type': 'Target Examination Type',
         }
@@ -35,7 +113,6 @@ class CourseCreationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        # If exam_type is provided (e.g., on form errors), populate subject choices
         if 'exam_type' in self.data:
             exam_type = self.data.get('exam_type')
             self.fields['subject'].choices = self._get_subject_choices(exam_type)
@@ -44,7 +121,6 @@ class CourseCreationForm(forms.ModelForm):
             self.fields['subject'].choices = self._get_subject_choices(exam_type)
     
     def _get_subject_choices(self, exam_type):
-        """Get available subjects for the given exam type"""
         choices = [('', 'Select a subject')]
         
         if exam_type == 'JAMB':
@@ -60,13 +136,11 @@ class CourseCreationForm(forms.ModelForm):
         return choices
     
     def clean(self):
-        """Validate that the selected subject has an available syllabus"""
         cleaned_data = super().clean()
         exam_type = cleaned_data.get('exam_type')
         subject = cleaned_data.get('subject')
         
         if exam_type and subject:
-            # Check if syllabus exists for this exam_type and subject combination
             syllabus_exists = False
             
             if exam_type == 'JAMB':

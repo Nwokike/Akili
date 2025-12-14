@@ -5,14 +5,130 @@ from core.utils.ai_fallback import call_ai_with_fallback
 
 
 def generate_course_modules(course):
-    """
-    Generates 15 Modules for a given Course using AI and syllabus data.
-    Returns True on success, False on failure.
-    """
+    from courses.models import Module
+    from admin_syllabus.models import JAMBSyllabus, SSCESyllabus, JSSSyllabus
+    from core.services.curriculum import CurriculumService
+
+    if course.curriculum:
+        return generate_curriculum_modules(course)
+    
+    return generate_legacy_modules(course)
+
+
+def generate_curriculum_modules(course):
+    from courses.models import Module
+    
+    curriculum = course.curriculum
+    topics = CurriculumService.get_topics_for_curriculum(curriculum)
+    
+    if not topics.exists():
+        print(f"No topics found for curriculum {curriculum.id}, falling back to AI generation")
+        return generate_ai_modules_for_curriculum(course)
+    
+    with transaction.atomic():
+        for index, topic in enumerate(topics):
+            Module.objects.create(
+                course=course,
+                title=topic.title,
+                order=index + 1,
+                syllabus_topic=topic.description or topic.title,
+                lesson_content=None,
+                topic=topic
+            )
+    
+    return True
+
+
+def generate_ai_modules_for_curriculum(course):
+    from courses.models import Module
+    
+    school_level = course.school_level
+    term = course.term
+    curriculum = course.curriculum
+    
+    prompt = f"""You are creating a study plan for Nigerian secondary school students.
+
+Context:
+- Class Level: {school_level.name} ({school_level.level_type})
+- Subject: {course.subject}
+- Term: {term.name} ({term.instructional_weeks} instructional weeks)
+
+Generate a structured study plan consisting of modules for each week of the term.
+
+Return ONLY a valid JSON object with a single key "modules". 
+The "modules" key must contain an array of objects (one per week, up to {term.instructional_weeks} weeks). Each object must have:
+- "title": A concise module title (max 100 characters)
+- "topic": A specific curriculum topic covered (max 200 characters)
+- "week": The week number (1-{term.instructional_weeks})
+
+Do NOT include any text before or after the JSON object. Do NOT use markdown formatting.
+
+Example format:
+{{
+  "modules": [
+    {{"title": "Introduction to the Subject", "topic": "Foundation concepts and overview", "week": 1}},
+    {{"title": "Core Concepts", "topic": "Building blocks and fundamental principles", "week": 2}}
+  ]
+}}"""
+
+    result = call_ai_with_fallback(prompt, max_tokens=4000, is_json=True, subject=course.subject)
+
+    if not result['success']:
+        print(f"AI Module Generation Failed for Course {course.id}. Tier: {result.get('tier')}")
+        return False
+
+    response_text = result['content']
+
+    try:
+        cleaned_text = response_text.strip()
+
+        if cleaned_text.startswith('```'):
+            cleaned_text = cleaned_text.split('\n', 1)[1] if '\n' in cleaned_text else cleaned_text[3:]
+            if cleaned_text.endswith('```'):
+                cleaned_text = cleaned_text.rsplit('```', 1)[0]
+            cleaned_text = cleaned_text.strip()
+
+        parsed_data = json.loads(cleaned_text)
+
+        if not isinstance(parsed_data, dict):
+            print(f"AI Module Generation Error for Course {course.id}: Response is not a dictionary.")
+            return False
+
+        if 'modules' not in parsed_data:
+            print(f"AI Module Generation Error for Course {course.id}: Response dictionary does not have a 'modules' key.")
+            return False
+
+        module_list = parsed_data['modules']
+
+        if not isinstance(module_list, list) or len(module_list) == 0:
+            print(f"AI Module Generation Error for Course {course.id}: Empty module list returned")
+            return False
+
+    except json.JSONDecodeError as e:
+        print(f"JSON Parsing Failed for Course {course.id}: {e}")
+        return False
+    except Exception as e:
+        print(f"Unexpected error parsing modules for Course {course.id}: {e}")
+        return False
+
+    with transaction.atomic():
+        for index, item in enumerate(module_list):
+            Module.objects.create(
+                course=course,
+                title=item.get('title', 'Untitled Module'),
+                order=index + 1,
+                syllabus_topic=item.get('topic', 'Unspecified Topic'),
+                lesson_content=None,
+                topic=None
+            )
+
+    return True
+
+
+def generate_legacy_modules(course):
     from courses.models import Module
     from admin_syllabus.models import JAMBSyllabus, SSCESyllabus, JSSSyllabus
 
-    # 1. Get syllabus content
     syllabus_content = ""
     try:
         if course.exam_type == 'JAMB':
@@ -28,7 +144,6 @@ def generate_course_modules(course):
         print(f"Syllabus not found for {course.exam_type} {course.subject}: {e}")
         syllabus_content = ""
 
-    # 2. Build Prompt
     prompt = f"""Based on the following official {course.exam_type} syllabus for {course.subject}, generate a structured study plan consisting of EXACTLY 15 modules.
 
 Syllabus Content:
@@ -49,8 +164,6 @@ Example format:
   ]
 }}"""
 
-    # 3. Call AI with fallback system 
-    # UPDATED: max_tokens increased to 5000 as requested
     result = call_ai_with_fallback(prompt, max_tokens=5000, is_json=True, subject=course.subject)
 
     if not result['success']:
@@ -59,56 +172,43 @@ Example format:
 
     response_text = result['content']
 
-    # 4. Parse JSON response with robust cleaning
     try:
-        # Clean the response text thoroughly
         cleaned_text = response_text.strip()
 
-        # Remove markdown code blocks if present
         if cleaned_text.startswith('```'):
-            # Remove ```json or ``` at the start
             cleaned_text = cleaned_text.split('\n', 1)[1] if '\n' in cleaned_text else cleaned_text[3:]
-            # Remove ``` at the end
             if cleaned_text.endswith('```'):
                 cleaned_text = cleaned_text.rsplit('```', 1)[0]
             cleaned_text = cleaned_text.strip()
 
-        # Try to parse JSON
         parsed_data = json.loads(cleaned_text)
 
-        # Check if response is a dictionary
         if not isinstance(parsed_data, dict):
             print(f"AI Module Generation Error for Course {course.id}: Response is not a dictionary. Got: {type(parsed_data)}")
             return False
 
-        # Extract list from dictionary
         if 'modules' not in parsed_data:
             print(f"AI Module Generation Error for Course {course.id}: Response dictionary does not have a 'modules' key.")
             return False
 
         module_list = parsed_data['modules']
 
-        # Validation
         if not isinstance(module_list, list):
             print(f"AI Module Generation Error for Course {course.id}: 'modules' key did not contain a list.")
             return False
 
-        # Validate we have modules
         if len(module_list) == 0:
             print(f"AI Module Generation Error for Course {course.id}: Empty module list returned")
             return False
 
-        # Accept 10-15 modules (be flexible)
         if len(module_list) < 10:
             print(f"AI Module Generation Error for Course {course.id}: Only {len(module_list)} modules returned, need at least 10")
             return False
 
-        # If we got more than 15, trim to 15
         if len(module_list) > 15:
             print(f"AI returned {len(module_list)} modules, trimming to 15 for Course {course.id}")
             module_list = module_list[:15]
 
-        # If we got 10-14, pad to 15 with review modules
         while len(module_list) < 15:
             module_list.append({
                 "title": f"Review and Practice {len(module_list) + 1}",
@@ -122,7 +222,6 @@ Example format:
         print(f"Unexpected error parsing modules for Course {course.id}: {e}")
         return False
 
-    # 5. Save modules to database
     with transaction.atomic():
         for index, item in enumerate(module_list):
             Module.objects.create(
@@ -130,7 +229,7 @@ Example format:
                 title=item.get('title', 'Untitled Module'),
                 order=index + 1,
                 syllabus_topic=item.get('topic', 'Unspecified Topic'),
-                lesson_content=None  # Lesson content will be generated on-demand
+                lesson_content=None
             )
 
     return True
