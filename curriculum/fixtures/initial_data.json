@@ -1,0 +1,558 @@
+[
+  {
+    "model": "curriculum.academicsession",
+    "pk": 1,
+    "fields": {
+      "name": "2024/2025",
+      "start_date": "2024-09-09",
+      "end_date": "2025-07-18",
+      "is_active": true
+    }
+  },
+  {
+    "model": "curriculum.academicsession",
+    "pk": 2,
+    "fields": {
+      "name": "2025/2026",
+      "start_date": "2025-09-08",
+      "end_date": "2026-07-17",
+      "is_active": false
+    }
+  },
+  {
+    "model": "curriculum.schoollevel",
+    "pk": 1,
+    "fields": {
+      "name": "JS1",
+      "level_order": 1,
+      "level_type": "JUNIOR",
+      "description": "Junior Secondary School Year 1"
+    }
+  },
+  {
+    "model": "curriculum.schoollevel",
+    "pk": 2,
+    "fields": {
+      "name": "JS2",
+      "level_order": 2,
+      "level_type": "JUNIOR",
+      "description": "Junior Secondary School Year 2"
+    }
+  },
+  {
+    "model": "curriculum.schoollevel",
+    "pk": 3,
+    "fields": {
+      "name": "JS3",
+      "level_order": 3,
+      "level_type": "JUNIOR",
+      "description": "Junior Secondary School Year 3"
+    }
+  },
+  {
+    "model": "curriculum.schoollevel",
+    "pk": 4,
+    "fields": {
+      "name": "SS1",
+      "level_order": 4,
+      "level_type": "SENIOR",
+      "description": "Senior Secondary School Year 1"
+    }
+  },
+  {
+    "model": "curriculum.schoollevel",
+    "pk": 5,
+    "fields": {
+      "name": "SS2",
+      "level_order": 5,
+      "level_type": "SENIOR",
+      "description": "Senior Secondary School Year 2"
+    }
+  },
+  {
+    "model": "curriculum.schoollevel",
+    "pk": 6,
+    "fields": {
+      "name": "SS3",
+      "level_order": 6,
+      "level_type": "SENIOR",
+      "description": "Senior Secondary School Year 3"
+    }
+  },
+  {
+    "model": "curriculum.term",
+    "pk": 1,
+    "fields": {
+      "name": "First Term",
+      "order": 1,
+      "total_weeks": 14,
+      "instructional_weeks": 12,
+      "exam_weeks": 2,
+      "description": "September to December"
+    }
+  },
+  {
+    "model": "curriculum.term",
+    "pk": 2,
+    "fields": {
+      "name": "Second Term",
+      "order": 2,
+      "total_weeks": 14,
+      "instructional_weeks": 12,
+      "exam_weeks": 2,
+      "description": "January to April"
+    }
+  },
+  {
+    "model": "curriculum.term",
+    "pk": 3,
+    "fields": {
+      "name": "Third Term",
+      "order": 3,
+      "total_weeks": 12,
+      "instructional_weeks": 10,
+      "exam_weeks": 2,
+      "description": "May to July"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 1,
+    "fields": {
+      "term": 1,
+      "week_number": 1,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 1",
+      "description": "Introduction & Foundation concepts"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 2,
+    "fields": {
+      "term": 1,
+      "week_number": 2,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 2",
+      "description": "Core concepts development"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 3,
+    "fields": {
+      "term": 1,
+      "week_number": 3,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 3",
+      "description": "Core concepts development"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 4,
+    "fields": {
+      "term": 1,
+      "week_number": 4,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 4",
+      "description": "Core concepts development"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 5,
+    "fields": {
+      "term": 1,
+      "week_number": 5,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 5",
+      "description": "Intermediate topics + practice"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 6,
+    "fields": {
+      "term": 1,
+      "week_number": 6,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 6",
+      "description": "Intermediate topics + practice"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 7,
+    "fields": {
+      "term": 1,
+      "week_number": 7,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 7",
+      "description": "Mid-term revision & assessment"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 8,
+    "fields": {
+      "term": 1,
+      "week_number": 8,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 8",
+      "description": "Advanced topics"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 9,
+    "fields": {
+      "term": 1,
+      "week_number": 9,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 9",
+      "description": "Advanced topics"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 10,
+    "fields": {
+      "term": 1,
+      "week_number": 10,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 10",
+      "description": "Advanced topics"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 11,
+    "fields": {
+      "term": 1,
+      "week_number": 11,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 11",
+      "description": "Complex applications & integration"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 12,
+    "fields": {
+      "term": 1,
+      "week_number": 12,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 12",
+      "description": "Complex applications & integration"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 13,
+    "fields": {
+      "term": 1,
+      "week_number": 13,
+      "week_type": "REVISION",
+      "title": "Week 13",
+      "description": "Comprehensive revision"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 14,
+    "fields": {
+      "term": 1,
+      "week_number": 14,
+      "week_type": "EXAM",
+      "title": "Week 14",
+      "description": "Terminal examination"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 15,
+    "fields": {
+      "term": 2,
+      "week_number": 1,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 1",
+      "description": "Introduction & Foundation concepts"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 16,
+    "fields": {
+      "term": 2,
+      "week_number": 2,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 2",
+      "description": "Core concepts development"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 17,
+    "fields": {
+      "term": 2,
+      "week_number": 3,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 3",
+      "description": "Core concepts development"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 18,
+    "fields": {
+      "term": 2,
+      "week_number": 4,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 4",
+      "description": "Core concepts development"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 19,
+    "fields": {
+      "term": 2,
+      "week_number": 5,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 5",
+      "description": "Intermediate topics + practice"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 20,
+    "fields": {
+      "term": 2,
+      "week_number": 6,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 6",
+      "description": "Intermediate topics + practice"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 21,
+    "fields": {
+      "term": 2,
+      "week_number": 7,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 7",
+      "description": "Mid-term revision & assessment"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 22,
+    "fields": {
+      "term": 2,
+      "week_number": 8,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 8",
+      "description": "Advanced topics"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 23,
+    "fields": {
+      "term": 2,
+      "week_number": 9,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 9",
+      "description": "Advanced topics"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 24,
+    "fields": {
+      "term": 2,
+      "week_number": 10,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 10",
+      "description": "Advanced topics"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 25,
+    "fields": {
+      "term": 2,
+      "week_number": 11,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 11",
+      "description": "Complex applications & integration"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 26,
+    "fields": {
+      "term": 2,
+      "week_number": 12,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 12",
+      "description": "Complex applications & integration"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 27,
+    "fields": {
+      "term": 2,
+      "week_number": 13,
+      "week_type": "REVISION",
+      "title": "Week 13",
+      "description": "Comprehensive revision"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 28,
+    "fields": {
+      "term": 2,
+      "week_number": 14,
+      "week_type": "EXAM",
+      "title": "Week 14",
+      "description": "Terminal examination"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 29,
+    "fields": {
+      "term": 3,
+      "week_number": 1,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 1",
+      "description": "Introduction & Foundation concepts"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 30,
+    "fields": {
+      "term": 3,
+      "week_number": 2,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 2",
+      "description": "Core concepts development"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 31,
+    "fields": {
+      "term": 3,
+      "week_number": 3,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 3",
+      "description": "Core concepts development"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 32,
+    "fields": {
+      "term": 3,
+      "week_number": 4,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 4",
+      "description": "Core concepts development"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 33,
+    "fields": {
+      "term": 3,
+      "week_number": 5,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 5",
+      "description": "Intermediate topics + practice"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 34,
+    "fields": {
+      "term": 3,
+      "week_number": 6,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 6",
+      "description": "Intermediate topics + practice"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 35,
+    "fields": {
+      "term": 3,
+      "week_number": 7,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 7",
+      "description": "Mid-term revision & assessment"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 36,
+    "fields": {
+      "term": 3,
+      "week_number": 8,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 8",
+      "description": "Advanced topics"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 37,
+    "fields": {
+      "term": 3,
+      "week_number": 9,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 9",
+      "description": "Advanced topics"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 38,
+    "fields": {
+      "term": 3,
+      "week_number": 10,
+      "week_type": "INSTRUCTIONAL",
+      "title": "Week 10",
+      "description": "Advanced topics"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 39,
+    "fields": {
+      "term": 3,
+      "week_number": 11,
+      "week_type": "REVISION",
+      "title": "Week 11",
+      "description": "Comprehensive revision"
+    }
+  },
+  {
+    "model": "curriculum.week",
+    "pk": 40,
+    "fields": {
+      "term": 3,
+      "week_number": 12,
+      "week_type": "EXAM",
+      "title": "Week 12",
+      "description": "Terminal examination"
+    }
+  }
+]

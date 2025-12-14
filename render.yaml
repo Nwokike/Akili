@@ -8,7 +8,7 @@ services:
     plan: free
     env: python
     buildCommand: ./build.sh
-    startCommand: gunicorn akili_project.wsgi
+    startCommand: gunicorn --bind=0.0.0.0:5000 --workers=2 --threads=2 --worker-class=gthread --max-requests=1000 --max-requests-jitter=50 --timeout=120 --keepalive=5 akili_project.wsgi:application
     envVars:
       - key: PGDATABASE
         fromDatabase:

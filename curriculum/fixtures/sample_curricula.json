@@ -1,0 +1,110 @@
+[
+  {
+    "model": "curriculum.subjectcurriculum",
+    "pk": 1,
+    "fields": {
+      "school_level": 1,
+      "subject": 2,
+      "term": 1,
+      "version": "2025",
+      "overview": "Mathematics JS1 First Term covers foundational concepts including number systems, basic algebra, and introduction to geometry.",
+      "learning_objectives": ["Understand whole numbers and place value", "Perform basic arithmetic operations", "Recognize and work with fractions", "Identify basic geometric shapes"]
+    }
+  },
+  {
+    "model": "curriculum.subjectcurriculum",
+    "pk": 2,
+    "fields": {
+      "school_level": 1,
+      "subject": 1,
+      "term": 1,
+      "version": "2025",
+      "overview": "English Language JS1 First Term covers reading comprehension, grammar fundamentals, and basic composition skills.",
+      "learning_objectives": ["Develop reading comprehension skills", "Understand parts of speech", "Write simple paragraphs", "Improve vocabulary"]
+    }
+  },
+  {
+    "model": "curriculum.subjectcurriculum",
+    "pk": 3,
+    "fields": {
+      "school_level": 4,
+      "subject": 19,
+      "term": 1,
+      "version": "2025",
+      "overview": "Physics SS1 First Term introduces measurement, motion, and forces.",
+      "learning_objectives": ["Understand physical quantities and units", "Apply laws of motion", "Calculate velocity and acceleration", "Understand Newton's laws"]
+    }
+  },
+  {
+    "model": "curriculum.subjectcurriculum",
+    "pk": 4,
+    "fields": {
+      "school_level": 4,
+      "subject": 20,
+      "term": 1,
+      "version": "2025",
+      "overview": "Chemistry SS1 First Term covers atomic structure, periodic table, and chemical bonding.",
+      "learning_objectives": ["Understand atomic structure", "Navigate the periodic table", "Explain types of chemical bonds", "Balance chemical equations"]
+    }
+  },
+  {
+    "model": "curriculum.topic",
+    "pk": 1,
+    "fields": {
+      "curriculum": 1,
+      "week": 1,
+      "title": "Number Systems - Counting and Place Value",
+      "order": 1,
+      "description": "Introduction to number systems with focus on counting and understanding place value in whole numbers.",
+      "learning_objectives": ["Count in tens, hundreds, and thousands", "Identify place value of digits", "Read and write numbers in words"],
+      "key_concepts": ["Place value", "Ones, tens, hundreds", "Number names"],
+      "difficulty_level": "BASIC",
+      "estimated_duration_minutes": 45
+    }
+  },
+  {
+    "model": "curriculum.topic",
+    "pk": 2,
+    "fields": {
+      "curriculum": 1,
+      "week": 2,
+      "title": "Number Systems - Whole Numbers Operations",
+      "order": 1,
+      "description": "Operations with whole numbers including addition, subtraction, multiplication, and division.",
+      "learning_objectives": ["Add and subtract whole numbers", "Multiply whole numbers", "Divide whole numbers"],
+      "key_concepts": ["Addition", "Subtraction", "Multiplication", "Division"],
+      "difficulty_level": "BASIC",
+      "estimated_duration_minutes": 45
+    }
+  },
+  {
+    "model": "curriculum.topic",
+    "pk": 3,
+    "fields": {
+      "curriculum": 2,
+      "week": 1,
+      "title": "Introduction to English Grammar",
+      "order": 1,
+      "description": "Foundation of English grammar including parts of speech and sentence structure.",
+      "learning_objectives": ["Identify nouns, verbs, and adjectives", "Construct simple sentences", "Use proper punctuation"],
+      "key_concepts": ["Nouns", "Verbs", "Adjectives", "Sentences"],
+      "difficulty_level": "BASIC",
+      "estimated_duration_minutes": 45
+    }
+  },
+  {
+    "model": "curriculum.topic",
+    "pk": 4,
+    "fields": {
+      "curriculum": 3,
+      "week": 1,
+      "title": "Introduction to Physics - Measurement",
+      "order": 1,
+      "description": "Introduction to physical quantities, units, and measurement techniques.",
+      "learning_objectives": ["Identify physical quantities", "Use SI units", "Make accurate measurements"],
+      "key_concepts": ["Physical quantities", "SI units", "Measurement", "Precision"],
+      "difficulty_level": "BASIC",
+      "estimated_duration_minutes": 45
+    }
+  }
+]

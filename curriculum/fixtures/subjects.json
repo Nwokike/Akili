@@ -1,0 +1,312 @@
+[
+  {
+    "model": "curriculum.subject",
+    "pk": 1,
+    "fields": {
+      "name": "English Language",
+      "code": "ENG",
+      "is_science_subject": false,
+      "description": "English Language studies including grammar, comprehension, and composition"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 2,
+    "fields": {
+      "name": "Mathematics",
+      "code": "MTH",
+      "is_science_subject": true,
+      "description": "Mathematics including algebra, geometry, and calculus"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 3,
+    "fields": {
+      "name": "Basic Science",
+      "code": "BSC",
+      "is_science_subject": true,
+      "description": "Integrated science for junior secondary"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 4,
+    "fields": {
+      "name": "Basic Technology",
+      "code": "BTC",
+      "is_science_subject": true,
+      "description": "Technical and vocational skills for junior secondary"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 5,
+    "fields": {
+      "name": "Social Studies",
+      "code": "SST",
+      "is_science_subject": false,
+      "description": "Social studies and citizenship education"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 6,
+    "fields": {
+      "name": "Civic Education",
+      "code": "CIV",
+      "is_science_subject": false,
+      "description": "Civic education and citizenship"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 7,
+    "fields": {
+      "name": "Agricultural Science",
+      "code": "AGR",
+      "is_science_subject": true,
+      "description": "Agricultural science and practices"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 8,
+    "fields": {
+      "name": "Business Studies",
+      "code": "BUS",
+      "is_science_subject": false,
+      "description": "Introduction to business concepts"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 9,
+    "fields": {
+      "name": "Computer Studies/ICT",
+      "code": "ICT",
+      "is_science_subject": true,
+      "description": "Information and Communication Technology"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 10,
+    "fields": {
+      "name": "French",
+      "code": "FRE",
+      "is_science_subject": false,
+      "description": "French language studies"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 11,
+    "fields": {
+      "name": "Fine Art",
+      "code": "ART",
+      "is_science_subject": false,
+      "description": "Visual arts and creative expression"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 12,
+    "fields": {
+      "name": "Home Economics",
+      "code": "HEC",
+      "is_science_subject": false,
+      "description": "Home management and practical life skills"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 13,
+    "fields": {
+      "name": "Physical & Health Education",
+      "code": "PHE",
+      "is_science_subject": false,
+      "description": "Physical education and health studies"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 14,
+    "fields": {
+      "name": "Christian Religious Studies",
+      "code": "CRS",
+      "is_science_subject": false,
+      "description": "Christian religious knowledge and moral education"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 15,
+    "fields": {
+      "name": "Islamic Religious Studies",
+      "code": "IRS",
+      "is_science_subject": false,
+      "description": "Islamic religious knowledge and moral education"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 16,
+    "fields": {
+      "name": "Yoruba",
+      "code": "YOR",
+      "is_science_subject": false,
+      "description": "Yoruba language studies"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 17,
+    "fields": {
+      "name": "Igbo",
+      "code": "IGB",
+      "is_science_subject": false,
+      "description": "Igbo language studies"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 18,
+    "fields": {
+      "name": "Hausa",
+      "code": "HAU",
+      "is_science_subject": false,
+      "description": "Hausa language studies"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 19,
+    "fields": {
+      "name": "Physics",
+      "code": "PHY",
+      "is_science_subject": true,
+      "description": "Physics including mechanics, waves, electricity, and modern physics"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 20,
+    "fields": {
+      "name": "Chemistry",
+      "code": "CHE",
+      "is_science_subject": true,
+      "description": "Chemistry including organic, inorganic, and physical chemistry"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 21,
+    "fields": {
+      "name": "Biology",
+      "code": "BIO",
+      "is_science_subject": true,
+      "description": "Biology including botany, zoology, and ecology"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 22,
+    "fields": {
+      "name": "Economics",
+      "code": "ECO",
+      "is_science_subject": false,
+      "description": "Economics including micro and macroeconomics"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 23,
+    "fields": {
+      "name": "Government",
+      "code": "GOV",
+      "is_science_subject": false,
+      "description": "Government and political science"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 24,
+    "fields": {
+      "name": "Literature in English",
+      "code": "LIT",
+      "is_science_subject": false,
+      "description": "Literature studies including prose, poetry, and drama"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 25,
+    "fields": {
+      "name": "History",
+      "code": "HIS",
+      "is_science_subject": false,
+      "description": "Nigerian and world history"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 26,
+    "fields": {
+      "name": "Geography",
+      "code": "GEO",
+      "is_science_subject": false,
+      "description": "Physical and human geography"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 27,
+    "fields": {
+      "name": "Commerce",
+      "code": "COM",
+      "is_science_subject": false,
+      "description": "Commercial studies and trade"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 28,
+    "fields": {
+      "name": "Financial Accounting",
+      "code": "ACC",
+      "is_science_subject": false,
+      "description": "Accounting principles and practices"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 29,
+    "fields": {
+      "name": "Computer Science",
+      "code": "CSC",
+      "is_science_subject": true,
+      "description": "Computer science and programming"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 30,
+    "fields": {
+      "name": "Further Mathematics",
+      "code": "FMT",
+      "is_science_subject": true,
+      "description": "Advanced mathematics topics"
+    }
+  },
+  {
+    "model": "curriculum.subject",
+    "pk": 31,
+    "fields": {
+      "name": "Technical Drawing",
+      "code": "TDR",
+      "is_science_subject": true,
+      "description": "Technical and engineering drawing"
+    }
+  }
+]

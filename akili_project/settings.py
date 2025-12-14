@@ -104,6 +104,7 @@ INSTALLED_APPS = [
     'quizzes',
     'exams',
     'payments',
+    'curriculum',
 ]
 
 MIDDLEWARE = [
@@ -146,10 +147,11 @@ WSGI_APPLICATION = 'akili_project.wsgi.application'
 
 if os.getenv('DATABASE_URL'):
     # Production: Use PostgreSQL from DATABASE_URL
+    # Optimized for 1GB RAM VM per REBRANDING_ASSESSMENT.md
     DATABASES = {
         'default': dj_database_url.config(
             default=os.getenv('DATABASE_URL'),
-            conn_max_age=600,
+            conn_max_age=60,
             conn_health_checks=True,
         )
     }
