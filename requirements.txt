@@ -20,3 +20,12 @@ python-dotenv
 requests
 whitenoise
 bleach
+bleach
+dj-database-url
+django
+gunicorn
+markdown
+psycopg2-binary
+python-dotenv
+requests
+whitenoise
