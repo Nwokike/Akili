@@ -493,24 +493,25 @@ Build on concepts from previous weeks. The difficulty should match {topic.diffic
 
 ---
 
-### Phase 3: Frontend & Branding (Week 5-6)
+### Phase 3: Frontend & Branding (Week 5-6) - COMPLETED
 **Focus: User Interface Updates**
 
-| Task | Description | Files Affected |
-|------|-------------|----------------|
-| 3.1 | Update landing page messaging (exam → class focus) | templates/core/home.html |
-| 3.2 | Update course creation template with class selector | templates/courses/course_creation.html |
-| 3.3 | Update dashboard to show class levels | templates/core/dashboard.html |
-| 3.4 | Update sidebar navigation | templates/partials/sidebar.html |
-| 3.5 | Update all "exam" references to "class" in templates | All templates |
-| 3.6 | Create new class-level icons/badges | static/css/custom.css |
-| 3.7 | Update PWA manifest with new branding | static/pwa/manifest.json |
-| 3.8 | Fix duplicate CSS classes in sidebar | templates/partials/sidebar.html |
+| Task | Description | Files Affected | Status |
+|------|-------------|----------------|--------|
+| 3.1 | Update landing page messaging (exam → class focus) | templates/core/home.html | DONE |
+| 3.2 | Update course creation template with class selector | courses/templates/courses/course_creation.html | DONE |
+| 3.3 | Update dashboard to show class levels | templates/core/dashboard.html | DONE |
+| 3.4 | Update sidebar navigation | templates/partials/sidebar.html | DONE |
+| 3.5 | Update all "exam" references to "class" in templates | All templates | DONE |
+| 3.6 | Create new class-level icons/badges | templates/core/dashboard.html | DONE |
+| 3.7 | Update PWA manifest with new branding | static/pwa/manifest.json | DONE |
+| 3.8 | Fix duplicate CSS classes in sidebar | templates/partials/sidebar.html | DONE |
 
 **Deliverables:**
-- Rebranded landing page
-- Updated course creation flow
-- Consistent class-level terminology
+- Rebranded landing page with JS1-SS3 class levels
+- Updated course creation flow with school_level/term/subject dropdowns
+- Dashboard showing class-level badges with color coding
+- Fixed duplicate CSS classes in sidebar
 
 ---
 

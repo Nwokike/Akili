@@ -1,236 +1,257 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Akili - Your Personal AI Tutor for Nigerian Exams{% endblock %}
+{% block title %}Akili - Your Personal AI Tutor for Nigerian Students{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
-  <div class="max-w-5xl mx-auto text-center px-6 py-20">
+<section class="relative py-16 md:py-24 lg:py-32 overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-b from-primary-50 via-white to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-900"></div>
+  
+  <div class="relative z-10 max-w-4xl mx-auto text-center px-6">
+    <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-primary-100 dark:bg-primary-900/40 rounded-full mb-6">
+      <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+      <span class="text-xs font-medium text-primary-700 dark:text-primary-300">AI-Powered Learning</span>
+    </div>
     
-    <!-- Main Heading -->
-    <h1 class="text-6xl md:text-7xl font-extrabold text-gray-900 dark:text-gray-100 mb-6 leading-tight">
-      Your Personal<br/>
-      <span class="gradient-text">AI Tutor</span>
+    <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white mb-4 md:mb-6 leading-tight">
+      Your Personal <span class="gradient-text">AI Tutor</span>
     </h1>
     
-    <!-- Subheading -->
-    <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed">
-      Master JAMB, WAEC, NECO, and JSS exams with AI-powered personalized learning
+    <p class="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-8 md:mb-10 max-w-xl mx-auto leading-relaxed">
+      Master your studies from JS1 to SS3 with personalized lessons, quizzes, and mock exams
     </p>
     
-    <!-- CTA Buttons -->
-    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-      <a href="{% url 'signup' %}" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600 text-white font-bold px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 text-lg w-full sm:w-auto">
+    <div class="flex flex-col sm:flex-row gap-3 justify-center items-center mb-10 md:mb-14">
+      <a href="{% url 'signup' %}" class="btn-primary px-8 py-3 w-full sm:w-auto text-base">
         Start Learning Free
+      </a>
+      <a href="#features" class="btn-secondary px-8 py-3 w-full sm:w-auto text-base">
+        Learn More
       </a>
     </div>
     
-    <!-- Value Props -->
-    <div class="grid md:grid-cols-3 gap-8 mb-16">
-      
+    <div class="flex flex-wrap justify-center gap-6 md:gap-10">
       <div class="text-center">
-        <div class="text-5xl font-bold text-accent-600 dark:text-accent-400 mb-2">10</div>
-        <p class="text-gray-600 dark:text-gray-400 font-medium">Free Credits Daily</p>
+        <div class="text-2xl md:text-3xl font-bold text-primary-600 dark:text-primary-400">10</div>
+        <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400">Free Credits Daily</p>
       </div>
-      
       <div class="text-center">
-        <div class="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-2">∞</div>
-        <p class="text-gray-600 dark:text-gray-400 font-medium">AI-Generated Content</p>
+        <div class="text-2xl md:text-3xl font-bold text-purple-600 dark:text-purple-400">6</div>
+        <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400">Class Levels</p>
       </div>
-      
       <div class="text-center">
-        <div class="text-5xl font-bold text-green-600 dark:text-green-400 mb-2">24/7</div>
-        <p class="text-gray-600 dark:text-gray-400 font-medium">Study Anytime</p>
+        <div class="text-2xl md:text-3xl font-bold text-green-600 dark:text-green-400">24/7</div>
+        <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400">Always Available</p>
       </div>
-      
     </div>
-    
   </div>
 </section>
 
-<!-- Features Section -->
-<section class="py-24 bg-white dark:bg-gray-800">
-  <div class="max-w-6xl mx-auto px-6">
+<section id="features" class="py-16 md:py-20 bg-white dark:bg-gray-800">
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="text-center mb-12">
+      <span class="inline-block px-3 py-1 bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-xs font-semibold rounded-full mb-3">Features</span>
+      <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3">
+        Everything You Need to Excel
+      </h2>
+      <p class="text-gray-600 dark:text-gray-400 max-w-lg mx-auto">
+        Powerful tools designed to help you master every subject
+      </p>
+    </div>
     
-    <h2 class="text-4xl md:text-5xl font-bold text-center text-gray-900 dark:text-gray-100 mb-16">
-      Everything You Need to Excel
-    </h2>
-    
-    <div class="grid md:grid-cols-3 gap-12">
-      
-      <!-- Feature 1: AI Tutor -->
-      <div class="text-center">
-        <div class="w-20 h-20 bg-primary-100 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <svg class="w-10 h-10 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="bg-gray-50 dark:bg-gray-900/50 rounded-2xl p-6 hover:shadow-lg transition-shadow duration-300">
+        <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-xl flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
           </svg>
         </div>
-        <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Personal AI Tutor</h3>
-        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-          Get instant, detailed explanations for any topic. Like having a private tutor available 24/7.
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">AI Tutor</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Get instant explanations for any topic, available 24/7.
         </p>
       </div>
       
-      <!-- Feature 2: Mock Exams -->
-      <div class="text-center">
-        <div class="w-20 h-20 bg-accent-100 dark:bg-accent-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <svg class="w-10 h-10 text-accent-600 dark:text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="bg-gray-50 dark:bg-gray-900/50 rounded-2xl p-6 hover:shadow-lg transition-shadow duration-300">
+        <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 rounded-xl flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Practice Quizzes</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Test your knowledge with AI-generated quizzes.
+        </p>
+      </div>
+      
+      <div class="bg-gray-50 dark:bg-gray-900/50 rounded-2xl p-6 hover:shadow-lg transition-shadow duration-300">
+        <div class="w-12 h-12 bg-accent-100 dark:bg-accent-900/50 rounded-xl flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 text-accent-600 dark:text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
           </svg>
         </div>
-        <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Full Mock Exams</h3>
-        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-          Practice with syllabus-grounded exams that mirror real JAMB, WAEC, and NECO standards.
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Mock Exams</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Prepare for term exams with full mock tests.
         </p>
       </div>
       
-      <!-- Feature 3: Works Offline -->
-      <div class="text-center">
-        <div class="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <svg class="w-10 h-10 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="bg-gray-50 dark:bg-gray-900/50 rounded-2xl p-6 hover:shadow-lg transition-shadow duration-300">
+        <div class="w-12 h-12 bg-green-100 dark:bg-green-900/50 rounded-xl flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
           </svg>
         </div>
-        <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Works Offline</h3>
-        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-          Install as a mobile app. Access your courses anytime, even without internet.
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Works Offline</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Access saved lessons anytime, even without internet.
         </p>
       </div>
       
+      <div class="bg-gray-50 dark:bg-gray-900/50 rounded-2xl p-6 hover:shadow-lg transition-shadow duration-300">
+        <div class="w-12 h-12 bg-rose-100 dark:bg-rose-900/50 rounded-xl flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 text-rose-600 dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Curriculum Aligned</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Content follows Nigerian secondary curriculum.
+        </p>
+      </div>
+      
+      <div class="bg-gray-50 dark:bg-gray-900/50 rounded-2xl p-6 hover:shadow-lg transition-shadow duration-300">
+        <div class="w-12 h-12 bg-cyan-100 dark:bg-cyan-900/50 rounded-xl flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 text-cyan-600 dark:text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Instant Content</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Lessons generated in seconds using AI.
+        </p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- How It Works -->
-<section class="py-24 bg-gray-50 dark:bg-gray-900">
-  <div class="max-w-4xl mx-auto px-6">
+<section class="py-16 md:py-20 bg-gray-50 dark:bg-gray-900">
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="text-center mb-12">
+      <span class="inline-block px-3 py-1 bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 text-xs font-semibold rounded-full mb-3">All Levels</span>
+      <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3">
+        Complete Secondary Education
+      </h2>
+      <p class="text-gray-600 dark:text-gray-400 max-w-lg mx-auto">
+        From JS1 to SS3, every class level is supported
+      </p>
+    </div>
     
-    <h2 class="text-4xl md:text-5xl font-bold text-center text-gray-900 dark:text-gray-100 mb-16">
-      Get Started in Minutes
-    </h2>
-    
-    <div class="space-y-12">
+    <div class="grid grid-cols-3 md:grid-cols-6 gap-3 md:gap-4">
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-blue-100 dark:border-blue-900 hover:shadow-md transition-shadow">
+        <div class="text-xl md:text-2xl font-bold text-blue-600 dark:text-blue-400">JS1</div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">Junior 1</p>
+      </div>
       
-      <!-- Step 1 -->
-      <div class="flex items-start space-x-6">
-        <div class="flex-shrink-0 w-16 h-16 bg-primary-600 dark:bg-primary-700 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg">
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-blue-100 dark:border-blue-900 hover:shadow-md transition-shadow">
+        <div class="text-xl md:text-2xl font-bold text-blue-600 dark:text-blue-400">JS2</div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">Junior 2</p>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-blue-100 dark:border-blue-900 hover:shadow-md transition-shadow">
+        <div class="text-xl md:text-2xl font-bold text-blue-600 dark:text-blue-400">JS3</div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">Junior 3</p>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-green-100 dark:border-green-900 hover:shadow-md transition-shadow">
+        <div class="text-xl md:text-2xl font-bold text-green-600 dark:text-green-400">SS1</div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">Senior 1</p>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-green-100 dark:border-green-900 hover:shadow-md transition-shadow">
+        <div class="text-xl md:text-2xl font-bold text-green-600 dark:text-green-400">SS2</div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">Senior 2</p>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-green-100 dark:border-green-900 hover:shadow-md transition-shadow">
+        <div class="text-xl md:text-2xl font-bold text-green-600 dark:text-green-400">SS3</div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">Senior 3</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-16 md:py-20 bg-white dark:bg-gray-800">
+  <div class="max-w-3xl mx-auto px-6">
+    <div class="text-center mb-12">
+      <span class="inline-block px-3 py-1 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 text-xs font-semibold rounded-full mb-3">How It Works</span>
+      <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
+        Get Started in 3 Steps
+      </h2>
+    </div>
+    
+    <div class="space-y-6">
+      <div class="flex items-start gap-4">
+        <div class="flex-shrink-0 w-10 h-10 bg-primary-600 text-white rounded-xl flex items-center justify-center font-bold text-sm">
           1
         </div>
-        <div class="pt-3">
-          <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Sign Up Free</h3>
-          <p class="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
-            Create your account in seconds. Get 10 free credits daily. No credit card needed.
+        <div>
+          <h3 class="text-base font-bold text-gray-900 dark:text-white mb-1">Create Your Free Account</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Sign up in seconds and get 10 free credits daily.
           </p>
         </div>
       </div>
       
-      <!-- Step 2 -->
-      <div class="flex items-start space-x-6">
-        <div class="flex-shrink-0 w-16 h-16 bg-primary-600 dark:bg-primary-700 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg">
+      <div class="flex items-start gap-4">
+        <div class="flex-shrink-0 w-10 h-10 bg-primary-600 text-white rounded-xl flex items-center justify-center font-bold text-sm">
           2
         </div>
-        <div class="pt-3">
-          <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Choose Your Exam & Subject</h3>
-          <p class="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
-            Select JAMB, WAEC, NECO, or JSS. Pick the subjects you want to master.
+        <div>
+          <h3 class="text-base font-bold text-gray-900 dark:text-white mb-1">Select Your Class & Subject</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Choose your class level (JS1-SS3), term, and subject.
           </p>
         </div>
       </div>
       
-      <!-- Step 3 -->
-      <div class="flex items-start space-x-6">
-        <div class="flex-shrink-0 w-16 h-16 bg-primary-600 dark:bg-primary-700 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg">
+      <div class="flex items-start gap-4">
+        <div class="flex-shrink-0 w-10 h-10 bg-primary-600 text-white rounded-xl flex items-center justify-center font-bold text-sm">
           3
         </div>
-        <div class="pt-3">
-          <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Start Learning</h3>
-          <p class="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
-            Get personalized lessons, practice quizzes, and full mock exams powered by AI.
+        <div>
+          <h3 class="text-base font-bold text-gray-900 dark:text-white mb-1">Start Learning with AI</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Get personalized lessons, quizzes, and exam preparation.
           </p>
         </div>
       </div>
-      
     </div>
     
-    <div class="text-center mt-16">
-      <a href="{% url 'signup' %}" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600 text-white font-bold px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 text-lg inline-block">
-        Get Started Now →
+    <div class="text-center mt-10">
+      <a href="{% url 'signup' %}" class="btn-primary px-8 py-3">
+        Get Started Now
       </a>
     </div>
-    
   </div>
 </section>
 
-<!-- Social Proof / Stats -->
-<section class="py-24 bg-white dark:bg-gray-800">
-  <div class="max-w-6xl mx-auto px-6 text-center">
-    
-    <h2 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6">
-      Trusted by Nigerian Students
+<section class="py-16 md:py-20 bg-gradient-to-br from-primary-600 to-primary-800">
+  <div class="max-w-3xl mx-auto text-center px-6">
+    <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4">
+      Ready to Excel in Your Studies?
     </h2>
-    <p class="text-xl text-gray-600 dark:text-gray-400 mb-16 max-w-2xl mx-auto">
-      Join thousands of students who are already improving their exam scores with Akili
+    <p class="text-base md:text-lg text-white/80 mb-8 max-w-xl mx-auto">
+      Join students using AI to master their subjects and ace their exams
     </p>
     
-    <div class="grid md:grid-cols-4 gap-8">
-      
-      <div class="p-6">
-        <div class="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">JAMB</div>
-        <p class="text-gray-600 dark:text-gray-400">University Entrance</p>
-      </div>
-      
-      <div class="p-6">
-        <div class="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">WAEC</div>
-        <p class="text-gray-600 dark:text-gray-400">Senior School Cert</p>
-      </div>
-      
-      <div class="p-6">
-        <div class="text-4xl font-bold text-accent-600 dark:text-accent-400 mb-2">NECO</div>
-        <p class="text-gray-600 dark:text-gray-400">National Exam</p>
-      </div>
-      
-      <div class="p-6">
-        <div class="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">JSS</div>
-        <p class="text-gray-600 dark:text-gray-400">Junior Secondary</p>
-      </div>
-      
-    </div>
-    
-  </div>
-</section>
-
-<!-- Final CTA -->
-<section class="py-24 bg-gradient-to-r from-primary-600 to-blue-700 text-white">
-  <div class="max-w-4xl mx-auto text-center px-6">
-    
-    <h2 class="text-4xl md:text-5xl font-bold mb-6">
-      Ready to Excel in Your Exams?
-    </h2>
-    <p class="text-xl mb-10 opacity-90">
-      Start learning with your personal AI tutor today
-    </p>
-    
-    <a href="{% url 'signup' %}" class="bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-700 font-bold px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 text-lg inline-block">
+    <a href="{% url 'signup' %}" class="inline-block px-8 py-3 bg-white text-primary-700 font-semibold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
       Start Free Today
     </a>
     
-    <p class="mt-6 text-sm opacity-75">
-      10 free credits daily • No credit card required • Cancel anytime
+    <p class="mt-4 text-xs text-white/60">
+      10 free credits daily &bull; No credit card required
     </p>
-    
   </div>
 </section>
-
 {% endblock %}
-
-{% block extra_scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const installButton = document.getElementById('install-button');
-  if (installButton) {
-    installButton.style.display = 'none';
-  }
-});
-</script>
-{% endblock extra_scripts %}

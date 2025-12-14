@@ -12,7 +12,7 @@
     <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
       Welcome back, <span class="gradient-text">{{ user.get_full_name }}</span>!
     </h1>
-    <p class="text-gray-600 dark:text-gray-400 text-lg">Ready to ace your exams today?</p>
+    <p class="text-gray-600 dark:text-gray-400 text-lg">Ready to learn today?</p>
   </div>
   
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -91,12 +91,18 @@
         {% for course in user_courses %}
           <a href="{% url 'courses:module_listing' course_id=course.id %}" class="card card-hover">
             <div class="flex items-start justify-between mb-3">
+              {% if course.school_level %}
+              <span class="inline-flex items-center px-3 py-1 {% if course.school_level.level_type == 'JUNIOR' %}bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300{% else %}bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300{% endif %} rounded-full text-xs font-semibold">
+                {{ course.school_level.name }}
+              </span>
+              {% elif course.exam_type %}
               <span class="inline-flex items-center px-3 py-1 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full text-xs font-semibold">
                 {{ course.exam_type }}
               </span>
+              {% endif %}
             </div>
             <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">{{ course.subject }}</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400">{{ course.modules.count }} modules</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">{{ course.modules.count }} modules{% if course.term %} - {{ course.term.name }}{% endif %}</p>
           </a>
         {% endfor %}
       </div>
