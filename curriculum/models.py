@@ -149,6 +149,7 @@ class StudentProgramme(models.Model):
 class SubjectEnrolment(models.Model):
     programme = models.ForeignKey(StudentProgramme, on_delete=models.CASCADE, related_name='enrolments')
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='enrolments')
+    curriculum = models.ForeignKey(SubjectCurriculum, on_delete=models.SET_NULL, null=True, blank=True, related_name='enrolments', help_text="Current curriculum the student is following")
     current_term = models.ForeignKey(Term, on_delete=models.SET_NULL, null=True, blank=True, related_name='enrolments')
     current_week = models.ForeignKey(Week, on_delete=models.SET_NULL, null=True, blank=True, related_name='enrolments')
     progress_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)

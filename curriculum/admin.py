@@ -65,9 +65,10 @@ class StudentProgrammeAdmin(admin.ModelAdmin):
 
 @admin.register(SubjectEnrolment)
 class SubjectEnrolmentAdmin(admin.ModelAdmin):
-    list_display = ['programme', 'subject', 'current_term', 'current_week', 'progress_percentage']
-    list_filter = ['subject', 'current_term']
+    list_display = ['programme', 'subject', 'curriculum', 'current_term', 'current_week', 'progress_percentage']
+    list_filter = ['subject', 'current_term', 'curriculum__school_level']
     search_fields = ['programme__user__username']
+    raw_id_fields = ['curriculum']
 
 
 @admin.register(LegacyExamMapping)
