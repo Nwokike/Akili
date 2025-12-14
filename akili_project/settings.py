@@ -64,7 +64,7 @@ if DEBUG:
     SESSION_COOKIE_SAMESITE = 'Lax'
     CSRF_COOKIE_HTTPONLY = True
     SESSION_COOKIE_HTTPONLY = True
-    X_FRAME_OPTIONS = 'DENY'
+    X_FRAME_OPTIONS = 'SAMEORIGIN'  # Allow Replit iframe preview
 else:
     # Production
     CSRF_COOKIE_SECURE = True
