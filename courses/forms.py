@@ -1,6 +1,5 @@
 from django import forms
 from .models import Course
-from admin_syllabus.models import JAMBSyllabus, SSCESyllabus, JSSSyllabus
 from curriculum.models import SchoolLevel, Subject, Term, SubjectCurriculum
 from core.services.curriculum import CurriculumService
 

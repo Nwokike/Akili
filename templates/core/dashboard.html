@@ -15,7 +15,7 @@
     <p class="text-gray-600 dark:text-gray-400 text-lg">Ready to learn today?</p>
   </div>
   
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+  <div class="grid grid-cols-3 gap-4 mb-8">
     
     <div class="card text-center bg-gradient-to-br from-accent-50 to-accent-100 dark:from-accent-900/20 dark:to-accent-800/20 border-accent-200 dark:border-accent-800">
       <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">Credits</p>
@@ -33,12 +33,6 @@
       <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">Quizzes</p>
       <p class="text-4xl font-bold text-green-700 dark:text-green-400 mb-1">{{ quizzes_count|default:0 }}</p>
       <p class="text-xs text-gray-500 dark:text-gray-400">completed</p>
-    </div>
-    
-    <div class="card text-center bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 border-purple-200 dark:border-purple-800">
-      <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">Mock Exams</p>
-      <p class="text-4xl font-bold text-purple-700 dark:text-purple-400 mb-1">{{ exams_count|default:0 }}</p>
-      <p class="text-xs text-gray-500 dark:text-gray-400">taken</p>
     </div>
     
   </div>
@@ -61,16 +55,16 @@
         </div>
       </a>
       
-      <a href="{% url 'exam_center' %}" class="card card-hover text-left group border-2 border-gray-200 dark:border-gray-700 hover:border-accent-500 hover:bg-accent-50 dark:hover:bg-accent-900/20">
+      <a href="{% url 'quizzes:quiz_history' %}" class="card card-hover text-left group border-2 border-gray-200 dark:border-gray-700 hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20">
         <div class="flex items-center space-x-4">
-          <div class="w-14 h-14 bg-accent-100 dark:bg-accent-900/30 group-hover:bg-accent-200 dark:group-hover:bg-accent-800/40 rounded-xl flex items-center justify-center flex-shrink-0">
-            <svg class="w-7 h-7 text-accent-600 dark:text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          <div class="w-14 h-14 bg-green-100 dark:bg-green-900/30 group-hover:bg-green-200 dark:group-hover:bg-green-800/40 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-7 h-7 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
             </svg>
           </div>
           <div>
-            <h3 class="font-bold text-gray-900 dark:text-gray-100 text-lg mb-1">Take Mock Exam</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400">Practice with full exams (5 credits)</p>
+            <h3 class="font-bold text-gray-900 dark:text-gray-100 text-lg mb-1">Practice Quizzes</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Test your knowledge (FREE)</p>
           </div>
         </div>
       </a>

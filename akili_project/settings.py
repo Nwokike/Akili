@@ -98,11 +98,9 @@ INSTALLED_APPS = [
     # Akili Apps
     'core',
     'users',
-    'admin_syllabus',
     'courses',
     'profiles',
     'quizzes',
-    'exams',
     'payments',
     'curriculum',
     'assessments',

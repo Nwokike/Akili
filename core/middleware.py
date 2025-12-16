@@ -35,8 +35,11 @@ class RateLimitMiddleware:
     
     RATE_LIMITED_PATHS = [
         '/courses/create',
-        '/exams/start',
         '/courses/ask-tutor',
+        '/login/',
+        '/signup/',
+        '/password-reset/',
+        '/profiles/change-password/',
     ]
     
     def __init__(self, get_response):

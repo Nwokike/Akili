@@ -4,10 +4,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.contrib import messages
 from .models import Course, Module, CachedLesson
-from .forms import CourseCreationForm, LegacyCourseCreationForm
+from .forms import CourseCreationForm
 from core.utils.ai_module_generator import generate_course_modules
 from core.services.curriculum import CurriculumService
-from admin_syllabus.models import JAMBSyllabus, SSCESyllabus, JSSSyllabus
 from django.db import transaction
 from django.http import JsonResponse
 from quizzes.models import QuizAttempt
