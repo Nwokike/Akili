@@ -13,4 +13,5 @@ python manage.py collectstatic --no-input
 python manage.py migrate
 
 # Create cache table
-python manage.py createcachetable
+# "|| true" ensures the build doesn't fail if the table already exists
+python manage.py createcachetable || true
