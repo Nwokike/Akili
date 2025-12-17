@@ -48,13 +48,14 @@ def update_grade_from_quiz(quiz_attempt):
     modules_with_attempts = 0
     
     for module in all_modules:
-        best_attempt = QuizAttempt.objects.filter(
+        attempts = QuizAttempt.objects.filter(
             user=user,
             module=module,
             completed_at__isnull=False
-        ).order_by('-score').first()
+        )
         
-        if best_attempt:
+        if attempts.exists():
+            best_attempt = max(attempts, key=lambda a: a.percentage)
             modules_with_attempts += 1
             total_best_percentage += Decimal(str(best_attempt.percentage))
     
