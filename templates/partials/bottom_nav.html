@@ -23,14 +23,14 @@
   <span class="text-xs mt-1 font-medium">Courses</span>
 </a>
     
-    <a href="{% url 'quizzes:quiz_history' %}" 
+    <a href="{% url 'courses:tutor_hub' %}" 
        class="flex flex-col items-center py-2 px-3 
-              {% if 'quiz' in request.path %}text-primary-600 dark:text-primary-400{% else %}text-gray-600 dark:text-gray-400{% endif %} 
+              {% if 'tutor' in request.path %}text-primary-600 dark:text-primary-400{% else %}text-gray-600 dark:text-gray-400{% endif %} 
               transition-colors">
-      <svg class="w-6 h-6" fill="{% if 'quiz' in request.path %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+      <svg class="w-6 h-6" fill="{% if 'tutor' in request.path %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
       </svg>
-      <span class="text-xs mt-1 font-medium">Quizzes</span>
+      <span class="text-xs mt-1 font-medium">AI Tutor</span>
     </a>
     
     <a href="{% url 'assessments:my_grades' %}" class="flex flex-col items-center py-2 px-3 {% if 'grades' in request.path or 'assessments' in request.path %}text-primary-600 dark:text-primary-400{% else %}text-gray-600 dark:text-gray-400{% endif %} transition-colors">

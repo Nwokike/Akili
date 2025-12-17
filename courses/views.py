@@ -390,3 +390,85 @@ class GetAvailableSubjectsView(LoginRequiredMixin, View):
                 return JsonResponse({'subjects': []})
         
         return JsonResponse({'subjects': []})
+
+
+class TutorHubView(LoginRequiredMixin, View):
+    """Global AI Tutor Hub - ask questions across all subjects"""
+    
+    def get(self, request):
+        user_courses = Course.objects.filter(user=request.user).select_related(
+            'school_level', 'term'
+        ).prefetch_related('modules').order_by('-created_at')
+        
+        recent_modules = []
+        for course in user_courses[:5]:
+            for module in course.modules.all()[:3]:
+                recent_modules.append({
+                    'module': module,
+                    'course': course,
+                })
+                if len(recent_modules) >= 6:
+                    break
+            if len(recent_modules) >= 6:
+                break
+        
+        context = {
+            'title': 'AI Tutor',
+            'courses': user_courses,
+            'recent_modules': recent_modules,
+            'user_credits': request.user.tutor_credits,
+        }
+        return render(request, 'courses/tutor_hub.html', context)
+    
+    def post(self, request):
+        module_id = request.POST.get('module_id')
+        question = request.POST.get('question', '').strip()
+        
+        if not module_id:
+            messages.error(request, 'Please select a topic to ask about.')
+            return redirect('courses:tutor_hub')
+        
+        module = get_object_or_404(Module, id=module_id, course__user=request.user)
+        
+        if not question:
+            messages.error(request, 'Please enter a question.')
+            return redirect('courses:tutor_hub')
+        
+        if not request.user.deduct_credits(1):
+            messages.error(request, 'Insufficient credits. You need 1 credit to ask a question.')
+            return redirect('courses:tutor_hub')
+        
+        from core.utils.ai_fallback import call_ai_with_fallback
+        
+        course = module.course
+        context_info = ""
+        if course.school_level and course.term:
+            context_info = f"Class Level: {course.school_level.name}, Term: {course.term.name}"
+        else:
+            context_info = f"Exam Type: {course.exam_type}"
+        
+        prompt = f"""You are a friendly and helpful AI tutor for Nigerian secondary school students studying {course.subject}.
+
+{context_info}
+Topic: {module.syllabus_topic}
+
+Student's Question: {question}
+
+Provide a clear, encouraging, and educational answer appropriate for the student's level. Use examples relevant to Nigerian students where possible. Format your response with clear sections if needed."""
+
+        result = call_ai_with_fallback(prompt, max_tokens=1500, subject=course.subject)
+        
+        if result.get('success'):
+            answer = bleach.clean(result.get('content', ''), tags=[], strip=True)
+            context = {
+                'title': 'AI Tutor Response',
+                'question': question,
+                'answer': result.get('content', ''),
+                'module': module,
+                'course': course,
+            }
+            return render(request, 'courses/tutor_response.html', context)
+        else:
+            messages.error(request, 'Sorry, I could not process your question. Please try again.')
+            request.user.add_credits(1)
+            return redirect('courses:tutor_hub')

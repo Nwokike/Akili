@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}AI Tutor | Akili{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-primary-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 py-8 px-4 md:px-8">
+  <div class="max-w-4xl mx-auto">
+
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-500 to-blue-500 rounded-full mb-4">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+        </svg>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">AI Tutor</h1>
+      <p class="text-gray-600 dark:text-gray-400">Ask questions about any topic you're studying</p>
+      <div class="mt-2 inline-flex items-center px-3 py-1 bg-accent-100 dark:bg-accent-900/30 rounded-full">
+        <span class="text-sm font-medium text-accent-700 dark:text-accent-400">{{ user_credits }} credits available</span>
+      </div>
+    </div>
+
+    <div class="card mb-8">
+      <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Ask a Question</h2>
+      
+      {% if courses %}
+      <form method="post" action="{% url 'courses:tutor_hub' %}" class="space-y-4" onsubmit="showSpinner()">
+        {% csrf_token %}
+        
+        <div>
+          <label for="module_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Topic</label>
+          <select name="module_id" id="module_id" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+            <option value="">Choose a topic...</option>
+            {% for course in courses %}
+              <optgroup label="{% if course.school_level %}{{ course.school_level.name }}{% endif %} {{ course.subject }}">
+                {% for module in course.modules.all %}
+                  <option value="{{ module.id }}">{{ module.syllabus_topic }}</option>
+                {% endfor %}
+              </optgroup>
+            {% endfor %}
+          </select>
+        </div>
+        
+        <div>
+          <label for="question" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Your Question</label>
+          <textarea name="question" id="question" rows="4" required placeholder="Type your question here... For example: 'Explain photosynthesis in simple terms' or 'How do I solve quadratic equations?'" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"></textarea>
+        </div>
+        
+        <button type="submit" class="w-full btn-primary py-3 text-lg font-semibold flex items-center justify-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+          </svg>
+          Ask Tutor (1 credit)
+        </button>
+      </form>
+      {% else %}
+      <div class="text-center py-8">
+        <p class="text-gray-600 dark:text-gray-400 mb-4">You need to create a course first before you can ask questions.</p>
+        <a href="{% url 'courses:create_course' %}" class="btn-primary inline-block" onclick="showSpinner()">Create Your First Course</a>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if recent_modules %}
+    <div class="card">
+      <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Quick Access Topics</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {% for item in recent_modules %}
+        <a href="{% url 'courses:lesson_detail' module_id=item.module.id %}" class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 transition group">
+          <div class="flex-shrink-0 w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center mr-3">
+            <span class="text-primary-600 dark:text-primary-400 font-bold text-sm">{{ item.module.order }}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate group-hover:text-primary-600 dark:group-hover:text-primary-400">{{ item.module.syllabus_topic }}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">{{ item.course.subject }}</p>
+          </div>
+          <svg class="w-5 h-5 text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

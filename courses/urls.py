@@ -8,6 +8,8 @@ urlpatterns = [
     
     path('new/', views.CourseCreationView.as_view(), name='create_course'),
     
+    path('tutor/', views.TutorHubView.as_view(), name='tutor_hub'),
+    
     path('api/subjects/', views.GetAvailableSubjectsView.as_view(), name='get_subjects'),
     
     path('<int:course_id>/modules/', views.ModuleListingView.as_view(), name='module_listing'),
