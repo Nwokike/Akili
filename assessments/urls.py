@@ -22,4 +22,7 @@ urlpatterns = [
     path('notifications/', views.notifications_list, name='notifications'),
     path('notifications/<int:pk>/read/', views.mark_notification_read, name='mark_notification_read'),
     path('notifications/read-all/', views.mark_all_notifications_read, name='mark_all_read'),
+    
+    path('exam/start/<int:course_id>/', views.start_course_exam, name='start_course_exam'),
+    path('exam/<int:exam_id>/', views.course_exam_detail, name='course_exam_detail'),
 ]

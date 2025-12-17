@@ -375,6 +375,35 @@ class ContentModerationQueue(models.Model):
         return f"{self.get_content_type_display()} {self.content_id} - {self.get_status_display()}"
 
 
+class CourseExam(models.Model):
+    """Course-wide mock exam - comprehensive exam covering all modules"""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='course_exams')
+    course = models.ForeignKey('courses.Course', on_delete=models.CASCADE, related_name='exams')
+    score = models.IntegerField(default=0)
+    total_questions = models.IntegerField(default=20)
+    questions_data = models.JSONField(default=list, help_text="AI-generated exam questions")
+    user_answers = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    passed = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'course_exams'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.course.subject} Exam ({self.score}/{self.total_questions})"
+
+    @property
+    def percentage(self):
+        return round((self.score / self.total_questions) * 100, 2) if self.total_questions else 0
+
+    @property
+    def is_passing(self):
+        from django.conf import settings
+        return self.percentage >= getattr(settings, 'AKILI_EXAM_PASSING_PERCENTAGE', 50)
+
+
 class CurriculumUpdateRequest(models.Model):
     """6.4: Content Management - Admin interface for curriculum updates"""
     STATUS_CHOICES = [

@@ -70,6 +70,60 @@ def update_grade_from_quiz(quiz_attempt):
     return grade
 
 
+def update_grade_from_exam(course_exam):
+    """
+    Update or create a Grade record based on a completed mock exam.
+    
+    The exam score is scaled to 60% of the total grade (AKILI_EXAM_MAX_SCORE).
+    
+    Args:
+        course_exam: A CourseExam instance that has been completed
+    
+    Returns:
+        Grade instance or None if the course doesn't have curriculum/term
+    """
+    from assessments.models import Grade, CourseExam
+    
+    course = course_exam.course
+    user = course_exam.user
+    
+    if not course.curriculum or not course.term:
+        return None
+    
+    grade, created = Grade.objects.get_or_create(
+        student=user,
+        curriculum=course.curriculum,
+        term=course.term,
+        defaults={
+            'continuous_assessment_score': Decimal('0'),
+            'exam_score': Decimal('0'),
+        }
+    )
+    
+    from django.db.models import F, ExpressionWrapper, FloatField
+    
+    best_exam = CourseExam.objects.filter(
+        user=user,
+        course=course,
+        completed_at__isnull=False,
+        total_questions__gt=0
+    ).annotate(
+        calc_percentage=ExpressionWrapper(
+            F('score') * 100.0 / F('total_questions'),
+            output_field=FloatField()
+        )
+    ).order_by('-calc_percentage').first()
+    
+    if best_exam:
+        exam_max = Decimal(str(getattr(settings, 'AKILI_EXAM_MAX_SCORE', 60)))
+        exam_score = (Decimal(str(best_exam.percentage)) / 100) * exam_max
+        grade.exam_score = round(exam_score, 2)
+    
+    grade.compute_grade()
+    
+    return grade
+
+
 def backfill_grades_for_user(user):
     """
     Backfill grades for all completed quizzes for a user.

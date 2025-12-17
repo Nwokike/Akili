@@ -95,13 +95,60 @@ def assessment_result(request, pk):
 
 @login_required
 def my_grades(request):
-    """6.1: View student grades"""
+    """6.1: View student grades with quiz performance breakdown"""
+    from courses.models import Course
+    from quizzes.models import QuizAttempt
+    
     grades = Grade.objects.filter(
         student=request.user
     ).select_related('curriculum__subject', 'curriculum__school_level', 'term')
     
+    courses = Course.objects.filter(
+        user=request.user,
+        curriculum__isnull=False,
+        term__isnull=False
+    ).select_related('curriculum__subject', 'school_level', 'term').prefetch_related('modules')
+    
+    course_stats = []
+    for course in courses:
+        modules = course.modules.all()
+        module_count = modules.count()
+        
+        completed_modules = 0
+        total_best_percentage = 0
+        
+        for module in modules:
+            attempts = QuizAttempt.objects.filter(
+                user=request.user,
+                module=module,
+                completed_at__isnull=False
+            )
+            if attempts.exists():
+                best = max(attempts, key=lambda a: a.percentage)
+                completed_modules += 1
+                total_best_percentage += best.percentage
+        
+        avg_score = total_best_percentage / completed_modules if completed_modules > 0 else 0
+        progress = (completed_modules / module_count * 100) if module_count > 0 else 0
+        
+        course_grade = grades.filter(
+            curriculum=course.curriculum,
+            term=course.term
+        ).first()
+        
+        course_stats.append({
+            'course': course,
+            'module_count': module_count,
+            'completed_modules': completed_modules,
+            'progress': round(progress),
+            'average_score': round(avg_score, 1),
+            'grade': course_grade,
+            'mock_exam_ready': completed_modules >= max(1, module_count // 2),
+        })
+    
     context = {
         'grades': grades,
+        'course_stats': course_stats,
     }
     return render(request, 'assessments/my_grades.html', context)
 
@@ -359,3 +406,109 @@ def parent_payments(request):
         'parent_credits': request.user.tutor_credits,
     }
     return render(request, 'assessments/parent_payments.html', context)
+
+
+@login_required
+def start_course_exam(request, course_id):
+    """Start a new course-wide mock exam"""
+    from courses.models import Course
+    from .models import CourseExam
+    from .exam_utils import generate_exam_and_save
+    
+    course = get_object_or_404(Course, pk=course_id, user=request.user)
+    
+    if request.method != 'POST':
+        messages.error(request, "Invalid request method.")
+        return redirect('courses:module_listing', course_id=course_id)
+    
+    existing_exam = CourseExam.objects.filter(
+        user=request.user,
+        course=course,
+        completed_at__isnull=True
+    ).first()
+    
+    if existing_exam:
+        messages.info(request, "Continuing your existing exam.")
+        return redirect('assessments:course_exam_detail', exam_id=existing_exam.id)
+    
+    modules_count = course.modules.count()
+    if modules_count < 1:
+        messages.error(request, "This course has no modules to generate an exam from.")
+        return redirect('courses:module_listing', course_id=course_id)
+    
+    success, result = generate_exam_and_save(course, request.user, num_questions=20)
+    
+    if success:
+        messages.success(request, f"Mock exam generated for {course.subject}!")
+        return redirect('assessments:course_exam_detail', exam_id=result)
+    else:
+        messages.error(request, "Failed to generate exam. Please try again.")
+        return redirect('courses:module_listing', course_id=course_id)
+
+
+@login_required
+def course_exam_detail(request, exam_id):
+    """View and submit a course mock exam"""
+    from .models import CourseExam
+    from .services import update_grade_from_exam
+    from django.utils import timezone
+    
+    exam = get_object_or_404(
+        CourseExam.objects.filter(user=request.user),
+        pk=exam_id
+    )
+    
+    is_completed = bool(exam.completed_at)
+    
+    if request.method == 'POST' and not is_completed:
+        total_correct = 0
+        user_answers = {}
+        
+        for index, question in enumerate(exam.questions_data):
+            user_choice_str = request.POST.get(f'q_{index}')
+            correct_index_value = question.get('correct_index')
+            
+            if user_choice_str and correct_index_value is not None:
+                user_choice = int(user_choice_str)
+                correct_index = int(correct_index_value)
+                is_correct = (user_choice == correct_index)
+                
+                if is_correct:
+                    total_correct += 1
+                
+                user_answers[str(index)] = {'chosen': user_choice, 'is_correct': is_correct}
+            else:
+                user_answers[str(index)] = {'chosen': -1, 'is_correct': False}
+        
+        exam.score = total_correct
+        exam.completed_at = timezone.now()
+        exam.user_answers = user_answers
+        exam.passed = exam.is_passing
+        exam.save()
+        
+        try:
+            update_grade_from_exam(exam)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).error(f"Failed to update grade from exam: {e}")
+        
+        if exam.passed:
+            messages.success(request, f"Exam completed! You scored {total_correct}/{exam.total_questions} ({exam.percentage}%) - PASSED!")
+        else:
+            messages.warning(request, f"Exam completed! You scored {total_correct}/{exam.total_questions} ({exam.percentage}%). You need 50% to pass.")
+        
+        return redirect('assessments:course_exam_detail', exam_id=exam.id)
+    
+    if is_completed:
+        template_name = 'assessments/course_exam_result.html'
+    else:
+        template_name = 'assessments/course_exam_form.html'
+    
+    context = {
+        'exam': exam,
+        'questions': exam.questions_data,
+        'title': f"Mock Exam: {exam.course.subject}",
+        'user_answers': exam.user_answers if is_completed else None,
+    }
+    
+    return render(request, template_name, context)

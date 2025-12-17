@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load assessment_tags %}
+{% block title %}Exam Results: {{ exam.course.subject }} - Akili{% endblock %}
+{% block page_title %}Exam Results{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <div class="card mb-6 {% if exam.passed %}bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-800{% else %}bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-red-200 dark:border-red-800{% endif %}">
+    <div class="text-center py-4">
+      <h2 class="text-3xl font-bold {% if exam.passed %}text-green-700 dark:text-green-400{% else %}text-red-700 dark:text-red-400{% endif %} mb-2">
+        {% if exam.passed %}Congratulations! You Passed!{% else %}Keep Practicing{% endif %}
+      </h2>
+      <p class="text-6xl font-bold text-gray-900 dark:text-gray-100 my-4">
+        {{ exam.score }}/{{ exam.total_questions }}
+      </p>
+      <p class="text-2xl {% if exam.passed %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
+        {{ exam.percentage }}%
+      </p>
+      <p class="text-gray-600 dark:text-gray-400 mt-2">
+        {% if exam.passed %}This score has been added to your term grade.{% else %}You need 50% to pass. Review the questions below.{% endif %}
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">Review Your Answers</h3>
+    
+    <div class="space-y-6">
+      {% for question in questions %}
+      {% with answer=user_answers|default_if_none:''|dictsort:forloop.counter0 %}
+      <div class="p-4 rounded-lg {% if user_answers and user_answers|get_item:forloop.counter0|get_item:'is_correct' %}bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800{% else %}bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800{% endif %}">
+        <p class="font-semibold text-gray-900 dark:text-gray-100 mb-3">
+          <span class="text-primary-600 dark:text-primary-400">Q{{ forloop.counter }}.</span> {{ question.question }}
+        </p>
+        
+        <div class="space-y-2 mb-3">
+          {% for option in question.options %}
+          <div class="flex items-center p-2 rounded {% if forloop.counter0 == question.correct_index %}bg-green-100 dark:bg-green-800/30{% endif %}">
+            {% if forloop.counter0 == question.correct_index %}
+            <span class="text-green-600 dark:text-green-400 mr-2">&#10003;</span>
+            {% elif user_answers and user_answers|get_item:forloop.parentloop.counter0|get_item:'chosen' == forloop.counter0 %}
+            <span class="text-red-600 dark:text-red-400 mr-2">&#10007;</span>
+            {% else %}
+            <span class="mr-4"></span>
+            {% endif %}
+            <span class="text-gray-800 dark:text-gray-200">{{ option }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        
+        {% if question.explanation %}
+        <p class="text-sm text-gray-600 dark:text-gray-400 italic">
+          <strong>Explanation:</strong> {{ question.explanation }}
+        </p>
+        {% endif %}
+      </div>
+      {% endwith %}
+      {% endfor %}
+    </div>
+    
+    <div class="mt-8 flex flex-col sm:flex-row gap-4">
+      <a href="{% url 'courses:module_listing' course_id=exam.course.id %}" class="btn-secondary text-center flex-1">
+        Back to Course
+      </a>
+      <a href="{% url 'assessments:my_grades' %}" class="btn-primary text-center flex-1">
+        View My Grades
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
