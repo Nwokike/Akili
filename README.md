@@ -35,27 +35,23 @@ Akili is a comprehensive AI-powered educational platform designed to help Nigeri
 - **Practice Quizzes**: FREE unlimited quizzes with instant feedback and detailed explanations
 - **Mock Tests**: Full-length practice tests (20 questions) to assess understanding
 
-### Assessment System (NEW)
+### Assessment System 
 - **Continuous Assessment**: Weekly and monthly tests with automatic grading
 - **Grade Computation**: Automatic grade calculation (A-F) based on Nigerian grading standards
 - **Progress Reports**: Term-end progress reports with position ranking and remarks
 
-### Teacher Features (NEW)
+### Teacher Features 
 - **Teacher Dashboard**: Comprehensive view of assigned classes and students
 - **Student Management**: Enroll and manage students in classes
 - **Assignment Creation**: Create and distribute assignments with due dates
 - **Class Analytics**: View performance statistics and identify struggling students
 
-> **Note**: Teacher accounts are created by administrators. To become a teacher, contact the admin who will create a TeacherProfile linked to your account.
-
-### Parent Portal (NEW)
+### Parent Portal 
 - **Child Progress Tracking**: Monitor children's grades and academic progress
 - **Payment Management**: View payment history and credit balances
 - **Notifications**: Receive alerts for grades, assessments, and reports
 
-> **Note**: Parent accounts are created by administrators. To monitor your child's progress, contact the admin who will create a ParentProfile and link your child's student account.
-
-### Content Management (NEW)
+### Content Management 
 - **Curriculum Version Control**: Track changes to curriculum content
 - **Content Moderation Queue**: Review AI-generated content before publication
 - **Curriculum Update Requests**: Request and approve curriculum modifications
@@ -226,7 +222,7 @@ akili-platform/
 | `SubjectEnrolment` | Subject-specific tracking |
 | `LegacyExamMapping` | JAMB/SSCE/JSS compatibility |
 
-### Assessments App (NEW)
+### Assessments App 
 | Model | Description |
 |-------|-------------|
 | `Assessment` | Weekly/monthly tests and exams |
