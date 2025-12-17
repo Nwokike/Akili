@@ -114,6 +114,13 @@ def quiz_detail_view(request, quiz_id):
 
         quiz_attempt.save()
 
+        # Update grades in the assessments system
+        try:
+            from assessments.services import update_grade_from_quiz
+            update_grade_from_quiz(quiz_attempt)
+        except Exception as e:
+            logger.error(f"Failed to update grade from quiz: {e}")
+
         # Provide feedback on pass/fail status
         if quiz_attempt.passed:
             messages.success(request, f"Quiz submitted! You scored {total_correct} out of {quiz_attempt.total_questions} ({quiz_attempt.percentage}%) - PASSED! Next module unlocked.")

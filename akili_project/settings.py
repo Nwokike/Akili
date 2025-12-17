@@ -254,6 +254,7 @@ AKILI_CREDITS_PER_REFERRAL = 2
 # Akili Learning Settings
 AKILI_QUIZ_PASSING_PERCENTAGE = 60  # Minimum % to pass a quiz and unlock next module
 AKILI_LESSON_REPORT_THRESHOLD = 3   # Number of reports before lesson is regenerated
+AKILI_CA_MAX_SCORE = 40  # Maximum continuous assessment score (40% of total grade)
 AKILI_DOMAIN = os.getenv('AKILI_DOMAIN', 'akili.ng')  # Default domain for referral URLs
 
 # Credit Tiers (in kobo - 100 kobo = ₦1)
