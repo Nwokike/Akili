@@ -63,9 +63,12 @@
             Continue Learning
           </a>
           {% if stat.mock_exam_ready %}
-          <span class="py-2 px-3 text-sm font-medium text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-not-allowed" title="Mock exams coming soon">
-            Mock Exam
-          </span>
+          <form method="post" action="{% url 'assessments:start_course_exam' course_id=stat.course.id %}" onsubmit="showSpinner()">
+            {% csrf_token %}
+            <button type="submit" class="py-2 px-3 text-sm font-medium text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition">
+              Mock Exam
+            </button>
+          </form>
           {% endif %}
         </div>
       </div>

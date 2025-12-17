@@ -44,11 +44,28 @@
       <span class="font-semibold">AI Tutor</span>
     </a>
     
-    <a href="{% url 'assessments:my_grades' %}" class="flex items-center space-x-3 px-4 py-3 rounded-lg {% if 'grades' in request.path or 'assessments' in request.path %}bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400{% else %}text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700{% endif %} transition duration-200">
-      <svg class="w-5 h-5" fill="{% if 'grades' in request.path or 'assessments' in request.path %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24">
+    <a href="{% url 'quizzes:quiz_history' %}" class="flex items-center space-x-3 px-4 py-3 rounded-lg {% if 'quizzes' in request.path and 'history' in request.path %}bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400{% else %}text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700{% endif %} transition duration-200">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+      </svg>
+      <span class="font-semibold">Quiz History</span>
+    </a>
+    
+    <a href="{% url 'assessments:my_grades' %}" class="flex items-center space-x-3 px-4 py-3 rounded-lg {% if 'grades' in request.path %}bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400{% else %}text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700{% endif %} transition duration-200">
+      <svg class="w-5 h-5" fill="{% if 'grades' in request.path %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
       </svg>
       <span class="font-semibold">Grades</span>
+    </a>
+    
+    <a href="{% url 'assessments:notifications' %}" class="flex items-center space-x-3 px-4 py-3 rounded-lg {% if 'notifications' in request.path %}bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400{% else %}text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700{% endif %} transition duration-200">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+      </svg>
+      <span class="font-semibold">Notifications</span>
+      {% if unread_notifications > 0 %}
+      <span class="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ unread_notifications }}</span>
+      {% endif %}
     </a>
     
     <a href="{% url 'payments:initialize_payment' %}" class="flex items-center space-x-3 px-4 py-3 rounded-lg {% if 'payments' in request.path %}bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400{% else %}text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700{% endif %} transition duration-200">

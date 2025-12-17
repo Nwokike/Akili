@@ -44,7 +44,7 @@ def dashboard_view(request):
     
     unread_notifications = Notification.objects.filter(
         user=request.user,
-        read=False
+        is_read=False
     ).count()
     
     continue_learning = []

@@ -159,6 +159,29 @@
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
         dropdown.classList.toggle('hidden');
+        var notifDropdown = document.getElementById('notification-dropdown');
+        if (notifDropdown) notifDropdown.classList.add('hidden');
+      });
+      
+      document.addEventListener('click', function(e) {
+        if (container && !container.contains(e.target)) {
+          dropdown.classList.add('hidden');
+        }
+      });
+    }
+  }
+
+  function initNotificationDropdown() {
+    var btn = document.getElementById('notification-dropdown-btn');
+    var dropdown = document.getElementById('notification-dropdown');
+    var container = document.getElementById('notification-dropdown-container');
+    
+    if (btn && dropdown) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        dropdown.classList.toggle('hidden');
+        var profileDropdown = document.getElementById('profile-dropdown');
+        if (profileDropdown) profileDropdown.classList.add('hidden');
       });
       
       document.addEventListener('click', function(e) {
@@ -274,6 +297,7 @@
     }
 
     initProfileDropdown();
+    initNotificationDropdown();
     initMobileMenu();
     initSmoothScroll();
     initKatex();

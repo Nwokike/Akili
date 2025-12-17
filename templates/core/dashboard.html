@@ -15,62 +15,144 @@
     <p class="text-gray-600 dark:text-gray-400 text-lg">Ready to learn today?</p>
   </div>
   
-  <div class="grid grid-cols-3 gap-4 mb-8">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
     
     <div class="card text-center bg-gradient-to-br from-accent-50 to-accent-100 dark:from-accent-900/20 dark:to-accent-800/20 border-accent-200 dark:border-accent-800">
       <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">Credits</p>
-      <p class="text-4xl font-bold text-accent-700 dark:text-accent-400 mb-1">{{ user_credits|default:0 }}</p>
+      <p class="text-3xl md:text-4xl font-bold text-accent-700 dark:text-accent-400 mb-1">{{ user_credits|default:0 }}</p>
       <p class="text-xs text-gray-500 dark:text-gray-400">of {{ user_daily_limit|default:10 }} daily</p>
     </div>
     
     <div class="card text-center bg-gradient-to-br from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 border-primary-200 dark:border-primary-800">
       <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">Courses</p>
-      <p class="text-4xl font-bold text-primary-700 dark:text-primary-400 mb-1">{{ courses_count|default:0 }}</p>
+      <p class="text-3xl md:text-4xl font-bold text-primary-700 dark:text-primary-400 mb-1">{{ courses_count|default:0 }}</p>
       <p class="text-xs text-gray-500 dark:text-gray-400">in progress</p>
     </div>
     
     <div class="card text-center bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-800">
       <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">Quizzes</p>
-      <p class="text-4xl font-bold text-green-700 dark:text-green-400 mb-1">{{ quizzes_count|default:0 }}</p>
+      <p class="text-3xl md:text-4xl font-bold text-green-700 dark:text-green-400 mb-1">{{ quizzes_count|default:0 }}</p>
       <p class="text-xs text-gray-500 dark:text-gray-400">completed</p>
+    </div>
+    
+    <div class="card text-center bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 border-purple-200 dark:border-purple-800">
+      <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">Overall Grade</p>
+      <p class="text-3xl md:text-4xl font-bold text-purple-700 dark:text-purple-400 mb-1">{% if overall_grade > 0 %}{{ overall_grade }}%{% else %}-{% endif %}</p>
+      <p class="text-xs text-gray-500 dark:text-gray-400">{% if grade_stats.count > 0 %}{{ grade_stats.count }} subject{{ grade_stats.count|pluralize }}{% else %}no grades yet{% endif %}</p>
     </div>
     
   </div>
   
+  {% if continue_learning %}
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Continue Learning</h2>
+    <div class="grid md:grid-cols-3 gap-4">
+      {% for item in continue_learning %}
+      <a href="{% url 'courses:lesson_detail' module_id=item.module.id %}" class="card card-hover group border-l-4 border-primary-500">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold px-2 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded">{{ item.action }}</span>
+          <span class="text-xs text-gray-500 dark:text-gray-400">Module {{ item.module.order }}</span>
+        </div>
+        <h3 class="font-bold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 mb-1">{{ item.course.subject }}</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400 truncate">{{ item.module.title }}</p>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  
   <div class="mb-8">
     <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h2>
-    <div class="grid md:grid-cols-2 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       
-      <a href="{% url 'courses:create_course' %}" class="card card-hover text-left group border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20">
-        <div class="flex items-center space-x-4">
-          <div class="w-14 h-14 bg-primary-100 dark:bg-primary-900/30 group-hover:bg-primary-200 dark:group-hover:bg-primary-800/40 rounded-xl flex items-center justify-center flex-shrink-0">
-            <svg class="w-7 h-7 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-          </div>
-          <div>
-            <h3 class="font-bold text-gray-900 dark:text-gray-100 text-lg mb-1">Add New Course</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400">Start learning a new subject</p>
-          </div>
+      <a href="{% url 'courses:create_course' %}" class="card card-hover text-center group border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20">
+        <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 group-hover:bg-primary-200 dark:group-hover:bg-primary-800/40 rounded-xl flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
         </div>
+        <h3 class="font-bold text-gray-900 dark:text-gray-100 text-sm mb-1">New Course</h3>
+        <p class="text-xs text-gray-600 dark:text-gray-400">5 credits</p>
       </a>
       
-      <a href="{% url 'quizzes:quiz_history' %}" class="card card-hover text-left group border-2 border-gray-200 dark:border-gray-700 hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20">
-        <div class="flex items-center space-x-4">
-          <div class="w-14 h-14 bg-green-100 dark:bg-green-900/30 group-hover:bg-green-200 dark:group-hover:bg-green-800/40 rounded-xl flex items-center justify-center flex-shrink-0">
-            <svg class="w-7 h-7 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-            </svg>
-          </div>
-          <div>
-            <h3 class="font-bold text-gray-900 dark:text-gray-100 text-lg mb-1">Practice Quizzes</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400">Test your knowledge (FREE)</p>
-          </div>
+      <a href="{% url 'courses:tutor_hub' %}" class="card card-hover text-center group border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20">
+        <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/40 rounded-xl flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+          </svg>
         </div>
+        <h3 class="font-bold text-gray-900 dark:text-gray-100 text-sm mb-1">AI Tutor</h3>
+        <p class="text-xs text-gray-600 dark:text-gray-400">Ask anything</p>
+      </a>
+      
+      <a href="{% url 'assessments:my_grades' %}" class="card card-hover text-center group border-2 border-gray-200 dark:border-gray-700 hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20">
+        <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 group-hover:bg-purple-200 dark:group-hover:bg-purple-800/40 rounded-xl flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+        </div>
+        <h3 class="font-bold text-gray-900 dark:text-gray-100 text-sm mb-1">My Grades</h3>
+        <p class="text-xs text-gray-600 dark:text-gray-400">View progress</p>
+      </a>
+      
+      <a href="{% url 'quizzes:quiz_history' %}" class="card card-hover text-center group border-2 border-gray-200 dark:border-gray-700 hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20">
+        <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 group-hover:bg-green-200 dark:group-hover:bg-green-800/40 rounded-xl flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+          </svg>
+        </div>
+        <h3 class="font-bold text-gray-900 dark:text-gray-100 text-sm mb-1">Quiz History</h3>
+        <p class="text-xs text-gray-600 dark:text-gray-400">FREE practice</p>
       </a>
       
     </div>
   </div>
+  
+  {% if recent_quizzes or recent_exams %}
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Recent Activity</h2>
+    <div class="card divide-y divide-gray-200 dark:divide-gray-700">
+      {% for quiz in recent_quizzes %}
+      <div class="flex items-center justify-between py-3 {% if forloop.first %}pt-0{% endif %}">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center {% if quiz.passed %}bg-green-100 dark:bg-green-900/30{% else %}bg-yellow-100 dark:bg-yellow-900/30{% endif %}">
+            <svg class="w-5 h-5 {% if quiz.passed %}text-green-600 dark:text-green-400{% else %}text-yellow-600 dark:text-yellow-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+            </svg>
+          </div>
+          <div>
+            <p class="font-medium text-gray-900 dark:text-gray-100">{{ quiz.module.course.subject }} - Quiz</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ quiz.module.title }}</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="font-bold {% if quiz.passed %}text-green-600 dark:text-green-400{% else %}text-yellow-600 dark:text-yellow-400{% endif %}">{{ quiz.percentage }}%</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">{{ quiz.completed_at|timesince }} ago</p>
+        </div>
+      </div>
+      {% endfor %}
+      {% for exam in recent_exams %}
+      <div class="flex items-center justify-between py-3">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center {% if exam.passed %}bg-green-100 dark:bg-green-900/30{% else %}bg-red-100 dark:bg-red-900/30{% endif %}">
+            <svg class="w-5 h-5 {% if exam.passed %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+            </svg>
+          </div>
+          <div>
+            <p class="font-medium text-gray-900 dark:text-gray-100">{{ exam.course.subject }} - Mock Exam</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ exam.total_questions }} questions</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="font-bold {% if exam.passed %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">{{ exam.percentage }}%</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">{{ exam.completed_at|timesince }} ago</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
   
   <div class="mb-8">
     <div class="flex items-center justify-between mb-4">
