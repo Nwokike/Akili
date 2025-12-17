@@ -241,3 +241,71 @@ class ReferralSystemTestCase(TestCase):
         response = client.get(f'/join/{self.referrer.username}')
         if response.status_code == 200:
             self.assertContains(response, self.referrer.first_name)
+
+
+class PasswordResetTestCase(TestCase):
+    """Tests for password reset flow"""
+    
+    def setUp(self):
+        self.client = Client()
+        self.User = get_user_model()
+        self.user = self.User.objects.create_user(
+            email='resetuser@example.com',
+            password='testpass123',
+            first_name='Reset',
+            last_name='User'
+        )
+    
+    def test_password_reset_page_loads(self):
+        """Test password reset page loads successfully"""
+        response = self.client.get(reverse('password_reset'))
+        self.assertEqual(response.status_code, 200)
+    
+    def test_password_reset_form_submission(self):
+        """Test password reset form accepts valid email"""
+        response = self.client.post(reverse('password_reset'), {
+            'email': 'resetuser@example.com'
+        })
+        self.assertEqual(response.status_code, 302)
+    
+    def test_password_reset_done_page(self):
+        """Test password reset done page loads"""
+        response = self.client.get(reverse('password_reset_done'))
+        self.assertEqual(response.status_code, 200)
+
+
+class ProfileViewsTestCase(TestCase):
+    """Tests for profile-related views"""
+    
+    def setUp(self):
+        self.client = Client()
+        self.User = get_user_model()
+        self.user = self.User.objects.create_user(
+            email='profileuser@example.com',
+            password='testpass123',
+            first_name='Profile',
+            last_name='User'
+        )
+        self.client.login(email='profileuser@example.com', password='testpass123')
+    
+    def test_profile_page_requires_login(self):
+        """Test profile page requires authentication"""
+        self.client.logout()
+        response = self.client.get(reverse('profiles:my_profile'))
+        self.assertEqual(response.status_code, 302)
+    
+    def test_profile_page_loads_when_authenticated(self):
+        """Test profile page loads for authenticated user"""
+        response = self.client.get(reverse('profiles:my_profile'))
+        self.assertEqual(response.status_code, 200)
+    
+    def test_dashboard_requires_login(self):
+        """Test dashboard requires authentication"""
+        self.client.logout()
+        response = self.client.get(reverse('dashboard'))
+        self.assertEqual(response.status_code, 302)
+    
+    def test_dashboard_loads_when_authenticated(self):
+        """Test dashboard loads for authenticated user"""
+        response = self.client.get(reverse('dashboard'))
+        self.assertEqual(response.status_code, 200)

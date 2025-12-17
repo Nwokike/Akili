@@ -46,10 +46,14 @@ Akili is a comprehensive AI-powered educational platform designed to help Nigeri
 - **Assignment Creation**: Create and distribute assignments with due dates
 - **Class Analytics**: View performance statistics and identify struggling students
 
+> **Note**: Teacher accounts are created by administrators. To become a teacher, contact the admin who will create a TeacherProfile linked to your account.
+
 ### Parent Portal (NEW)
 - **Child Progress Tracking**: Monitor children's grades and academic progress
 - **Payment Management**: View payment history and credit balances
 - **Notifications**: Receive alerts for grades, assessments, and reports
+
+> **Note**: Parent accounts are created by administrators. To monitor your child's progress, contact the admin who will create a ParentProfile and link your child's student account.
 
 ### Content Management (NEW)
 - **Curriculum Version Control**: Track changes to curriculum content

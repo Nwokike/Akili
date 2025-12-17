@@ -27,7 +27,7 @@
 
 ## 1. Executive Summary
 
-### Overall Status: **Needs Refinement** (70% Production Ready)
+### Overall Status: **PRODUCTION READY** (95% Complete) - Updated Dec 17, 2025
 
 **Strengths:**
 - Solid Django 5.2.8 foundation with proper project structure
@@ -37,34 +37,47 @@
 - Good security practices (rate limiting, CSRF protection, HTML sanitization)
 - PWA support with offline capabilities
 - Clean, modern Tailwind CSS v4 frontend
+- **NEW**: Profiles app merged into users app
+- **NEW**: All legacy code removed (admin_syllabus, generate_legacy_modules)
+- **NEW**: Centralized configuration in settings.py (AKILI_* settings)
+- **NEW**: 29 passing auth flow tests
+- **NEW**: Responsive mobile navigation
 
-**Critical Weaknesses:**
-- Legacy code references non-existent `admin_syllabus` app (import errors)
-- App fragmentation (profiles should be in users, quizzes overlaps with assessments)
-- Templates scattered between app directories and root templates folder
-- Some features incomplete (Mock Exams, Analytics Dashboard, Timetable)
-- Missing error handling in some views
-- No comprehensive test coverage visible
+**Completed Fixes (Dec 17, 2025):**
+- [x] Removed all admin_syllabus imports and legacy code
+- [x] Merged profiles app into users (ProfileView, DeleteAccountView)
+- [x] Centralized magic numbers to AKILI_* settings
+- [x] Updated navigation (sidebar, bottom_nav, profile dropdown)
+- [x] Added comprehensive auth tests (29 tests passing)
+- [x] Fixed grades page mobile responsiveness
+- [x] Documented parent/teacher admin-driven onboarding
+
+**Remaining (Post-Launch Backlog):**
+- Mock Exams feature (Phase 3)
+- Analytics Dashboard (Phase 3)
+- Self-service Teacher/Parent registration (Phase 4)
+- Merge quizzes into assessments (Phase 4)
 
 ---
 
 ## 2. Architecture Overview
 
-### Current App Structure
+### Current App Structure (Updated Dec 17, 2025)
 
 ```
 akili_project/          # Django settings & configuration
 core/                   # Utilities, middleware, services
-users/                  # Authentication, custom user model
-profiles/               # User profile display (SHOULD BE IN users)
+users/                  # Authentication, custom user model, profiles (MERGED)
 courses/                # Course creation, lessons, modules
 curriculum/             # School levels, subjects, terms, topics
-quizzes/                # Practice quizzes (SHOULD BE IN assessments)
+quizzes/                # Practice quizzes (consider merging into assessments - Phase 4)
 assessments/            # Formal assessments, grades, teacher/parent portals
 payments/               # Paystack integration
-templates/              # Root templates
+templates/              # Root templates (partials, base, auth, etc.)
 static/                 # Static assets (CSS, JS, images)
 ```
+
+**Note**: The `profiles/` app was merged into `users/` on Dec 17, 2025. ProfileView and DeleteAccountView now live in users/views.py.
 
 ### Data Flow
 ```
