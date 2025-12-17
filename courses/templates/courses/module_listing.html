@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ course.exam_type }} {{ course.subject }} - Modules{% endblock %}
+{% block title %}{% if course.school_level %}{{ course.school_level.name }}{% else %}{{ course.exam_type }}{% endif %} {{ course.subject }} - Modules{% endblock %}
 
-{% block page_title %}{{ course.exam_type }} {{ course.subject }}{% endblock %}
+{% block page_title %}{% if course.school_level %}{{ course.school_level.name }}{% else %}{{ course.exam_type }}{% endif %} {{ course.subject }}{% endblock %}
 
 {% block content %}
 <div class="max-w-6xl mx-auto py-8 px-4">
@@ -22,7 +22,7 @@
   <div class="card mb-8 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 border-primary-200 dark:border-primary-800">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{{ course.exam_type }} {{ course.subject }}</h1>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{% if course.school_level %}{{ course.school_level.name }}{% else %}{{ course.exam_type }}{% endif %} {{ course.subject }}</h1>
         <p class="text-gray-600 dark:text-gray-400">{{ modules_with_status|length }} Study Module{{ modules_with_status|length|pluralize }}</p>
       </div>
       <div class="text-right">

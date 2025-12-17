@@ -65,7 +65,7 @@
             <div class="flex items-center justify-between mb-3">
               <div class="flex-1">
                 <h3 class="font-semibold text-gray-900 dark:text-gray-100">
-                  {{ quiz.module.course.exam_type }} - {{ quiz.module.course.subject }}
+                  {% if quiz.module.course.school_level %}{{ quiz.module.course.school_level.name }}{% else %}{{ quiz.module.course.exam_type }}{% endif %} - {{ quiz.module.course.subject }}
                 </h3>
                 <p class="text-sm text-gray-600 dark:text-gray-400">{{ quiz.module.title }}</p>
                 <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">

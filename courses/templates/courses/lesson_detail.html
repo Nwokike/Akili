@@ -53,7 +53,7 @@
     <ol class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
       <li><a href="{% url 'dashboard' %}" class="hover:text-primary-600">Dashboard</a></li>
       <li><span>/</span></li>
-      <li><a href="{% url 'courses:module_listing' course_id=course.id %}" class="hover:text-primary-600">{{ course.exam_type }} {{ course.subject }}</a></li>
+      <li><a href="{% url 'courses:module_listing' course_id=course.id %}" class="hover:text-primary-600">{% if course.school_level %}{{ course.school_level.name }}{% else %}{{ course.exam_type }}{% endif %} {{ course.subject }}</a></li>
       <li><span>/</span></li>
       <li class="text-gray-900 dark:text-gray-100 font-medium">{{ module.title }}</li>
     </ol>

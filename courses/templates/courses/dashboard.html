@@ -38,10 +38,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {% for course in courses %}
             <div class="card card-hover group cursor-pointer" onclick="window.location.href='{% url 'courses:module_listing' course.id %}'">
-              <!-- Exam Type Badge -->
+              <!-- Level/Exam Type Badge -->
               <div class="flex items-center justify-between mb-4">
                 <span class="badge badge-primary text-sm font-bold">
-                  {{ course.exam_type }}
+                  {% if course.school_level %}{{ course.school_level.name }}{% else %}{{ course.exam_type }}{% endif %}
                 </span>
                 <span class="text-xs text-gray-500 dark:text-gray-400">
                   {{ course.created_at|date:"M d, Y" }}
@@ -75,7 +75,7 @@
 
                 <!-- FIX: Added event.stopPropagation() to the onclick -->
                 <button type="button"
-                        onclick="event.stopPropagation(); openDeleteModal('{{ course.id }}', '{{ course.exam_type }}', '{{ course.subject }}')"
+                        onclick="event.stopPropagation(); openDeleteModal('{{ course.id }}', '{% if course.school_level %}{{ course.school_level.name }}{% else %}{{ course.exam_type }}{% endif %}', '{{ course.subject }}')"
                         class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                         title="Delete course">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
