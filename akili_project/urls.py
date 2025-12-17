@@ -20,13 +20,15 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('dashboard/', core_views.dashboard_view, name='dashboard'),
     
-    # App URLs with namespaces
-    path('', include('users.urls')),
+    # App URLs
+    path('', include('users.urls')),  # Auth URLs without namespace
     path('courses/', include('courses.urls')),
-    path('profiles/', include('profiles.urls')),
     path('quizzes/', include('quizzes.urls')),
     path('payments/', include('payments.urls')),
     path('assessments/', include('assessments.urls')),
+    
+    # Profile URLs with namespace (merged from profiles app)
+    path('profiles/', include('users.profile_urls')),
     
     # Legal pages
     path('privacy/', core_views.privacy_view, name='privacy'),

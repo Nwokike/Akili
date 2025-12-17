@@ -120,7 +120,6 @@ INSTALLED_APPS = [
     'core',
     'users',
     'courses',
-    'profiles',
     'quizzes',
     'payments',
     'curriculum',

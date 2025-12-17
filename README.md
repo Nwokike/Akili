@@ -316,9 +316,6 @@ python manage.py seed_curriculum
 # Migrate legacy courses (for upgrades from old version)
 python manage.py migrate_legacy_courses
 
-# Map legacy syllabuses to new curriculum
-python manage.py map_syllabuses
-
 # Collect static files (production)
 python manage.py collectstatic --noinput
 ```

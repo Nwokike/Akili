@@ -5,6 +5,10 @@ from django.contrib import messages
 from django.db import transaction
 from django.urls import reverse
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import logout as auth_logout
+from django.conf import settings
 from .models import CustomUser
 from .forms import SignupForm, LoginForm
 
@@ -103,4 +107,60 @@ def logout_view(request):
 def referral_signup_view(request, username):
     """Handle referral signup via /join/username"""
     return redirect(f'{reverse("signup")}?ref={username}')
+
+
+class ProfileView(LoginRequiredMixin, View):
+    """Displays the user's profile details and referral information."""
+    def get(self, request):
+        max_referral_credits = settings.AKILI_MAX_REFERRAL_CREDITS
+
+        username = request.user.username
+        if username:
+            referral_count = CustomUser.objects.filter(
+                referred_by__isnull=False,
+                referred_by=username
+            ).exclude(referred_by='').count()
+        else:
+            referral_count = 0
+        bonus_credits_earned = referral_count * settings.AKILI_CREDITS_PER_REFERRAL
+
+        context = {
+            'user_profile': request.user,
+            'title': 'My Profile & Settings',
+            'max_referral_credits': max_referral_credits,
+            'referral_count': referral_count,
+            'bonus_credits_earned': bonus_credits_earned,
+        }
+
+        return render(request, 'profiles/profile.html', context)
+
+
+class DeleteAccountView(LoginRequiredMixin, View):
+    """Handles the permanent deletion of a user's account and associated data."""
+    def post(self, request):
+        if getattr(settings, 'ACCOUNT_DELETION_DISABLED', False):
+            messages.error(request, "Account deletion is temporarily disabled.")
+            return redirect(reverse('profiles:my_profile'))
+
+        if request.POST.get('confirm_delete') != 'true':
+            messages.error(request, "You must check the confirmation box to delete your account.")
+            return redirect(reverse('profiles:my_profile'))
+
+        password = request.POST.get('password', '')
+        if not password:
+            messages.error(request, "Please enter your password to confirm account deletion.")
+            return redirect(reverse('profiles:my_profile'))
+        
+        if not request.user.check_password(password):
+            messages.error(request, "Incorrect password. Account deletion cancelled.")
+            return redirect(reverse('profiles:my_profile'))
+
+        user = request.user
+        
+        with transaction.atomic():
+            auth_logout(request)
+            user.delete()
+
+        messages.success(request, "Your account has been successfully deleted.")
+        return redirect(reverse('home'))
 
