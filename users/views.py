@@ -104,28 +104,3 @@ def referral_signup_view(request, username):
     """Handle referral signup via /join/username"""
     return redirect(f'{reverse("signup")}?ref={username}')
 
-# --- FINAL ACCOUNT DELETION LOGIC ---
-@login_required
-def delete_account_view(request):
-    """Handle permanent account deletion via POST request."""
-    if request.method == 'POST':
-        
-        # Use transaction for atomic deletion
-        with transaction.atomic():
-            user = request.user
-            # We store the username to show a message *after* logout
-            username = user.username
-            
-            # 1. Log the user out first to invalidate their session
-            logout(request)
-            
-            # 2. Now, delete the user object (CASCADE handles related data)
-            user.delete()
-        
-        messages.success(request, f"Account '{username}' has been permanently deleted.")
-        return redirect('signup') # Redirect to the public signup page
-    else:
-        # If accessed via GET (e.g., typing the URL), send them to the profile page
-        messages.error(request, "Invalid request. Use the profile page to delete.")
-        # NOTE: Using profiles:my_profile ensures the new URL works
-        return redirect(reverse('profiles:my_profile'))

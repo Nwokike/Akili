@@ -39,7 +39,6 @@ class RateLimitMiddleware:
         '/login/',
         '/signup/',
         '/password-reset/',
-        '/profiles/change-password/',
     ]
     
     def __init__(self, get_response):
