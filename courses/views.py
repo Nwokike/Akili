@@ -378,7 +378,6 @@ class DeleteCourseView(LoginRequiredMixin, View):
 class GetAvailableSubjectsView(LoginRequiredMixin, View):
     def get(self, request):
         school_level_id = request.GET.get('school_level')
-        exam_type = request.GET.get('exam_type', '')
         
         if school_level_id:
             try:
@@ -387,15 +386,5 @@ class GetAvailableSubjectsView(LoginRequiredMixin, View):
                 return JsonResponse({'subjects': subjects_list})
             except (ValueError, TypeError):
                 return JsonResponse({'subjects': []})
-        
-        if exam_type:
-            subjects = []
-            if exam_type == 'JAMB':
-                subjects = list(JAMBSyllabus.objects.all().values_list('subject', flat=True))
-            elif exam_type == 'SSCE':
-                subjects = list(SSCESyllabus.objects.all().values_list('subject', flat=True))
-            elif exam_type == 'JSS':
-                subjects = list(JSSSyllabus.objects.all().values_list('subject', flat=True))
-            return JsonResponse({'subjects': subjects})
         
         return JsonResponse({'subjects': []})

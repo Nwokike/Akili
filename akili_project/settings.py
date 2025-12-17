@@ -50,9 +50,30 @@ else:
     ALLOWED_HOSTS = []
 
 
-# CSRF Settings
+# CSRF Settings - Handle Replit dynamic domains automatically
 CSRF_TRUSTED_ORIGINS_ENV = os.getenv('CSRF_TRUSTED_ORIGINS', '')
-CSRF_TRUSTED_ORIGINS = [origin for origin in CSRF_TRUSTED_ORIGINS_ENV.split(',') if origin]
+CSRF_TRUSTED_ORIGINS = []
+
+# Add any manually configured origins (ensure they have https:// prefix)
+for origin in CSRF_TRUSTED_ORIGINS_ENV.split(','):
+    origin = origin.strip()
+    if origin:
+        if not origin.startswith(('http://', 'https://')):
+            origin = f'https://{origin}'
+        CSRF_TRUSTED_ORIGINS.append(origin)
+
+# Auto-detect Replit domains for development
+REPLIT_DEV_DOMAIN = os.getenv('REPLIT_DEV_DOMAIN', '')
+if REPLIT_DEV_DOMAIN:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{REPLIT_DEV_DOMAIN}')
+
+# Handle multiple Replit domains (comma-separated)
+REPLIT_DOMAINS = os.getenv('REPLIT_DOMAINS', '')
+if REPLIT_DOMAINS:
+    for domain in REPLIT_DOMAINS.split(','):
+        domain = domain.strip()
+        if domain:
+            CSRF_TRUSTED_ORIGINS.append(f'https://{domain}')
 
 
 # Cookie & Security settings
