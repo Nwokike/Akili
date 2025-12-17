@@ -659,26 +659,26 @@ class StudySchedule(models.Model):
 
 ### 13.1 Must Fix Before Production
 
-- [ ] Remove all admin_syllabus imports (BLOCKING)
-- [ ] Remove generate_legacy_modules function
-- [ ] Remove LegacyCourseCreationForm
-- [ ] Fix GetAvailableSubjectsView legacy code path
-- [ ] Ensure DEBUG=False in production
-- [ ] Set proper SECRET_KEY
-- [ ] Configure ALLOWED_HOSTS correctly
-- [ ] Configure CSRF_TRUSTED_ORIGINS correctly
-- [ ] Set up LOG_DIR environment variable
-- [ ] Test payment flow end-to-end
+- [x] Remove all admin_syllabus imports (BLOCKING) - **COMPLETED Dec 17, 2025**
+- [x] Remove generate_legacy_modules function - **COMPLETED Dec 17, 2025**
+- [x] Remove LegacyCourseCreationForm - **COMPLETED Dec 17, 2025**
+- [x] Fix GetAvailableSubjectsView legacy code path - **VERIFIED: Uses CurriculumService (no legacy refs)**
+- [ ] Ensure DEBUG=False in production - *Configured via environment variable*
+- [ ] Set proper SECRET_KEY - *Configured via environment variable*
+- [ ] Configure ALLOWED_HOSTS correctly - *Configured via environment variable*
+- [ ] Configure CSRF_TRUSTED_ORIGINS correctly - *Configured via environment variable*
+- [ ] Set up LOG_DIR environment variable - *Optional for production*
+- [ ] Test payment flow end-to-end - *Requires Paystack test keys*
 - [ ] Run comprehensive migration on fresh DB
 
 ### 13.2 Should Fix Before Production
 
-- [ ] Merge profiles into users
-- [ ] Move all templates to root
+- [x] Merge profiles into users - **COMPLETED Dec 17, 2025** (profiles app deleted, ProfileView/DeleteAccountView moved to users app)
+- [ ] Move all templates to root - *Templates mostly in root, some in app dirs for organization*
 - [ ] Add basic test coverage (at minimum auth flow)
-- [ ] Remove duplicate delete_account_view
-- [ ] Move magic numbers to settings
-- [ ] Add environment variable for domain
+- [x] Remove duplicate delete_account_view - **COMPLETED Dec 17, 2025**
+- [x] Move magic numbers to settings - **COMPLETED Dec 17, 2025** (AKILI_QUIZ_PASSING_PERCENTAGE, AKILI_LESSON_REPORT_THRESHOLD, AKILI_CREDIT_TIERS)
+- [x] Add environment variable for domain - **COMPLETED Dec 17, 2025** (AKILI_DOMAIN in settings)
 
 ### 13.3 Nice to Have
 
@@ -688,29 +688,41 @@ class StudySchedule(models.Model):
 - [ ] Implement offline content caching
 - [ ] Add comprehensive logging
 
+### 13.4 UX Improvements (COMPLETED Dec 17, 2025)
+
+- [x] Update sidebar navigation - Added Grades link
+- [x] Update bottom navigation - Made consistent with sidebar (Dashboard, Courses, Quizzes, Grades, Credits)
+- [x] Enhanced profile dropdown - Added Notifications, Privacy Policy, Terms of Service links
+- [x] Remove /profiles/change-password/ from rate limit paths (endpoint didn't exist)
+- [x] Update README.md - Removed false reference to map_syllabuses command
+
 ---
 
 ## 14. Prioritized Action Items
 
-### PHASE 1: Critical Fixes (Before ANY Deployment)
+### PHASE 1: Critical Fixes (Before ANY Deployment) - **ALL COMPLETED**
 
-| Priority | Task | Effort |
-|----------|------|--------|
-| P0 | Remove all admin_syllabus imports | 30 min |
-| P0 | Delete generate_legacy_modules() | 10 min |
-| P0 | Delete LegacyCourseCreationForm | 10 min |
-| P0 | Fix GetAvailableSubjectsView | 15 min |
-| P0 | Test application starts without errors | 10 min |
+| Priority | Task | Effort | Status |
+|----------|------|--------|--------|
+| P0 | Remove all admin_syllabus imports | 30 min | **DONE** |
+| P0 | Delete generate_legacy_modules() | 10 min | **DONE** |
+| P0 | Delete LegacyCourseCreationForm | 10 min | **DONE** |
+| P0 | Fix GetAvailableSubjectsView | 15 min | **VERIFIED OK** |
+| P0 | Test application starts without errors | 10 min | **DONE** |
 
-### PHASE 2: Code Cleanup (1-2 days)
+### PHASE 2: Code Cleanup (1-2 days) - **MOSTLY COMPLETED**
 
-| Priority | Task | Effort |
-|----------|------|--------|
-| P1 | Merge profiles app into users | 2 hours |
-| P1 | Consolidate all templates to root | 1 hour |
-| P1 | Remove duplicate delete account view | 30 min |
-| P1 | Update README.md (remove false references) | 30 min |
-| P1 | Add basic auth flow tests | 2 hours |
+| Priority | Task | Effort | Status |
+|----------|------|--------|--------|
+| P1 | Merge profiles app into users | 2 hours | **DONE** |
+| P1 | Consolidate all templates to root | 1 hour | Partial - templates organized |
+| P1 | Remove duplicate delete account view | 30 min | **DONE** |
+| P1 | Update README.md (remove false references) | 30 min | **DONE** |
+| P1 | Add basic auth flow tests | 2 hours | Pending |
+| P1 | Centralize magic numbers to settings | 30 min | **DONE** |
+| P1 | Add AKILI_DOMAIN environment config | 10 min | **DONE** |
+| P1 | Update navigation (sidebar + bottom_nav) | 30 min | **DONE** |
+| P1 | Enhanced profile dropdown menu | 20 min | **DONE** |
 
 ### PHASE 3: Feature Completion (3-5 days)
 
