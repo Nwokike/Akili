@@ -193,12 +193,10 @@ akili-platform/
 │   ├── views.py              # Dashboard views
 │   └── templates/            # Assessment templates
 ├── quizzes/                  # Practice quizzes
-├── exams/                    # Mock tests
 ├── users/                    # Authentication
 │   └── models.py             # CustomUser model
 ├── payments/                 # Paystack integration
 ├── profiles/                 # User profile management
-├── admin_syllabus/           # Legacy exam syllabuses
 ├── static/                   # CSS, JS, images
 ├── templates/                # HTML templates
 ├── requirements.txt          # Python dependencies
