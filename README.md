@@ -354,7 +354,7 @@ The project includes `render.yaml` for one-click Render deployment:
 4. Render automatically runs `build.sh`
 5. Gunicorn starts with optimized settings
 
-### Production Configuration (1GB RAM)
+### Production Configuration 
 
 ```bash
 gunicorn --bind=0.0.0.0:5000 \
