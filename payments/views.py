@@ -125,12 +125,12 @@ def verify_payment(request):
                 # Payment.amount stores Naira as float, convert to kobo integer
                 amount_kobo = round(payment.amount * 100)
                 
-                # Credit tiers in KOBO to avoid float precision issues
-                CREDIT_TIERS_KOBO = {
-                    200000: 300,  # Premium: ₦2,000 (200000 kobo) = 300 credits
-                    100000: 120,  # Standard: ₦1,000 (100000 kobo) = 120 credits
-                    50000: 50,    # Starter: ₦500 (50000 kobo) = 50 credits
-                }
+                # Credit tiers from settings (in kobo to avoid float precision issues)
+                CREDIT_TIERS_KOBO = getattr(settings, 'AKILI_CREDIT_TIERS', {
+                    200000: 300,  # Premium: ₦2,000 = 300 credits
+                    100000: 120,  # Standard: ₦1,000 = 120 credits
+                    50000: 50,    # Starter: ₦500 = 50 credits
+                })
                 
                 # Find exact match first, then fallback to range-based
                 credits_to_add = CREDIT_TIERS_KOBO.get(amount_kobo)
@@ -211,11 +211,11 @@ def paystack_webhook(request):
                             
                             amount_kobo = data.get('amount', 0)
                             
-                            CREDIT_TIERS_KOBO = {
+                            CREDIT_TIERS_KOBO = getattr(settings, 'AKILI_CREDIT_TIERS', {
                                 200000: 300,
                                 100000: 120,
                                 50000: 50,
-                            }
+                            })
                             
                             credits_to_add = CREDIT_TIERS_KOBO.get(amount_kobo)
                             if credits_to_add is None:

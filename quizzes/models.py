@@ -40,5 +40,6 @@ class QuizAttempt(models.Model):
     
     @property
     def is_passing(self):
-        """Check if the score meets the 60% passing threshold"""
-        return self.percentage >= 60
+        """Check if the score meets the passing threshold"""
+        from django.conf import settings
+        return self.percentage >= getattr(settings, 'AKILI_QUIZ_PASSING_PERCENTAGE', 60)

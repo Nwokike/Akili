@@ -252,6 +252,18 @@ AKILI_DAILY_FREE_CREDITS = 10
 AKILI_MAX_REFERRAL_CREDITS = 30
 AKILI_CREDITS_PER_REFERRAL = 2
 
+# Akili Learning Settings
+AKILI_QUIZ_PASSING_PERCENTAGE = 60  # Minimum % to pass a quiz and unlock next module
+AKILI_LESSON_REPORT_THRESHOLD = 3   # Number of reports before lesson is regenerated
+AKILI_DOMAIN = os.getenv('AKILI_DOMAIN', 'akili.ng')  # Default domain for referral URLs
+
+# Credit Tiers (in kobo - 100 kobo = ₦1)
+AKILI_CREDIT_TIERS = {
+    200000: 300,  # Premium: ₦2,000 = 300 credits
+    100000: 120,  # Standard: ₦1,000 = 120 credits
+    50000: 50,    # Starter: ₦500 = 50 credits
+}
+
 # Profiles App Settings
 ACCOUNT_DELETION_DISABLED = False
 

@@ -88,8 +88,9 @@ class CustomUser(AbstractUser):
     def referral_url(self):
         """Generate referral URL for this user - uses dynamic domain from settings"""
         import os
-        # Try to get domain from environment or settings
-        base_url = os.getenv('REPLIT_DEV_DOMAIN', os.getenv('REPL_SLUG', 'akili.ng'))
+        from django.conf import settings as django_settings
+        # Try to get domain from environment, then fall back to settings
+        base_url = os.getenv('REPLIT_DEV_DOMAIN') or os.getenv('REPLIT_DOMAINS') or getattr(django_settings, 'AKILI_DOMAIN', 'akili.ng')
         if base_url and not base_url.startswith('http'):
             base_url = f"https://{base_url}"
         return f"{base_url}/join/{self.username}"

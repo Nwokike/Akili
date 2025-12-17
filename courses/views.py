@@ -3,6 +3,7 @@ from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.contrib import messages
+from django.conf import settings
 from .models import Course, Module, CachedLesson
 from .forms import CourseCreationForm
 from core.utils.ai_module_generator import generate_course_modules
@@ -133,7 +134,8 @@ class ModuleListingView(LoginRequiredMixin, View):
                 previous_module = module_by_order.get(module.order - 1)
                 if previous_module and previous_module.id not in passed_modules:
                     is_locked = True
-                    lock_reason = f"Complete Module {previous_module.order} quiz with 60% or higher to unlock"
+                    passing_pct = getattr(settings, 'AKILI_QUIZ_PASSING_PERCENTAGE', 60)
+                    lock_reason = f"Complete Module {previous_module.order} quiz with {passing_pct}% or higher to unlock"
 
             modules_with_status.append({
                 'module': module,
@@ -159,7 +161,7 @@ class LessonDetailView(LoginRequiredMixin, View):
             lesson = self._generate_lesson(module)
         else:
             lesson = module.lesson_content
-            if lesson.report_count > 3:
+            if lesson.report_count > settings.AKILI_LESSON_REPORT_THRESHOLD:
                 lesson.delete()
                 lesson = self._generate_lesson(module)
 

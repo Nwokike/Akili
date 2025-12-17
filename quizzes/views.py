@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
 from django.utils import timezone
+from django.conf import settings
 import logging
 from django.db.models import Sum
 
@@ -117,7 +118,8 @@ def quiz_detail_view(request, quiz_id):
         if quiz_attempt.passed:
             messages.success(request, f"Quiz submitted! You scored {total_correct} out of {quiz_attempt.total_questions} ({quiz_attempt.percentage}%) - PASSED! Next module unlocked.")
         else:
-            messages.warning(request, f"Quiz submitted! You scored {total_correct} out of {quiz_attempt.total_questions} ({quiz_attempt.percentage}%). You need 60% to pass and unlock the next module.")
+            passing_pct = getattr(settings, 'AKILI_QUIZ_PASSING_PERCENTAGE', 60)
+            messages.warning(request, f"Quiz submitted! You scored {total_correct} out of {quiz_attempt.total_questions} ({quiz_attempt.percentage}%). You need {passing_pct}% to pass and unlock the next module.")
         return redirect('quizzes:quiz_detail', quiz_id=quiz_attempt.id)
 
 
