@@ -44,16 +44,16 @@
   </div>
   
   {% if continue_learning %}
-  <div class="mb-8">
+  <div class="mb-8 overflow-hidden">
     <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Continue Learning</h2>
-    <div class="grid md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {% for item in continue_learning %}
-      <a href="{% url 'courses:lesson_detail' module_id=item.module.id %}" class="card card-hover group border-l-4 border-primary-500">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-semibold px-2 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded">{{ item.action }}</span>
-          <span class="text-xs text-gray-500 dark:text-gray-400">Module {{ item.module.order }}</span>
+      <a href="{% url 'courses:lesson_detail' module_id=item.module.id %}" class="card card-hover group border-l-4 border-primary-500 min-w-0">
+        <div class="flex items-center justify-between mb-2 flex-wrap gap-1">
+          <span class="text-xs font-semibold px-2 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded whitespace-nowrap">{{ item.action }}</span>
+          <span class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">Module {{ item.module.order }}</span>
         </div>
-        <h3 class="font-bold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 mb-1">{{ item.course.subject }}</h3>
+        <h3 class="font-bold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 mb-1 break-words">{{ item.course.subject }}</h3>
         <p class="text-sm text-gray-600 dark:text-gray-400 truncate">{{ item.module.title }}</p>
       </a>
       {% endfor %}
@@ -107,6 +107,26 @@
       
     </div>
   </div>
+  
+  {% if today_schedule %}
+  <div class="mb-8">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Today's Schedule</h2>
+      <a href="{% url 'assessments:timetable' %}" class="text-primary-600 hover:text-primary-700 font-semibold text-sm">Manage Timetable →</a>
+    </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {% for plan in today_schedule %}
+      <div class="card border-l-4 border-primary-500">
+        <h3 class="font-bold text-gray-900 dark:text-gray-100">{{ plan.title }}</h3>
+        <p class="text-sm text-primary-600 dark:text-primary-400 font-medium">{{ plan.start_time|time:"g:i A" }} - {{ plan.end_time|time:"g:i A" }}</p>
+        {% if plan.course %}
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ plan.course.subject }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
   
   {% if recent_quizzes or recent_exams %}
   <div class="mb-8">

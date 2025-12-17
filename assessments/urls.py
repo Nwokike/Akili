@@ -11,11 +11,18 @@ urlpatterns = [
     path('grades/', views.my_grades, name='my_grades'),
     path('report/<int:pk>/', views.progress_report_view, name='progress_report'),
     
+    path('timetable/', views.timetable_view, name='timetable'),
+    path('timetable/add/', views.add_study_plan, name='add_study_plan'),
+    path('timetable/delete/<int:pk>/', views.delete_study_plan, name='delete_study_plan'),
+    
     path('teacher/', views.teacher_dashboard, name='teacher_dashboard'),
+    path('teacher/register/', views.become_teacher, name='become_teacher'),
     path('teacher/class/<int:pk>/', views.class_detail, name='class_detail'),
     path('teacher/class/<int:pk>/analytics/', views.class_analytics, name='class_analytics'),
     
     path('parent/', views.parent_dashboard, name='parent_dashboard'),
+    path('parent/register/', views.become_parent, name='become_parent'),
+    path('parent/add-child/', views.add_child, name='add_child'),
     path('parent/child/<int:child_id>/', views.child_progress, name='child_progress'),
     path('parent/payments/', views.parent_payments, name='parent_payments'),
     

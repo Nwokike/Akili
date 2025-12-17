@@ -14,10 +14,14 @@ def dashboard_view(request):
     """Main dashboard view with comprehensive statistics and quick actions"""
     from courses.models import Course, Module
     from quizzes.models import QuizAttempt
-    from assessments.models import Grade, Notification, CourseExam
+    from assessments.models import Grade, Notification, CourseExam, StudyPlan
     from django.db.models import Avg, Count, Max
+    from datetime import datetime
     
     user_courses = Course.objects.filter(user=request.user).prefetch_related('modules').select_related('school_level', 'term')
+    
+    today_weekday = datetime.now().weekday()
+    today_schedule = StudyPlan.objects.filter(user=request.user, day_of_week=today_weekday).select_related('course').order_by('start_time')
     
     courses_count = user_courses.count()
     quizzes_count = QuizAttempt.objects.filter(user=request.user, completed_at__isnull=False).count()
@@ -91,6 +95,7 @@ def dashboard_view(request):
         'unread_notifications': unread_notifications,
         'continue_learning': continue_learning[:3],
         'has_parent_profile': has_parent_profile,
+        'today_schedule': today_schedule[:4],
     })
 
 

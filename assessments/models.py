@@ -404,6 +404,47 @@ class CourseExam(models.Model):
         return self.percentage >= getattr(settings, 'AKILI_EXAM_PASSING_PERCENTAGE', 50)
 
 
+class StudyPlan(models.Model):
+    """Timetable - Personal study schedule for students"""
+    DAY_CHOICES = [
+        (0, 'Monday'),
+        (1, 'Tuesday'),
+        (2, 'Wednesday'),
+        (3, 'Thursday'),
+        (4, 'Friday'),
+        (5, 'Saturday'),
+        (6, 'Sunday'),
+    ]
+    
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='study_plans')
+    course = models.ForeignKey('courses.Course', on_delete=models.CASCADE, related_name='study_plans', null=True, blank=True)
+    title = models.CharField(max_length=200)
+    day_of_week = models.IntegerField(choices=DAY_CHOICES)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    is_recurring = models.BooleanField(default=True)
+    notes = models.TextField(blank=True)
+    reminder_enabled = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'study_plans'
+        ordering = ['day_of_week', 'start_time']
+
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.title} ({self.get_day_of_week_display()})"
+
+    @property
+    def duration_minutes(self):
+        from datetime import datetime, timedelta
+        start = datetime.combine(datetime.today(), self.start_time)
+        end = datetime.combine(datetime.today(), self.end_time)
+        if end < start:
+            end += timedelta(days=1)
+        return int((end - start).total_seconds() / 60)
+
+
 class CurriculumUpdateRequest(models.Model):
     """6.4: Content Management - Admin interface for curriculum updates"""
     STATUS_CHOICES = [

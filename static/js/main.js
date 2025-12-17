@@ -325,4 +325,24 @@
   window.addEventListener('pageshow', function() {
     window.hideSpinner();
   });
+
+  function updateOnlineStatus() {
+    var offlineIndicator = document.getElementById('offline-indicator');
+    if (!offlineIndicator) return;
+    
+    if (navigator.onLine) {
+      offlineIndicator.classList.add('hidden');
+    } else {
+      offlineIndicator.classList.remove('hidden');
+    }
+  }
+
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateOnlineStatus);
+  } else {
+    updateOnlineStatus();
+  }
 })();

@@ -11,7 +11,30 @@ Akili is an AI-powered educational platform for Nigerian secondary school studen
 
 ## Recent Changes (December 17, 2025)
 
-### Phase 1 Cleanup - Legacy Code Removal
+### Production Readiness Updates
+- **Timetable Feature**: Added complete study schedule management
+  - New `StudyPlan` model in `assessments/models.py`
+  - Views: `timetable_view`, `add_study_plan`, `delete_study_plan`
+  - Template: `assessments/templates/assessments/timetable.html`
+  - Dashboard widget showing today's schedule
+
+- **Parent/Teacher Registration Flow**:
+  - New views: `become_parent`, `become_teacher`, `add_child`
+  - Templates: `become_parent.html`, `become_teacher.html`
+  - Profile dropdown shows "Become a Parent/Teacher" for users without profiles
+  - Existing profile holders see direct dashboard links
+
+- **Enhanced Navigation**:
+  - Sidebar: Added Timetable link
+  - Mobile bottom nav: Added Quizzes and Schedule (Timetable)
+  - Profile dropdown: Added My Grades, Parent/Teacher options
+
+- **Offline Access**:
+  - Enhanced service worker with dynamic caching
+  - Offline indicator banner in UI
+  - PWA install button positioned properly for mobile
+
+### Phase 1 Cleanup - Legacy Code Removal (Previous)
 - **Removed admin_syllabus references**: Deleted all imports and usages of JAMBSyllabus, SSCESyllabus, JSSSyllabus from:
   - `core/utils/ai_module_generator.py` - Removed generate_legacy_modules() function
   - `core/tests.py` - Removed ExamCenterViewTestCase and exams imports
@@ -46,6 +69,11 @@ Akili is an AI-powered educational platform for Nigerian secondary school studen
 - `/quizzes/` - Quiz functionality
 - `/profiles/` - User profile (URL name: `profiles:my_profile`)
 - `/payments/` - Payment handling (URL name: `payments:initialize_payment`)
+- `/assessments/timetable/` - Study timetable
+- `/assessments/parent/` - Parent dashboard
+- `/assessments/parent/register/` - Become a parent
+- `/assessments/teacher/` - Teacher dashboard
+- `/assessments/teacher/register/` - Become a teacher
 
 ## User Preferences
 - Nigerian secondary school focus (JS1-SS3)
@@ -61,7 +89,12 @@ Akili is an AI-powered educational platform for Nigerian secondary school studen
 - `ALLOWED_HOSTS` - Set to "*" for development
 - `CSRF_TRUSTED_ORIGINS` - Auto-detected from REPLIT_DEV_DOMAIN
 
+## Deployment Configuration
+- Build: `python manage.py collectstatic --noinput`
+- Run: `gunicorn --bind=0.0.0.0:5000 --reuse-port --workers=2 akili_project.wsgi:application`
+- Target: autoscale
+
 ## Known Issues to Address
-1. LSP diagnostics in core/tests.py and courses/tests.py (minor)
+1. LSP diagnostics show Django import errors (false positives - Django is installed and working)
 2. Legacy `exam_type` field still exists in Course model (kept for backwards compatibility)
 3. Some templates still reference `course.exam_type` (display only, non-breaking)

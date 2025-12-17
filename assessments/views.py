@@ -409,6 +409,205 @@ def parent_payments(request):
 
 
 @login_required
+def timetable_view(request):
+    """View and manage personal study timetable"""
+    from courses.models import Course
+    from .models import StudyPlan
+    from datetime import datetime
+    
+    study_plans = StudyPlan.objects.filter(user=request.user).select_related('course')
+    courses = Course.objects.filter(user=request.user)
+    
+    today_weekday = datetime.now().weekday()
+    today_plans = study_plans.filter(day_of_week=today_weekday)
+    
+    plans_by_day = {}
+    for day_num, day_name in StudyPlan.DAY_CHOICES:
+        plans_by_day[day_name] = study_plans.filter(day_of_week=day_num)
+    
+    context = {
+        'study_plans': study_plans,
+        'today_plans': today_plans,
+        'plans_by_day': plans_by_day,
+        'courses': courses,
+        'today_weekday': today_weekday,
+    }
+    return render(request, 'assessments/timetable.html', context)
+
+
+@login_required
+def add_study_plan(request):
+    """Add a new study plan entry"""
+    from courses.models import Course
+    from .models import StudyPlan
+    from datetime import datetime
+    
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        day_of_week = request.POST.get('day_of_week')
+        start_time = request.POST.get('start_time')
+        end_time = request.POST.get('end_time')
+        course_id = request.POST.get('course')
+        notes = request.POST.get('notes', '')
+        
+        if not all([title, day_of_week, start_time, end_time]):
+            messages.error(request, 'Please fill in all required fields.')
+            return redirect('assessments:timetable')
+        
+        try:
+            start_time_obj = datetime.strptime(start_time, '%H:%M').time()
+            end_time_obj = datetime.strptime(end_time, '%H:%M').time()
+        except ValueError:
+            messages.error(request, 'Invalid time format.')
+            return redirect('assessments:timetable')
+        
+        course = None
+        if course_id:
+            course = Course.objects.filter(id=course_id, user=request.user).first()
+        
+        StudyPlan.objects.create(
+            user=request.user,
+            title=title,
+            day_of_week=int(day_of_week),
+            start_time=start_time_obj,
+            end_time=end_time_obj,
+            course=course,
+            notes=notes
+        )
+        
+        messages.success(request, 'Study plan added successfully!')
+    
+    return redirect('assessments:timetable')
+
+
+@login_required
+def delete_study_plan(request, pk):
+    """Delete a study plan entry"""
+    from .models import StudyPlan
+    
+    plan = get_object_or_404(StudyPlan, pk=pk, user=request.user)
+    plan.delete()
+    messages.success(request, 'Study plan deleted.')
+    return redirect('assessments:timetable')
+
+
+@login_required
+def become_parent(request):
+    """Register as a parent to monitor children"""
+    from .models import ParentProfile
+    from users.models import CustomUser
+    
+    if hasattr(request.user, 'parent_profile'):
+        messages.info(request, 'You already have a parent profile.')
+        return redirect('assessments:parent_dashboard')
+    
+    if request.method == 'POST':
+        phone_number = request.POST.get('phone_number', '')
+        address = request.POST.get('address', '')
+        child_email = request.POST.get('child_email', '').strip()
+        
+        parent_profile = ParentProfile.objects.create(
+            user=request.user,
+            phone_number=phone_number,
+            address=address
+        )
+        
+        if child_email:
+            try:
+                child = CustomUser.objects.get(email=child_email)
+                if child != request.user:
+                    parent_profile.children.add(child)
+                    messages.success(request, f'Parent profile created! {child.get_full_name()} added as your child.')
+                else:
+                    messages.warning(request, 'You cannot add yourself as a child.')
+            except CustomUser.DoesNotExist:
+                messages.info(request, 'Parent profile created. The child email was not found - they may need to sign up first.')
+        else:
+            messages.success(request, 'Parent profile created! You can add children later.')
+        
+        return redirect('assessments:parent_dashboard')
+    
+    return render(request, 'assessments/become_parent.html')
+
+
+@login_required
+def add_child(request):
+    """Add a child to parent profile"""
+    from .models import ParentProfile
+    from users.models import CustomUser
+    
+    if not hasattr(request.user, 'parent_profile'):
+        messages.error(request, 'You need to register as a parent first.')
+        return redirect('assessments:become_parent')
+    
+    if request.method == 'POST':
+        child_email = request.POST.get('child_email', '').strip()
+        
+        if child_email:
+            try:
+                child = CustomUser.objects.get(email=child_email)
+                if child != request.user:
+                    request.user.parent_profile.children.add(child)
+                    messages.success(request, f'{child.get_full_name()} added as your child.')
+                else:
+                    messages.error(request, 'You cannot add yourself as a child.')
+            except CustomUser.DoesNotExist:
+                messages.error(request, 'No user found with that email.')
+    
+    return redirect('assessments:parent_dashboard')
+
+
+@login_required
+def become_teacher(request):
+    """Register as a teacher"""
+    from .models import TeacherProfile
+    from curriculum.models import Subject, SchoolLevel
+    
+    if hasattr(request.user, 'teacher_profile'):
+        messages.info(request, 'You already have a teacher profile.')
+        return redirect('assessments:teacher_dashboard')
+    
+    subjects = Subject.objects.all()
+    school_levels = SchoolLevel.objects.all()
+    
+    if request.method == 'POST':
+        employee_id = request.POST.get('employee_id', '')
+        qualification = request.POST.get('qualification', '')
+        years_experience = request.POST.get('years_experience', 0)
+        bio = request.POST.get('bio', '')
+        selected_subjects = request.POST.getlist('subjects')
+        selected_levels = request.POST.getlist('school_levels')
+        
+        try:
+            years_exp = int(years_experience)
+        except (ValueError, TypeError):
+            years_exp = 0
+        
+        teacher_profile = TeacherProfile.objects.create(
+            user=request.user,
+            employee_id=employee_id if employee_id else None,
+            qualification=qualification,
+            years_of_experience=years_exp,
+            bio=bio,
+            is_verified=False
+        )
+        
+        if selected_subjects:
+            teacher_profile.subjects.set(Subject.objects.filter(id__in=selected_subjects))
+        if selected_levels:
+            teacher_profile.school_levels.set(SchoolLevel.objects.filter(id__in=selected_levels))
+        
+        messages.success(request, 'Teacher profile created! It will be verified soon.')
+        return redirect('assessments:teacher_dashboard')
+    
+    context = {
+        'subjects': subjects,
+        'school_levels': school_levels,
+    }
+    return render(request, 'assessments/become_teacher.html', context)
+
+
+@login_required
 def start_course_exam(request, course_id):
     """Start a new course-wide mock exam"""
     from courses.models import Course
