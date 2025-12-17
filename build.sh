@@ -16,5 +16,6 @@ python manage.py migrate
 # "|| true" ensures the build doesn't fail if the table already exists
 python manage.py createcachetable || true
 
-# One-time superuser creation (run once, then remove these lines)
-echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='Maikel').exists() or User.objects.create_superuser('Maikel', 'nwokikeonyeka@gmail.com', 'Maikel1@')" | python manage.py shell
+# One-time superuser creation
+# FIXED: Checks by email and passes arguments correctly (email, password, then named args)
+echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(email='nwokikeonyeka@gmail.com').exists() or User.objects.create_superuser('nwokikeonyeka@gmail.com', 'Maikel1@', username='Maikel', first_name='Onyeka', last_name='Nwokike')" | python manage.py shell
